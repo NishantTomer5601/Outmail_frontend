@@ -27,7 +27,7 @@ export default function Partners() {
   return (
     <div className=" w-full overflow-hidden py-10 bg-black bg-gradient-to-l from-black via-[#6c00ff] to-black ">
       <h2 className="text-2xl font-bold text-white text-center mb-20 mt-10">
-        Our Diverse Network of Partners.
+        Trusted by Job Seekers Connecting with Top Companies
       </h2>
 
 

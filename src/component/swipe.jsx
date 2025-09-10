@@ -4,9 +4,9 @@ import  CardSwipe from "@/component/ui/cardswipe"
 
 const CardSwipeDemo = () => {
   const images = [
-    { src: "/dashboard.jpg", alt: "Image 1" },
-    { src: "/dashboard.jpg", alt: "Image 2" },
-    { src: "/dashboard.jpg", alt: "Image 3" },
+    { src: "/dashboard.jpg", alt: "OutMail Dashboard 1" },
+    { src: "/dashboard.jpg", alt: "OutMail Dashboard 2" },
+    { src: "/dashboard.jpg", alt: "OutMail Dashboard 3" },
   ]
 
   return (

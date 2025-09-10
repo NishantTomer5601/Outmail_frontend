@@ -14,12 +14,12 @@ export default function index() {
             <div className="sticky top-0 h-screen flex items-center justify-center">
             <div className="sticky top-0 h-screen grid place-content-center">
   <div className="text-right px-8">
-    <h1 className="2xl:text-7xl text-white text-5xl font-semibold text-left tracking-tight leading-[120%] mb-4">
-     Our Vision
-    </h1>
-    <p className="text-white text-lg max-w-xl ml-auto text-left">
-    Our vision is to build a future where technology empowers every individual and business to innovate without limits. We strive to create intelligent, scalable, and human-centric digital solutions that redefine industries and drive meaningful change.
-    </p>
+  <h1 className="2xl:text-7xl text-white text-5xl font-semibold text-left tracking-tight leading-[120%] mb-4">
+   Our Mission
+  </h1>
+  <p className="text-white text-lg max-w-xl ml-auto text-left">
+  OutMail’s mission is to help every job seeker get noticed. We believe in direct, personalized outreach that puts your profile in front of real recruiters—so you can land more interviews and take control of your career journey.
+  </p>
   </div>
 </div>
             </div>

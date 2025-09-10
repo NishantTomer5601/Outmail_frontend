@@ -10,56 +10,56 @@ const faqItems = [
     id: '1',
     question: 'What is OutMail?',
     answer:
-      'OutMail is your AI-powered job application assistant. It helps students automatically apply to multiple job listings using tailored resumes and cover letters.',
+      'OutMail is a simple yet powerful tool for students, fresh graduates, and job seekers to boost their job visibility by automating personalized email outreach directly to recruiters.',
     category: 'general',
   },
   {
     id: '2',
     question: 'How does OutMail work?',
     answer:
-      'You connect your resume and job preferences, and OutMail uses AI to apply on your behalf by matching you with relevant job listings and generating custom applications.',
+      'Connect your Gmail, upload your resumes and templates, choose your target companies, and launch a campaign. OutMail sends personalized emails on your behalf, safely and efficiently.',
     category: 'general',
   },
   {
     id: '3',
-    question: 'Do I need to manually upload my resume every time?',
+    question: 'Can I personalize my emails?',
     answer:
-      'No, once you upload your resume and set your preferences, OutMail uses that information for all future applications unless you update it.',
+      'Yes! You can upload multiple resumes and templates, and OutMail lets you tailor each campaign for different companies and roles.',
     category: 'technical',
   },
   {
     id: '4',
-    question: 'Can I customize my cover letter?',
+    question: 'Is my Gmail safe?',
     answer:
-      'Yes! OutMail provides AI-generated cover letters, but you can edit and customize them before they are sent out.',
+      'Absolutely. OutMail uses secure OAuth for Gmail connection, throttles sending to safe limits, and never stores your emails or shares your data.',
     category: 'technical',
   },
   {
     id: '5',
-    question: 'Is OutMail free to use?',
+    question: 'What happens to my contact lists?',
     answer:
-      'OutMail offers a free tier with limited applications per month. For unlimited access and advanced AI features, you can upgrade to a premium plan.',
-    category: 'pricing',
+      'Your uploaded CSV contacts are deleted automatically after each campaign for your privacy and security.',
+    category: 'privacy',
   },
   {
     id: '6',
-    question: 'Will I get notifications about applied jobs?',
+    question: 'How many emails can I send?',
     answer:
-      'Yes, OutMail sends email and dashboard notifications for each job it applies to, including tracking and response status (if available).',
-    category: 'support',
+      'Depending on your plan, you can send up to 500, 2,000, or 5,000 emails per month. OutMail enforces hourly and daily limits to keep your Gmail safe.',
+    category: 'pricing',
   },
   {
     id: '7',
-    question: 'Can I pause or stop the AI from applying?',
+    question: 'Does OutMail guarantee a job?',
     answer:
-      'Absolutely. You have full control — you can pause, resume, or stop applications at any time from your dashboard.',
-    category: 'technical',
+      'No tool can guarantee a job, but OutMail guarantees your application will be seen by more recruiters, increasing your chances of landing interviews.',
+    category: 'general',
   },
   {
     id: '8',
-    question: 'Is my data safe with OutMail?',
+    question: 'Can I track my campaign status?',
     answer:
-      'Yes, your data is encrypted and stored securely. We never share your resume or details without your permission.',
+      'Yes, you can track the status of your campaigns and see which emails have been sent from your dashboard.',
     category: 'support',
   },
 ];
@@ -101,7 +101,7 @@ export default function Faq2() {
           </h2>
 
           <p className="max-w-2xl text-center text-white">
-            Learn how OutMail helps students streamline their job applications using AI.
+            Learn how OutMail helps you get noticed, connect directly with recruiters, and boost your job search success.
           </p>
         </div>
 

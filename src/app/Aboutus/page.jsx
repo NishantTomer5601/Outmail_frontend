@@ -17,13 +17,11 @@ function page() {
       <div className="bg-gradient-to-l from-black via-[#6c00ff] to-black py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl sm:text-5xl font-syne font-bold tracking-wide mt-6">
-            About Us
+            About OutMail
           </h1>
 
           <p className="text-[#C0C0C0] text-base sm:text-lg mt-6 leading-relaxed">
-            Automate your job search, create stunning resumes, and track every application —
-            <br />
-            <span className="block mt-2">all in one place.</span>
+            OutMail helps you get noticed in a crowded job market by automating direct, personalized outreach to recruiters. We believe every job seeker deserves to be seen and have a fair shot at landing interviews.
           </p>
 
           <div className="text-center mt-10">

@@ -24,14 +24,11 @@ function page() {
         </div>
 
         <h1 className="text-4xl sm:text-5xl font-syne font-bold tracking-wide mt-3">
-          Pricing
+          OutMail Subscription Plans
         </h1>
 
-
         <p className="text-[#C0C0C0] text-base sm:text-lg mt-6 leading-relaxed">
-          Automate your job search, create stunning resumes, and track every application — all in
-          <br />
-          <span className="block mt-2">one place.</span>
+          Choose the plan that fits your job search journey. OutMail helps you reach more companies, personalize your outreach, and boost your chances of landing interviews.
         </p>
 
         <div className="text-center mt-10">

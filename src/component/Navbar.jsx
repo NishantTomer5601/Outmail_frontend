@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link"; // Import Link component
-import Logo from "@/assets/logo.svg";
+// Removed SVG logo import; using public folder image instead
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -15,7 +15,7 @@ function Navbar() {
         
         {/* Logo */}
         <div className="flex items-center space-x-2 text-2xl font-bold">
-          <Image src={Logo} alt="Logo" width={40} height={40} />
+          <Image src="/Logo_Outmail.png" alt="Logo" width={40} height={40} />
           <span className="text-white">OUTMAIL</span>
         </div>
 

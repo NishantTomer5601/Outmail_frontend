@@ -24,12 +24,10 @@ function page() {
         </div>
 
         <h1 className="text-4xl sm:text-5xl px-4  font-syne font-bold tracking-wide mt-25">
-          Contact Us
+          Get in Touch with OutMail
         </h1>
         <p className="text-[#C0C0C0] text-base sm:text-lg mt-6 mb-25 leading-relaxed">
-          If you have any query , please fill the below form.
-          <br />
-          {/* <span className="block mt-2">.</span> */}
+          Have a question, feedback, or need help with your job search journey? Fill out the form below and our team will get back to you as soon as possible. We’re here to help you get noticed and land more interviews!
         </p>
 
         <div className="text-center -mt-10">
