@@ -16,7 +16,7 @@ function Navbar() {
         {/* Logo */}
         <div className="flex items-center space-x-2 text-2xl font-bold">
           <Image src="/Logo_Outmail.png" alt="Logo" width={40} height={40} />
-          <span className="text-white">OUTMAIL</span>
+          <span className="text-white">Outmail</span>
         </div>
 
         {/* Desktop Links */}

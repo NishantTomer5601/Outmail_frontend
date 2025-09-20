@@ -18,7 +18,7 @@ export default function index() {
    Our Mission
   </h1>
   <p className="text-white text-lg max-w-xl ml-auto text-left">
-  OutMail’s mission is to help every job seeker get noticed. We believe in direct, personalized outreach that puts your profile in front of real recruiters—so you can land more interviews and take control of your career journey.
+  Outmail’s mission is to help every job seeker get noticed. We believe in direct, personalized outreach that puts your profile in front of real recruiters—so you can land more interviews and take control of your career journey.
   </p>
   </div>
 </div>

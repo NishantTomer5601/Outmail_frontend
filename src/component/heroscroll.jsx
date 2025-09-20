@@ -11,7 +11,7 @@ export function HeroScrollDemo() {
       >
         <Image
           src={headerimg}
-          alt="OutMail: Boost Your Job Visibility"
+          alt="Outmail: Boost Your Job Visibility"
           width={1400}
           height={700}
           className="mx-auto rounded-2xl object-cover h-full object-left-top"

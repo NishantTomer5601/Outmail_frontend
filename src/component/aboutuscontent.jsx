@@ -10,13 +10,13 @@ export default function AboutUs() {
         {/* LEFT: TEXT CONTENT */}
         <div className="flex-1 text-left">
           <p className="text-sm font-medium text-indigo-300 uppercase tracking-wider mb-2">
-            About OutMail
+            About Outmail
           </p>
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             Helping You Get Noticed, Not Ignored
           </h2>
           <p className="text-white/90 max-w-2xl text-base md:text-lg leading-relaxed mb-10">
-            OutMail was created for students, fresh graduates, and job seekers who are tired of being lost in the crowd. We believe every candidate deserves a fair shot at being seen by recruiters—not just filtered out by algorithms or buried in portals.
+            Outmail was created for students, fresh graduates, and job seekers who are tired of being lost in the crowd. We believe every candidate deserves a fair shot at being seen by recruiters—not just filtered out by algorithms or buried in portals.
           </p>
 
           <h3 className="text-2xl font-semibold mb-6">Our Mission</h3>
@@ -33,7 +33,7 @@ export default function AboutUs() {
               Empowerment
             </span>
             <p className="text-white/90 text-sm max-w-md leading-relaxed mt-2">
-              OutMail puts the power back in your hands—no more waiting, no more guessing. You choose who sees your profile and how you present yourself.
+              Outmail puts the power back in your hands—no more waiting, no more guessing. You choose who sees your profile and how you present yourself.
             </p>
           </div>
           <div className="mb-6">

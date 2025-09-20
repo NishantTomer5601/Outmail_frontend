@@ -8,12 +8,12 @@ const MembershipBenefits = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         {/* Left Section - Text Content */}
         <div className="flex flex-col justify-center">
-          <p className="text-white uppercase tracking-wide font-semibold mb-2">Why OutMail Membership?</p>
+          <p className="text-white uppercase tracking-wide font-semibold mb-2">Why Outmail Membership?</p>
           <h2 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-6">
             Unlock More Visibility, More Interviews, More Success
           </h2>
           <p className="text-lg text-white mb-8">
-            OutMail membership gives you the tools to reach more recruiters, personalize your outreach, and protect your privacy—so you can focus on landing your next job.
+            Outmail membership gives you the tools to reach more recruiters, personalize your outreach, and protect your privacy—so you can focus on landing your next job.
           </p>
 
           {/* Benefit List */}

@@ -9,24 +9,24 @@ export default function Testimonials() {
   return (
     <div className=" text-white px-4 py-20 bg-gradient-to-l from-black via-[#6c00ff] to-black">
       <div className="max-w-6xl mx-auto text-center">
-        <h2 className="text-2xl md:text-3xl font-bold mb-8">What OutMail Users Say</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-8">What Outmail Users Say</h2>
 
         <div className="flex items-start justify-center gap-4 mb-12 max-w-4xl mx-auto">
           <Quote size={36} className="text-[#6c00ff] mt-2" />
           <p className="text-white text-lg text-left">
-            "OutMail helped me get my resume in front of real recruiters. I landed 3 interviews in a week—without spending hours sending emails!"
+            "Outmail helped me get my resume in front of real recruiters. I landed 3 interviews in a week—without spending hours sending emails!"
           </p>
         </div>
         <div className="flex items-start justify-center gap-4 mb-12 max-w-4xl mx-auto">
           <Quote size={36} className="text-[#6c00ff] mt-2" />
           <p className="text-white text-lg text-left">
-            "The personalization features are a game-changer. OutMail made my outreach feel unique to every company."
+            "The personalization features are a game-changer. Outmail made my outreach feel unique to every company."
           </p>
         </div>
         <div className="flex items-start justify-center gap-4 mb-12 max-w-4xl mx-auto">
           <Quote size={36} className="text-[#6c00ff] mt-2" />
           <p className="text-white text-lg text-left">
-            "I was worried about privacy, but OutMail’s safety features gave me peace of mind. Highly recommended for job seekers!"
+            "I was worried about privacy, but Outmail’s safety features gave me peace of mind. Highly recommended for job seekers!"
           </p>
         </div>
 

@@ -26,8 +26,6 @@ export default function Home() {
     <Features/>
     <Partners/>
    
-    
-    
     <CtaOne/>
     <AboutUs/>
     <Pricing/>

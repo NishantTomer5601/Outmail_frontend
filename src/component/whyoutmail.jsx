@@ -1,14 +1,14 @@
 import React from 'react';
 
 
-export default function WhyOutMail() {
+export default function WhyOutmail() {
   return (
     <div className="bg-white">
       {/* Key Benefits Section */}
       <section className="py-20 px-4 max-w-7xl mx-auto text-center">
-        <h1 className="text-sm font-medium text-purple-500">Why OutMail?</h1>
+        <h1 className="text-sm font-medium text-purple-500">Why Outmail?</h1>
         <h2 className="text-3xl font-semibold mt-2 tracking-tighter">Key Benefits for Job Seekers</h2>
-        <p className="mt-2 text-gray-500">OutMail is designed to help you get noticed, save time, and land more interviews.</p>
+        <p className="mt-2 text-gray-500">Outmail is designed to help you get noticed, save time, and land more interviews.</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-10">
           <div className="bg-black text-white p-6 rounded-2xl shadow flex flex-col items-center">
@@ -46,7 +46,7 @@ export default function WhyOutMail() {
 
       {/* How It Works Section */}
       <section className="py-20 bg-gradient-to-b from-purple-600 to-purple-800 text-white text-center">
-        <h3 className="text-sm">How OutMail Works</h3>
+        <h3 className="text-sm">How Outmail Works</h3>
         <h2 className="text-3xl font-semibold mt-2">Get Started in Four Simple Steps</h2>
 
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">

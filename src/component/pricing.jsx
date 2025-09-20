@@ -45,12 +45,12 @@ export default function ZPricing() {
   return (
     <div className="text-white py-20 px-4 bg-gradient-to-l from-black via-[#6c00ff] to-black">
       <div className="max-w-7xl mx-auto text-center">
-        <p className="text-sm font-medium text-white/80 mb-2">Subscription Plans 💼</p>
+        <p className="text-sm font-medium text-indigo-300 uppercase tracking-wider mb-2">Subscription Plans</p>
         <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tighter">
           Simple, Affordable Plans for Every Job Seeker
         </h2>
         <p className="text-white/70 mb-12 max-w-2xl mx-auto">
-          Choose the plan that fits your job search journey. OutMail helps you reach more companies, personalize your outreach, and boost your chances of landing interviews.
+          Choose the plan that fits your job search journey. Outmail helps you reach more companies, personalize your outreach, and boost your chances of landing interviews.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

@@ -6,17 +6,17 @@ export default function Features() {
     {
       icon: <Zap size={28} className="text-white" />,
       title: 'Automated Email Outreach',
-      desc: 'Send personalized emails to recruiters at scale, directly from your Gmail, with just a few clicks.',
+      desc: 'Send personalized emails to recruiters at scale, directly from your Gmail.',
     },
     {
       icon: <Settings size={28} className="text-white" />,
-      title: 'Personalization at Scale',
+      title: 'Personalization Made Easy',
       desc: 'Upload multiple resumes and templates to tailor your outreach for every company and role.',
     },
     {
       icon: <BarChart2 size={28} className="text-white" />,
       title: 'Smart Targeting',
-      desc: 'Choose companies by industry, size, funding stage, and more—or upload your own list for maximum control.',
+      desc: 'Reach firms based on industry, recent funding stage, size, or location - or import your own curated list for precision outreach.',
     },
     {
       icon: <ShieldCheck size={28} className="text-white" />,
@@ -32,7 +32,7 @@ export default function Features() {
       <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
         {/* Left Side */}
         <div className="text-white">
-          <p className="text-sm opacity-70 mb-2">Why OutMail Stands Out</p>
+          <p className="text-sm font-medium text-indigo-300 uppercase tracking-wider mb-2">Why Outmail Stands Out</p>
           <h2 className="text-4xl font-bold mb-10">
             Smarter Job Outreach, Built for You
           </h2>
@@ -54,7 +54,7 @@ export default function Features() {
         <div className="w-full flex  justify-end ">
           <img
             src="/dashboard.jpg" 
-            alt="OutMail Dashboard Preview"
+            alt="Outmail Dashboard Preview"
             className="rounded-4xl shadow-xl  max-w-full transition-transform duration-300 ease-in-out transform hover:scale-105 hover:-translate-y-1 translate-x-12 md:translate-x-24 lg:translate-x-32 "
             width={1000}
           />

@@ -8,30 +8,30 @@ import { MinusIcon, PlusIcon } from 'lucide-react';
 const faqItems = [
   {
     id: '1',
-    question: 'What is OutMail?',
+    question: 'What is Outmail?',
     answer:
-      'OutMail is a simple yet powerful tool for students, fresh graduates, and job seekers to boost their job visibility by automating personalized email outreach directly to recruiters.',
+      'Outmail is a simple yet powerful tool for students, fresh graduates, and job seekers to boost their job visibility by automating personalized email outreach directly to recruiters.',
     category: 'general',
   },
   {
     id: '2',
-    question: 'How does OutMail work?',
+    question: 'How does Outmail work?',
     answer:
-      'Connect your Gmail, upload your resumes and templates, choose your target companies, and launch a campaign. OutMail sends personalized emails on your behalf, safely and efficiently.',
+      'Connect your Gmail, upload your resumes and templates, choose your target companies, and launch a campaign. Outmail sends personalized emails on your behalf, safely and efficiently.',
     category: 'general',
   },
   {
     id: '3',
     question: 'Can I personalize my emails?',
     answer:
-      'Yes! You can upload multiple resumes and templates, and OutMail lets you tailor each campaign for different companies and roles.',
+      'Yes! You can upload multiple resumes and templates, and Outmail lets you tailor each campaign for different companies and roles.',
     category: 'technical',
   },
   {
     id: '4',
     question: 'Is my Gmail safe?',
     answer:
-      'Absolutely. OutMail uses secure OAuth for Gmail connection, throttles sending to safe limits, and never stores your emails or shares your data.',
+      'Absolutely. Outmail uses secure OAuth for Gmail connection, throttles sending to safe limits, and never stores your emails or shares your data.',
     category: 'technical',
   },
   {
@@ -45,14 +45,14 @@ const faqItems = [
     id: '6',
     question: 'How many emails can I send?',
     answer:
-      'Depending on your plan, you can send up to 500, 2,000, or 5,000 emails per month. OutMail enforces hourly and daily limits to keep your Gmail safe.',
+      'Depending on your plan, you can send up to 500, 2,000, or 5,000 emails per month. Outmail enforces hourly and daily limits to keep your Gmail safe.',
     category: 'pricing',
   },
   {
     id: '7',
-    question: 'Does OutMail guarantee a job?',
+    question: 'Does Outmail guarantee a job?',
     answer:
-      'No tool can guarantee a job, but OutMail guarantees your application will be seen by more recruiters, increasing your chances of landing interviews.',
+      'No tool can guarantee a job, but Outmail guarantees your application will be seen by more recruiters, increasing your chances of landing interviews.',
     category: 'general',
   },
   {
@@ -101,7 +101,7 @@ export default function Faq2() {
           </h2>
 
           <p className="max-w-2xl text-center text-white">
-            Learn how OutMail helps you get noticed, connect directly with recruiters, and boost your job search success.
+            Learn how Outmail helps you get noticed, connect directly with recruiters, and boost your job search success.
           </p>
         </div>
 
