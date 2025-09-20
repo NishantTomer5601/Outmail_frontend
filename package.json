@@ -27,7 +27,8 @@
     "swiper": "^11.2.10",
     "tabler-icons-react": "^1.56.0",
     "tailwind-merge": "^3.3.1",
-    "tempus": "^1.0.0-dev.12"
+    "tempus": "^1.0.0-dev.12",
+    "zod": "^4.1.9"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

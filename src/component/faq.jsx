@@ -17,7 +17,7 @@ const faqItems = [
     id: '2',
     question: 'How does Outmail work?',
     answer:
-      'Connect your Gmail, upload your resumes and templates, choose your target companies, and launch a campaign. Outmail sends personalized emails on your behalf, safely and efficiently.',
+      'Connect your Gmail, upload your resumes, email templates and launch a campaign. Outmail sends personalized emails on your behalf, safely and efficiently.',
     category: 'general',
   },
   {
