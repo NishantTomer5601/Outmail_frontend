@@ -21,26 +21,26 @@ export default function AboutUs() {
 
           <h3 className="text-2xl font-semibold mb-6">Our Mission</h3>
           <div className="mb-6">
-            <span className="bg-white text-[#630dff] font-semibold px-4 py-2 rounded-xl text-sm shadow-md border border-white group-hover:bg-[#ad46ff] group-hover:text-white transition">
+            <span className="bg-white text-[#630dff] font-bold px-4 py-2 rounded-xl text-sm shadow-md border border-white group-hover:bg-[#ad46ff] group-hover:text-white transition">
               Visibility
             </span>
-            <p className="text-white/90 text-sm max-w-md leading-relaxed mt-2">
-              We exist to boost your job visibility 3x by making direct, personalized outreach effortless and effective.
+            <p className="text-white/90 text-base max-w-md leading-relaxed mt-2">
+              We exist to boost your job visibility 5x by making direct, personalized outreach effortless and effective.
             </p>
           </div>
           <div className="mb-6">
-            <span className="bg-white text-[#630dff] font-semibold px-4 py-2 rounded-xl text-sm shadow-md border border-white group-hover:bg-[#ad46ff] group-hover:text-white transition">
+            <span className="bg-white text-[#630dff] font-bold px-4 py-2 rounded-xl text-sm shadow-md border border-white group-hover:bg-[#ad46ff] group-hover:text-white transition">
               Empowerment
             </span>
-            <p className="text-white/90 text-sm max-w-md leading-relaxed mt-2">
+            <p className="text-white/90 text-base max-w-md leading-relaxed mt-2">
               Outmail puts the power back in your hands—no more waiting, no more guessing. You choose who sees your profile and how you present yourself.
             </p>
           </div>
           <div className="mb-6">
-            <span className="bg-white text-[#630dff] font-semibold px-4 py-2 rounded-xl text-sm shadow-md border border-white group-hover:bg-[#ad46ff] group-hover:text-white transition">
+            <span className="bg-white text-[#630dff] font-bold px-4 py-2 rounded-xl text-sm shadow-md border border-white group-hover:bg-[#ad46ff] group-hover:text-white transition">
               Simplicity
             </span>
-            <p className="text-white/90 text-sm max-w-md leading-relaxed mt-2">
+            <p className="text-white/90 text-base max-w-md leading-relaxed mt-2">
               We make job outreach simple, safe, and smart—so you can focus on preparing for interviews, not sending emails.
             </p>
           </div>

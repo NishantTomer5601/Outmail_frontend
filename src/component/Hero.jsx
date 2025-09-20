@@ -10,11 +10,11 @@ function Hero() {
     <div>
     <div className="bg-gradient-to-l from-black via-[#6c00ff] to-black py-20 lg:py-32">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-2xl sm:text-5xl font-syne font-semibold tracking-wide mt-4 bg-gradient-to-r from-[#6c00ff] to-white bg-clip-text text-transparent drop-shadow-lg">
+        <h2 className="text-2xl sm:text-4xl font-syne font-semibold tracking-wide mt-4 bg-gradient-to-r from-[#6c00ff] to-white bg-clip-text text-transparent drop-shadow-lg">
           Stand Out. Get Noticed. Land Jobs Faster.
         </h2>
 
-        <p className="text-2xl sm:text-3xl font-syne font-semibold tracking-wide mt-4 bg-gradient-to-r from-white to-[#6c00ff] bg-clip-text text-transparent drop-shadow-lg">
+        <p className="text-2xl sm:text-2xl font-syne font-semibold tracking-wide mt-4 bg-gradient-to-r from-white to-[#6c00ff] bg-clip-text text-transparent drop-shadow-lg">
           Boost Your Job Visibility 5x with Smarter Outreach
         </p>
 
