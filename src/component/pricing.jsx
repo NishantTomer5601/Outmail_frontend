@@ -6,38 +6,39 @@ export default function ZPricing() {
       level: 'Starter Plan',
       title: 'FREE',
       features: [
-        'Up to 500 emails/month',
-        'Store 1 resume + 1 email template',
-        'Access to basic company database filters',
+        'Send Up to 100 emails',
+        'Store 3 resume + 3 email template',
+        'Access to basic/fixed 100 company outreach',
         'Campaign status tracking',
       ],
       buttonText: 'Start with Starter',
-      description: 'Perfect for students and early job seekers.'
+      description: 'A perfect way to try Outmail and kickstart your job outreach journey.'
     },
     {
       level: 'Growth Plan',
-      title: '₹799/month',
+      title: '₹129/month  (billed annually)',
       features: [
-        'Up to 2,000 emails/month',
+        'Send Up to 1,000+ emails/month',
         'Store 3 resumes + 3 templates',
-        'Advanced filters: industry, size, funding stage, roles',
-        'Priority campaign speed',
+        'Smart Company Targeting based on hiring trends',
+        'Campaign analytics & performance reports',
         'Email support',
       ],
       buttonText: 'Go Growth',
-      description: 'Best for serious job hunters aiming for visibility at scale.'
+      description: 'Unlock higher outreach power and advanced tools to maximize your job visibility.'
     },
     {
-      level: 'Pro Plan',
+      level: 'Campus Plan',
       title: '₹1,499/month',
       features: [
-        'Up to 5,000 emails/month',
-        'Unlimited resumes and templates',
+        'Bulk student accounts under one license',
+        'Admin dashboard for placement officers',
         'Full database access + smart targeting',
         'Campaign analytics & performance reports',
         'Priority support + onboarding assistance',
+        'Shared company database for all students'
       ],
-      buttonText: 'Unlock Pro',
+      buttonText: 'Contact Sales',
       description: 'Ideal for power users who want maximum reach and insights.'
     },
   ];
@@ -57,7 +58,7 @@ export default function ZPricing() {
           {memberships.map((plan, idx) => (
             <div
               key={idx}
-              className="group rounded-2xl border border-white p-8 text-left shadow-lg transition duration-300 bg-black hover:-translate-y-1 hover:scale-105"
+              className="group rounded-2xl border border-white p-8 text-left shadow-lg transition duration-300 bg-black hover:-translate-y-1 hover:scale-105 flex flex-col justify-between h-[480px]"
             >
               <span className="text-sm px-3 py-1 bg-white/10 rounded-full text-white/80 mb-4 inline-block">
                 {plan.level}
@@ -66,12 +67,12 @@ export default function ZPricing() {
               <p className="text-white/70 mb-6">
                 {plan.description}
               </p>
-              <ul className="mb-6 space-y-2 text-sm text-white/90">
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="text-[#6c00ff] text-xl leading-4">•</span> {feature}
-                  </li>
-                ))}
+              <ul className="mb-6 space-y-2 text-base text-white/90 flex-1">
+                  {plan.features.map((feature, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="text-[#6c00ff] text-xl leading-4">•</span> {feature}
+                    </li>
+                  ))}
               </ul>
               <a
                 href="#" // Replace with actual link or action

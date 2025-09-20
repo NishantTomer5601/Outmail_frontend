@@ -100,9 +100,6 @@ export default function Faq2() {
             Frequently Asked Questions
           </h2>
 
-          <p className="max-w-2xl text-center text-white">
-            Learn how Outmail helps you get noticed, connect directly with recruiters, and boost your job search success.
-          </p>
         </div>
 
         {/* Category Tabs */}
