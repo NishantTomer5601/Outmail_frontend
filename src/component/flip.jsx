@@ -8,7 +8,7 @@ export default function Flip() {
       <CardFlip
         title="Yash Sharma "
         subtitle="Launch your idea in record time"
-        description="Got the job from outmail"
+        description="Got the job from Outmail"
         features={[
           "Job",
           "Developer-First", 

@@ -65,7 +65,7 @@ const ContactUs = () => {
 
         {/* Right Column: Contact Form */}
         <div className="flex-1">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Contact OutMail Support</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Contact Outmail Support</h2>
           <p className="text-gray-600 mb-8 leading-relaxed">
             Have a question about your job search, campaign, or account? Our team is here to help you get noticed and land more interviews. Fill out the form and we’ll get back to you soon!
           </p>

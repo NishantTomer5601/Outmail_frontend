@@ -7,7 +7,7 @@ import Image from 'next/image';
 const projects = [
   {
     title: 'Boost Your Visibility',
-    description: 'Reach 3x more companies with OutMail’s automated, personalized outreach.',
+    description: 'Reach 3x more companies with Outmail’s automated, personalized outreach.',
     src: 'dashboard.jpg',
     link: '/dashboard.jpg',
     color: '#6c00ff',

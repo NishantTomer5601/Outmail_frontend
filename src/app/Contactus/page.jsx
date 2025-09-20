@@ -24,7 +24,7 @@ function page() {
         </div>
 
         <h1 className="text-4xl sm:text-5xl px-4  font-syne font-bold tracking-wide mt-25">
-          Get in Touch with OutMail
+          Get in Touch with Outmail
         </h1>
         <p className="text-[#C0C0C0] text-base sm:text-lg mt-6 mb-25 leading-relaxed">
           Have a question, feedback, or need help with your job search journey? Fill out the form below and our team will get back to you as soon as possible. We’re here to help you get noticed and land more interviews!

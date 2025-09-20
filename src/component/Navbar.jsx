@@ -16,11 +16,11 @@ function Navbar() {
         {/* Logo */}
         <div className="flex items-center space-x-2 text-2xl font-bold">
           <Image src="/Logo_Outmail.png" alt="Logo" width={40} height={40} />
-          <span className="text-white">OUTMAIL</span>
+          <span className="text-white">Outmail</span>
         </div>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex space-x-6 text-white text-sm font-medium">
+        <div className="hidden md:flex space-x-6 text-white text-lg font-medium">
           <a href="/" className="hover:text-[#AD46FF] transition">Home</a>
           <a href="/Aboutus" className="hover:text-[#AD46FF] transition">About Us</a>
           <a href="/Pricing" className="hover:text-[#AD46FF] transition">Pricing</a>

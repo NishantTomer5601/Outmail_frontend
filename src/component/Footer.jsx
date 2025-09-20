@@ -9,12 +9,12 @@ export default function Footer() {
         {/* Left Column */}
         <div>
           <div className="flex items-center gap-2 text-2xl font-bold mb-4">
-            <Image src="/Logo_Outmail.png" alt="OutMail Logo" width={40} height={40} />
-            <span className="text-white">OUTMAIL</span>
+            <Image src="/Logo_Outmail.png" alt="Outmail Logo" width={40} height={40} />
+            <span className="text-white">Outmail</span>
           </div>
 
           <p className="text-white/70 text-sm leading-relaxed max-w-md mb-6">
-            Boost your job visibility 3x with OutMail. Automate personalized outreach, connect directly with recruiters, and get noticed in today’s crowded job market.
+            Boost your job visibility 3x with Outmail. Automate personalized outreach, connect directly with recruiters, and get noticed in today’s crowded job market.
           </p>
 
           <ul className="flex flex-wrap gap-4 text-sm text-white/80">
@@ -29,7 +29,7 @@ export default function Footer() {
         <div>
           <h3 className="text-xl font-semibold mb-3">Stay Connected</h3>
           <p className="text-sm text-white/60 mb-4">
-            Join our newsletter for job search tips, product updates, and exclusive offers from OutMail.
+            Join our newsletter for job search tips, product updates, and exclusive offers from Outmail.
           </p>
 
           <form className="flex flex-col sm:flex-row gap-4">
@@ -51,7 +51,7 @@ export default function Footer() {
 
       {/* Bottom Line */}
       <div className="border-t border-white/20 mt-12 pt-6 text-center text-sm text-white/50">
-        <p>© {new Date().getFullYear()} OUTMAIL. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Outmail. All rights reserved.</p>
 
       </div>
     </footer>
