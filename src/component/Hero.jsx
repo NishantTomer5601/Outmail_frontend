@@ -10,21 +10,12 @@ function Hero() {
     <div>
     <div className="bg-gradient-to-l from-black via-[#6c00ff] to-black py-20 lg:py-32">
       <div className="container mx-auto px-4 text-center">
-        <div className="inline-block px-4 py-1 rounded-md">
-          <span className="text-[#C0C0C0] hover:text-purple-400 transition font-syne text-base">
-            Boost Your Job Visibility 3x with Smarter Outreach
-          </span>
-        </div>
-
-        <h1 className="text-4xl text-white sm:text-5xl font-syne font-bold tracking-wide mt-6">
-          Welcome to OutMail 🚀
-        </h1>
-        <h2 className="text-2xl text-white sm:text-3xl font-syne font-semibold tracking-wide mt-4">
-          The easiest way for students, fresh graduates, and job seekers to get noticed by top companies.
+        <h2 className="text-2xl sm:text-5xl font-syne font-semibold tracking-wide mt-4 bg-gradient-to-r from-[#6c00ff] to-white bg-clip-text text-transparent drop-shadow-lg">
+          Stand Out. Get Noticed. Land Jobs Faster.
         </h2>
 
-        <p className="text-[#C0C0C0] text-base sm:text-lg mt-6 leading-relaxed max-w-2xl mx-auto">
-          OutMail helps you stand out in a crowded job market by automating personalized email outreach directly to recruiters. No more resumes lost in portals—connect with the right companies, at the right time, with the right message.
+        <p className="text-2xl sm:text-3xl font-syne font-semibold tracking-wide mt-4 bg-gradient-to-r from-white to-[#6c00ff] bg-clip-text text-transparent drop-shadow-lg">
+          Boost Your Job Visibility 5x with Smarter Outreach
         </p>
 
         <div className="mt-8">
