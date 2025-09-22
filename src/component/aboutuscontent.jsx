@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import FlipMaskCard from './flipmask';
+import Image from 'next/image';
 
 export default function AboutUs() {
   return (
