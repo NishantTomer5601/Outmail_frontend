@@ -37,8 +37,8 @@ export default function Footer() {
 
                   <ul className="flex flex-wrap gap-4 text-sm text-white/80">
                     <li><a href="/Aboutus" className="hover:underline">About Us</a></li>
-                    <li><a href="https://www.outmail.in/terms-and-conditions" className="hover:underline">Terms and Conditions</a></li>
-                    <li><a href="https://www.outmail.in/privacy-policy" className="hover:underline">Privacy Policy</a></li> 
+                    <li><a href="https://docs.outmail.in/terms-and-conditions" className="hover:underline">Terms and Conditions</a></li>
+                    <li><a href="https://docs.outmail.in/privacy-policy" className="hover:underline">Privacy Policy</a></li> 
                     <li><a href="/faq" className="hover:underline">FAQ</a></li>
                     <li><a href="/Contactus" className="hover:underline">Contact Us</a></li>
                   </ul>
