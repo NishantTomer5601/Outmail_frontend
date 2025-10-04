@@ -3,30 +3,11 @@
         import Image from 'next/image';
         import { z } from 'zod';
 
-        export default function Footer() {
-          const [email, setEmail] = useState("");
-          const [error, setError] = useState("");
-          const [subscribed, setSubscribed] = useState(false);
-          const [modalOpen, setModalOpen] = useState(false);
-          const [modalContent, setModalContent] = useState({ title: '', content: '' });
-          const emailSchema = z.string().email();
-
-          const openModal = (type) => {
-            if (type === 'terms') {
-              setModalContent({
-                title: 'Terms and Conditions',
-                content: `These are the Terms and Conditions for Outmail. By using our service, you agree to abide by all rules and policies. Outmail is not responsible for any misuse of the platform. Please read all terms carefully before proceeding.`
-              });
-            } else if (type === 'privacy') {
-              setModalContent({
-                title: 'Privacy Policy',
-                content: `Outmail values your privacy. We do not share your personal information with third parties except as required for service delivery. All data is stored securely and handled according to industry standards.`
-              });
-            }
-            setModalOpen(true);
-          };
-
-          const handleSubmit = (e) => {
+export default function Footer() {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+  const emailSchema = z.string().email();          const handleSubmit = (e) => {
             e.preventDefault();
             if (!emailSchema.safeParse(email).success) {
               setError("Please enter a valid email address.");
@@ -56,24 +37,8 @@
 
                   <ul className="flex flex-wrap gap-4 text-sm text-white/80">
                     <li><a href="/Aboutus" className="hover:underline">About Us</a></li>
-                    <li>
-                      <button
-                        className="hover:underline bg-transparent text-white cursor-pointer"
-                        type="button"
-                        onClick={() => openModal('terms')}
-                      >
-                        Terms and Conditions
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="hover:underline bg-transparent text-white cursor-pointer"
-                        type="button"
-                        onClick={() => openModal('privacy')}
-                      >
-                        Privacy Policy
-                      </button>
-                    </li>
+                    <li><a href="https://www.outmail.in/terms-and-conditions" className="hover:underline">Terms and Conditions</a></li>
+                    <li><a href="https://www.outmail.in/privacy-policy" className="hover:underline">Privacy Policy</a></li> 
                     <li><a href="/faq" className="hover:underline">FAQ</a></li>
                     <li><a href="/Contactus" className="hover:underline">Contact Us</a></li>
                   </ul>
@@ -116,22 +81,6 @@
                   )}
                 </div>
               </div>
-
-              {/* Modal for Terms and Privacy */}
-              {modalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-                  <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 sm:p-8 shadow-xl border border-white/20 w-full max-w-lg">
-                    <h2 className="text-2xl font-bold text-white mb-6">{modalContent.title}</h2>
-                    <div className="text-white text-sm mb-6 whitespace-pre-line">{modalContent.content}</div>
-                    <button
-                      onClick={() => setModalOpen(false)}
-                      className="px-6 py-2 text-white font-semibold rounded-lg hover:bg-white/20 transition-colors"
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              )}
 
               {/* Bottom Line */}
               <div className="border-t border-white/20 mt-12 pt-6 text-center text-sm text-white/50">
