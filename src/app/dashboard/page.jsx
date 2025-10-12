@@ -1,5 +1,17 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 import {
   CircleUserRound,
   LogOut,
@@ -45,7 +57,205 @@ import {
   Edit,
   Save,
   Phone,
+  TrendingUp,
+  DollarSign,
+  Briefcase,
+  MapPin,
+  Building,
+  ExternalLink,
+  X,
 } from "lucide-react";
+
+// Funding Trends Component
+const FundingTrends = ({ selectedPeriod, onPeriodChange }) => {
+  const [fundingData, setFundingData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [viewType, setViewType] = useState('bar'); // 'bar' or 'pie'
+
+  // Mock API call function - replace with your actual API call
+  const fetchFundingData = async (period) => {
+    setLoading(true);
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Mock data - replace with your actual API endpoint
+    const mockData = {
+      '7': [
+        { industry: 'FinTech', amount: 420, color: '#8B5CF6' },
+        { industry: 'HealthTech', amount: 380, color: '#06B6D4' },
+        { industry: 'EdTech', amount: 290, color: '#10B981' },
+        { industry: 'CleanTech', amount: 180, color: '#F59E0B' },
+        { industry: 'AI/ML', amount: 350, color: '#EF4444' },
+        { industry: 'SaaS', amount: 410, color: '#8B5CF6' }
+      ],
+      '15': [
+        { industry: 'FinTech', amount: 650, color: '#8B5CF6' },
+        { industry: 'HealthTech', amount: 580, color: '#06B6D4' },
+        { industry: 'EdTech', amount: 390, color: '#10B981' },
+        { industry: 'CleanTech', amount: 280, color: '#F59E0B' },
+        { industry: 'AI/ML', amount: 520, color: '#EF4444' },
+        { industry: 'SaaS', amount: 610, color: '#8B5CF6' }
+      ],
+      '30': [
+        { industry: 'FinTech', amount: 980, color: '#8B5CF6' },
+        { industry: 'HealthTech', amount: 840, color: '#06B6D4' },
+        { industry: 'EdTech', amount: 620, color: '#10B981' },
+        { industry: 'CleanTech', amount: 450, color: '#F59E0B' },
+        { industry: 'AI/ML', amount: 780, color: '#EF4444' },
+        { industry: 'SaaS', amount: 890, color: '#8B5CF6' }
+      ]
+    };
+    
+    setFundingData(mockData[period] || mockData['7']);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchFundingData(selectedPeriod);
+  }, [selectedPeriod]);
+
+  const formatAmount = (amount) => {
+    if (amount >= 1000) {
+      return `$${(amount / 1000).toFixed(1)}T`;
+    }
+    return `$${amount}B`;
+  };
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white/90 backdrop-blur-md p-3 rounded-lg shadow-lg border border-white/20">
+          <p className="text-gray-800 font-semibold">{label}</p>
+          <p className="text-purple-600 font-bold">
+            {formatAmount(payload[0].value)}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const topThreeIndustries = [...fundingData]
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 3);
+
+  return (
+    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-white shadow-xl border border-white/20">
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h3 className="text-xl font-semibold flex items-center gap-2">
+            <TrendingUp size={24} className="text-green-400" />
+            Industry Funding Trends
+          </h3>
+          <p className="text-sm text-white/70 mt-1">
+            Recent funding in last {selectedPeriod} days
+          </p>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setViewType(viewType === 'bar' ? 'pie' : 'bar')}
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+            title={`Switch to ${viewType === 'bar' ? 'pie' : 'bar'} chart`}
+          >
+            <MoreHorizontal size={16} />
+          </button>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="h-64 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        </div>
+      ) : (
+        <>
+          {/* Chart Section */}
+          <div className="h-48 mb-4">
+            <ResponsiveContainer width="100%" height="100%">
+              {viewType === 'bar' ? (
+                <BarChart data={fundingData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis 
+                    dataKey="industry" 
+                    tick={{ fill: 'white', fontSize: 12 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                  />
+                  <YAxis 
+                    tick={{ fill: 'white', fontSize: 12 }}
+                    tickFormatter={formatAmount}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar 
+                    dataKey="amount" 
+                    radius={[4, 4, 0, 0]}
+                  >
+                    {fundingData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              ) : (
+                <PieChart>
+                  <Pie
+                    data={fundingData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={40}
+                    outerRadius={80}
+                    paddingAngle={2}
+                    dataKey="amount"
+                  >
+                    {fundingData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                </PieChart>
+              )}
+            </ResponsiveContainer>
+          </div>
+
+          {/* Compact Summary */}
+          <div className="border-t border-white/20 pt-3 space-y-3">
+            {/* Top 3 Industries */}
+            <div>
+              <h4 className="text-sm font-semibold text-white/80 mb-2">Top 3 Industries</h4>
+              <div className="flex flex-wrap gap-3">
+                {topThreeIndustries.map((industry, index) => (
+                  <div key={industry.industry} className="flex items-center gap-2">
+                    <div 
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: industry.color }}
+                    />
+                    <span className="text-xs text-white/70">{industry.industry}</span>
+                    <span className="text-xs font-bold text-green-400">
+                      {formatAmount(industry.amount)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Color Legend - Grid Layout */}
+            <div className="grid grid-cols-3 gap-x-4 gap-y-1">
+              {fundingData.map((industry) => (
+                <div key={industry.industry} className="flex items-center gap-1">
+                  <div 
+                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: industry.color }}
+                  />
+                  <span className="text-xs text-white/60 truncate">{industry.industry}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 // **NEW: Modal component for editing an existing template**
 const EditTemplateModal = ({ isOpen, onClose, onUpdate, template }) => {
@@ -547,13 +757,14 @@ const Card = ({ title, value, percentage, icon }) => {
 };
 
 // TopHorizontalCards Component
-const TopHorizontalCards = () => {
+const TopHorizontalCards = ({ selectedPeriod, onPeriodChange }) => {
   return (
     <div className="flex flex-col gap-4 font-syne text-white">
      <div className="relative  mt-3 inline-block">
   <select
     className="bg-[#2C2C2C] text-gray-300 px-2   ml-70 sm:px-3 py-1 rounded appearance-none pr-8 text-xs sm:text-sm"
-    onChange={() => {}}
+    value={`${selectedPeriod} days`}
+    onChange={(e) => onPeriodChange(e.target.value.split(' ')[0])}
   >
     <option value="7 days">7 days</option>
     <option value="15 days">15 days</option>
@@ -568,7 +779,7 @@ const TopHorizontalCards = () => {
       <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 flex flex-col items-center justify-center shadow-lg border border-white/10 mt-2">
 
         <h2 className="text-lg font-semibold text-white mb-1 ">
-          Success Rate (total mails sent/total mails scheduled)
+          Email Success Rate 
         </h2>
         <div className="relative w-28 h-28">
           <svg className="w-full h-full" viewBox="0 0 100 100">
@@ -602,7 +813,7 @@ const TopHorizontalCards = () => {
       <div className="rounded-xl p-4 flex flex-col shadow-xl border border-white/20 backdrop-blur-md bg-white/10">
         <div className="flex justify-between items-center mb-1">
           <h2 className="text-lg font-semibold text-white">
-            Referral Tracking
+            Statistics
           </h2>
           <button className="p-1 bg-white/10 hover:bg-white/20 rounded-full transition">
             <MoreHorizontal size={16} className="text-white/80" />
@@ -611,9 +822,9 @@ const TopHorizontalCards = () => {
 
         <div className="flex flex-row items-center justify-between gap-4">
           <div>
-            <p className="text-xs text-white/60">Invited</p>
+            <p className="text-xs text-white/60">Total mails sent in last {selectedPeriod} days</p>
             <p className="text-xl font-bold text-white">145</p>
-            <p className="text-xs text-white/60 mt-2">Bonus</p>
+            <p className="text-xs text-white/60 mt-2">Total mails Sent till date</p>
             <p className="text-xl font-bold text-white">1,465</p>
           </div>
 
@@ -650,38 +861,17 @@ const TopHorizontalCards = () => {
   );
 };
 
-// SalesOverview Component
-const SalesOverview = () => {
+// SalesOverview Component - now includes Funding Trends
+const SalesOverview = ({ selectedPeriod, onPeriodChange }) => {
   return (
     <div>
       {/* Welcome text */}
       <h2 className="text-2xl font-bold text-white mb-8">Welcome Yash!</h2>
   
-      {/* Glassmorphism Card */}
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-white shadow-xl border border-white/20 col-span-2">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold">Company Overview</h3>
-          <span className="text-sm text-green-400">+5% more in 2021</span>
-          <div className="flex items-center gap-2">
-            <button className="p-1 bg-white/10 backdrop-blur-sm border border-white/20 rounded text-sm">
-              Jan
-            </button>
-            <button className="p-1 bg-white/10 backdrop-blur-sm border border-white/20 rounded text-sm">
-              Feb
-            </button>
-            <button className="p-1 bg-white/10 backdrop-blur-sm border border-white/20 rounded text-sm">
-              Mar
-            </button>
-          </div>
-        </div>
-  
-        <div className="h-64 mb-1">
-          <ChartComponent type="line" title="Sales Overview" />
-        </div>
-      </div>
+      {/* Updated to use FundingTrends component */}
+      <FundingTrends selectedPeriod={selectedPeriod} onPeriodChange={onPeriodChange} />
     </div>
   );
-  
 };
 
 // ActiveUsers Component
@@ -812,6 +1002,13 @@ const OrdersOverview = () => {
 
 // **Corrected CombinedDashboard Component**
 const CombinedDashboard = () => {
+  // State to manage the selected time period
+  const [selectedPeriod, setSelectedPeriod] = useState('7');
+
+  const handlePeriodChange = (period) => {
+    setSelectedPeriod(period);
+  };
+
   return (
     <div className="flex-1 flex flex-col p-6 overflow-y-auto">
       {" "}
@@ -819,13 +1016,19 @@ const CombinedDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Sales Overview and Projects (Left side) */}
         <div className="lg:col-span-2 flex flex-col gap-6">
-          <SalesOverview />
+          <SalesOverview 
+            selectedPeriod={selectedPeriod} 
+            onPeriodChange={handlePeriodChange} 
+          />
           <Projects />
         </div>
 
         {/* Top Cards and Active Users (Right side) */}
         <div className="lg:col-span-1 flex flex-col gap-6">
-          <TopHorizontalCards />
+          <TopHorizontalCards 
+            selectedPeriod={selectedPeriod} 
+            onPeriodChange={handlePeriodChange} 
+          />
           <ActiveUsers />
         </div>
       </div>
@@ -1425,6 +1628,296 @@ export default function Page() {
     }
   };
 
+  // Job Openings Component
+  const JobOpenings = () => {
+    const [jobOpenings, setJobOpenings] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [filter, setFilter] = useState('all'); // 'all', 'applied', 'discarded'
+    
+    // Mock job openings data - replace with your API call
+    const mockJobOpenings = [
+      {
+        id: 1,
+        title: "Senior Frontend Developer",
+        company: "TechCorp Inc.",
+        location: "San Francisco, CA",
+        type: "Full-time",
+        salary: "$120k - $150k",
+        posted: "2 days ago",
+        description: "We're looking for a senior frontend developer with React experience...",
+        requirements: ["5+ years React experience", "TypeScript", "Next.js", "Team leadership"],
+        status: "pending", // 'pending', 'applied', 'discarded'
+        matchScore: 95,
+        url: "https://example.com/job/1"
+      },
+      {
+        id: 2,
+        title: "Full Stack Engineer",
+        company: "StartupXYZ",
+        location: "New York, NY",
+        type: "Full-time",
+        salary: "$100k - $130k",
+        posted: "1 day ago",
+        description: "Join our growing team as a full stack engineer working on cutting-edge...",
+        requirements: ["Node.js", "React", "PostgreSQL", "AWS"],
+        status: "pending",
+        matchScore: 88,
+        url: "https://example.com/job/2"
+      },
+      {
+        id: 3,
+        title: "React Developer",
+        company: "Digital Agency",
+        location: "Remote",
+        type: "Contract",
+        salary: "$80 - $100/hr",
+        posted: "3 days ago",
+        description: "Remote React developer position for various client projects...",
+        requirements: ["3+ years React", "Redux", "REST APIs", "Git"],
+        status: "applied",
+        matchScore: 82,
+        url: "https://example.com/job/3"
+      },
+      {
+        id: 4,
+        title: "UI/UX Developer",
+        company: "DesignHub",
+        location: "Austin, TX",
+        type: "Full-time",
+        salary: "$90k - $110k",
+        posted: "5 days ago",
+        description: "Looking for a creative UI/UX developer to join our design team...",
+        requirements: ["Figma", "HTML/CSS", "JavaScript", "User research"],
+        status: "discarded",
+        matchScore: 76,
+        url: "https://example.com/job/4"
+      },
+      {
+        id: 5,
+        title: "JavaScript Engineer",
+        company: "InnovateLab",
+        location: "Seattle, WA",
+        type: "Full-time",
+        salary: "$110k - $140k",
+        posted: "1 week ago",
+        description: "JavaScript engineer role focusing on modern web applications...",
+        requirements: ["ES6+", "Node.js", "MongoDB", "Docker"],
+        status: "pending",
+        matchScore: 91,
+        url: "https://example.com/job/5"
+      }
+    ];
+
+    useEffect(() => {
+      // Simulate API call
+      setLoading(true);
+      setTimeout(() => {
+        setJobOpenings(mockJobOpenings);
+        setLoading(false);
+      }, 1000);
+    }, []);
+
+    const handleApply = (jobId) => {
+      setJobOpenings(prev => 
+        prev.map(job => 
+          job.id === jobId ? { ...job, status: 'applied' } : job
+        )
+      );
+      // Here you would typically make an API call to your backend
+      console.log(`Applied to job ${jobId}`);
+    };
+
+    const handleDiscard = (jobId) => {
+      setJobOpenings(prev => 
+        prev.map(job => 
+          job.id === jobId ? { ...job, status: 'discarded' } : job
+        )
+      );
+      // Here you would typically make an API call to your backend
+      console.log(`Discarded job ${jobId}`);
+    };
+
+    const handleOpenJob = (url) => {
+      window.open(url, '_blank');
+    };
+
+    const filteredJobs = jobOpenings.filter(job => {
+      if (filter === 'all') return job.status === 'pending';
+      return job.status === filter;
+    });
+
+    const getStatusColor = (status) => {
+      switch (status) {
+        case 'applied': return 'text-green-400';
+        case 'discarded': return 'text-red-400';
+        default: return 'text-blue-400';
+      }
+    };
+
+    const getStatusText = (status) => {
+      switch (status) {
+        case 'applied': return 'Applied';
+        case 'discarded': return 'Discarded';
+        default: return 'New';
+      }
+    };
+
+    return (
+      <div className="p-4 sm:p-6 font-syne">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-10 text-white">Job Openings</h1>
+            <p className="text-white text-sm sm:text-base">
+              Personalized job recommendations based on your resume
+            </p>
+          </div>
+          
+          {/* Filter Tabs */}
+          <div className="flex bg-white/10 rounded-lg p-1 mt-4 sm:mt-0">
+            {['all', 'applied', 'discarded'].map((filterType) => (
+              <button
+                key={filterType}
+                onClick={() => setFilter(filterType)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${
+                  filter === filterType
+                    ? 'bg-purple-600 text-white'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {filterType} ({jobOpenings.filter(job => filterType === 'all' ? job.status === 'pending' : job.status === filterType).length})
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Loading State */}
+        {loading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          </div>
+        ) : (
+          /* Job Cards */
+          <div className="grid gap-6">
+            {filteredJobs.length > 0 ? (
+              filteredJobs.map((job) => (
+                <div
+                  key={job.id}
+                  className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 hover:border-white/40 transition-all duration-300"
+                >
+                  {/* Job Header */}
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-xl font-semibold text-white">{job.title}</h3>
+                        <span className={`text-sm font-medium ${getStatusColor(job.status)}`}>
+                          {getStatusText(job.status)}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <Star className="text-yellow-400 fill-current" size={16} />
+                          <span className="text-sm text-white/70">{job.matchScore}% match</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-white/70 mb-3">
+                        <div className="flex items-center gap-1">
+                          <Building size={16} />
+                          {job.company}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <MapPin size={16} />
+                          {job.location}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Briefcase size={16} />
+                          {job.type}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <DollarSign size={16} />
+                          {job.salary}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock size={16} />
+                          {job.posted}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Job Description */}
+                  <p className="text-white/80 text-sm mb-4 line-clamp-2">
+                    {job.description}
+                  </p>
+
+                  {/* Requirements */}
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold text-white/90 mb-2">Requirements:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {job.requirements.map((req, index) => (
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-white/10 text-white/80 rounded-lg text-xs"
+                        >
+                          {req}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-wrap gap-3">
+                    {job.status === 'pending' && (
+                      <>
+                        <button
+                          onClick={() => handleApply(job.id)}
+                          className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
+                        >
+                          <CheckCircle size={18} />
+                          Apply
+                        </button>
+                        <button
+                          onClick={() => handleDiscard(job.id)}
+                          className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
+                        >
+                          <X size={18} />
+                          Discard
+                        </button>
+                      </>
+                    )}
+                    
+                    <button
+                      onClick={() => handleOpenJob(job.url)}
+                      className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors"
+                    >
+                      <ExternalLink size={18} />
+                      View Details
+                    </button>
+                    
+                    {job.status !== 'pending' && (
+                      <button
+                        onClick={() => setJobOpenings(prev => 
+                          prev.map(j => j.id === job.id ? { ...j, status: 'pending' } : j)
+                        )}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                      >
+                        Reset Status
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-12">
+                <Briefcase size={48} className="text-white/50 mx-auto mb-4" />
+                <p className="text-white/70 text-lg">No job openings found for the selected filter.</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const ContactForm = () => {
     const [message, setMessage] = useState("");
     const [showPopup, setShowPopup] = useState(false);
@@ -1589,6 +2082,20 @@ export default function Page() {
     </a>
     <a
       onClick={() => {
+        setActiveSection("jobOpenings");
+        setIsSidebarOpen(false);
+      }}
+      className={`block transition cursor-pointer flex items-center gap-2 ${
+        activeSection === "jobOpenings"
+          ? "text-purple-400 font-semibold"
+          : "text-white hover:text-purple-400"
+      }`}
+    >
+      <Briefcase size={18} />
+      Job Openings
+    </a>
+    <a
+      onClick={() => {
         setActiveSection("settings");
         setIsSidebarOpen(false);
       }}
@@ -1648,6 +2155,7 @@ export default function Page() {
         {activeSection === "campaign" && <CampaignForm templates={templates} attachments={attachments} />}
         {activeSection === "attachments" && <AttachmentManager attachments={attachments} handleUploadAttachment={handleUploadAttachment} handleDeleteAttachment={handleDeleteAttachment} handleViewAttachment={handleViewAttachment} />}
         {activeSection === "templates" && <Templates templates={templates} handleSaveTemplate={handleSaveTemplate} handleUpdateTemplate={handleUpdateTemplate} handleDeleteTemplate={handleDeleteTemplate} handleViewTemplate={handleViewTemplate} />}
+        {activeSection === "jobOpenings" && <JobOpenings />}
         {activeSection === "settings" && <SettingsComponent />}
         {activeSection === "contact" && (
 
