@@ -568,7 +568,7 @@ const TopHorizontalCards = () => {
       <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 flex flex-col items-center justify-center shadow-lg border border-white/10 mt-2">
 
         <h2 className="text-lg font-semibold text-white mb-1 ">
-          Acceptance Rate
+          Success Rate (total mails sent/total mails scheduled)
         </h2>
         <div className="relative w-28 h-28">
           <svg className="w-full h-full" viewBox="0 0 100 100">
