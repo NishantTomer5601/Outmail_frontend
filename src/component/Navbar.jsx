@@ -31,7 +31,7 @@ function Navbar() {
         <div className="hidden md:flex items-center">
           {/* Change a tag to Link component for client-side routing */}
           <Link
-            href="/app-login"
+            href="https://outmail-backend-using-upstash-redis.onrender.com/api/auth/google/callback"
             className="text-white bg-[#AD46FF] font-semibold rounded-full px-4 py-1.5 hover:bg-[#c289f0] transition-colors"
           >
             Login
@@ -73,7 +73,7 @@ function Navbar() {
               
               {/* Change a tag to Link component for mobile menu */}
               <Link
-                href="/app-login"
+                href="https://outmail-backend-using-upstash-redis.onrender.com/api/auth/google/"
                 className="text-center text-white bg-[#AD46FF] font-semibold rounded-full px-8 py-3 mt-4 hover:bg-[#c289f0] transition-colors"
               >
                 Login
