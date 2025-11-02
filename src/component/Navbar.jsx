@@ -31,7 +31,7 @@ function Navbar() {
         <div className="hidden md:flex items-center">
           {/* Change a tag to Link component for client-side routing */}
           <Link
-            href="https://outmail-backend-using-upstash-redis.onrender.com/api/auth/google/callback"
+            href="https://outmail-backend-using-upstash-redis.onrender.com/api/auth/google/"
             className="text-white bg-[#AD46FF] font-semibold rounded-full px-4 py-1.5 hover:bg-[#c289f0] transition-colors"
           >
             Login
