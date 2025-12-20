@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
+import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
 import { 
   BarChart, 
   Bar, 
@@ -862,11 +864,13 @@ const TopHorizontalCards = ({ selectedPeriod, onPeriodChange }) => {
 };
 
 // SalesOverview Component - now includes Funding Trends
-const SalesOverview = ({ selectedPeriod, onPeriodChange }) => {
+const SalesOverview = ({ selectedPeriod, onPeriodChange, userName }) => {
   return (
     <div>
-      {/* Welcome text */}
-      <h2 className="text-2xl font-bold text-white mb-8">Welcome Yash!</h2>
+      {/* Welcome text with dynamic user name */}
+      <h2 className="text-2xl font-bold text-white mb-8">
+        Welcome {userName || 'User'}!
+      </h2>
   
       {/* Updated to use FundingTrends component */}
       <FundingTrends selectedPeriod={selectedPeriod} onPeriodChange={onPeriodChange} />
@@ -1018,7 +1022,8 @@ const CombinedDashboard = () => {
         <div className="lg:col-span-2 flex flex-col gap-6">
           <SalesOverview 
             selectedPeriod={selectedPeriod} 
-            onPeriodChange={handlePeriodChange} 
+            onPeriodChange={handlePeriodChange}
+            userName={user?.display_name || user?.name}
           />
           <Projects />
         </div>
@@ -1542,6 +1547,7 @@ const SettingsComponent = () => {
 
 // Main Page Component
 export default function Page() {
+  const { user, isAuthenticated, loading, logout } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("dashboard");
   const [templates, setTemplates] = useState([]);
@@ -1551,6 +1557,30 @@ export default function Page() {
   const [isTemplateViewerOpen, setIsTemplateViewerOpen] = useState(false);
   const [templateToView, setTemplateToView] = useState(null);
   const ATTACHMENT_LIMIT = 3;
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      window.location.href = '/';
+    }
+  }, [isAuthenticated, loading]);
+
+  // Show loading screen while checking auth
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-l from-black via-[#6c00ff] to-black">
+        <div className="text-white text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-lg">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
 
 
   const handleSaveTemplate = (newTemplate) => {
@@ -2017,9 +2047,19 @@ export default function Page() {
       setIsSidebarOpen(false);
     }}
   >
-    <CircleUserRound className="w-10 h-10 text-white" />
+    {user?.profilePicture ? (
+      <Image 
+        src={user.profilePicture} 
+        alt="Profile" 
+        width={40} 
+        height={40} 
+        className="rounded-full"
+      />
+    ) : (
+      <CircleUserRound className="w-10 h-10 text-white" />
+    )}
     <div>
-      <p className="font-semibold">Yash Sharma</p>
+      <p className="font-semibold">{user?.display_name || user?.name || "User"}</p>
       <span className="text-xs bg-[#2C2C2C] px-2 py-0.5 rounded text-purple-400">
         PRO
       </span>
@@ -2125,12 +2165,12 @@ export default function Page() {
   </nav>
 </div>
         <div className="mt-auto">
-          <a
-            href="#"
-            className="flex items-center gap-2 text-white hover:text-red-500 transition"
+          <button
+            onClick={logout}
+            className="flex items-center gap-2 text-white hover:text-red-500 transition w-full"
           >
             <LogOut size={16} /> Logout
-          </a>
+          </button>
         </div>
       </aside>
 

@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { Syne } from 'next/font/google';
 import './globals.css';
 import SmoothScrollWrapper from '@/component/SmoothScrollWrapper';
+import { AuthProvider } from '@/context/AuthContext';
 
 
 const geistSans = Geist({
@@ -38,11 +39,13 @@ export default function RootLayout({ children }) {
         <title>Outmail</title>
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${syne.variable} antialiased`}>
-        <SmoothScrollWrapper>
-        <dot>
-          {children}
-          </dot>
-        </SmoothScrollWrapper>
+        <AuthProvider>
+          <SmoothScrollWrapper>
+            <div>
+              {children}
+            </div>
+          </SmoothScrollWrapper>
+        </AuthProvider>
       </body>
     </html>
   );
