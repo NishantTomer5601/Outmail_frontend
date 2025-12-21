@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // **PRODUCTION MODE - BACKEND IS READY**
+  // *PRODUCTION MODE - BACKEND IS READY*
   // Backend HTTP-only cookie authentication is now working
   const DEV_MODE = false;
 
