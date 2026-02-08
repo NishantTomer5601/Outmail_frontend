@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAuth Testing Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .test-button { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; margin: 5px; cursor: pointer; }
+        .test-button:hover { background: #45a049; }
+        .test-button.danger { background: #f44336; }
+        .test-button.danger:hover { background: #da190b; }
+        .test-button.warning { background: #ff9800; }
+        .test-button.warning:hover { background: #e68900; }
+        .results { background: #f9f9f9; padding: 15px; border-radius: 4px; margin: 10px 0; }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .warning { color: #ff9800; }
+        .status { padding: 5px 10px; border-radius: 4px; margin: 5px 0; display: inline-block; }
+        .status.online { background: #4CAF50; color: white; }
+        .status.offline { background: #f44336; color: white; }
+        .user-info { background: #e3f2fd; padding: 15px; border-radius: 4px; margin: 10px 0; }
+        .role-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .role-student { background: #2196F3; color: white; }
+        .role-admin { background: #9C27B0; color: white; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Outmail OAuth Testing Dashboard</h1>
+    <p>Test your role-based authentication system running on <strong>localhost:8000</strong></p>
+
+    <!-- Backend Connection Test -->
+    <div class="test-section">
+        <h2>🌐 Backend Connection</h2>
+        <button class="test-button" onclick="testBackendConnection()">Test Backend Connection</button>
+        <div id="backend-status"></div>
+    </div>
+
+    <!-- Authentication Status -->
+    <div class="test-section">
+        <h2>🔐 Authentication Status</h2>
+        <button class="test-button" onclick="checkAuthStatus()">Check Auth Status</button>
+        <button class="test-button" onclick="checkCookies()">Check Cookies</button>
+        <div id="auth-results"></div>
+    </div>
+
+    <!-- OAuth Flow Testing -->
+    <div class="test-section">
+        <h2>🎯 OAuth Flow</h2>
+        <button class="test-button" onclick="startOAuthFlow()">Start OAuth Login</button>
+        <button class="test-button danger" onclick="testLogout()">Test Logout</button>
+        <div id="oauth-results"></div>
+    </div>
+
+    <!-- API Endpoints Testing -->
+    <div class="test-section">
+        <h2>📡 API Endpoints</h2>
+        <button class="test-button" onclick="testUserMeEndpoint()">Test /api/me</button>
+        <button class="test-button" onclick="testStudentRoutes()">Test Student Routes</button>
+        <button class="test-button warning" onclick="testAdminRoutes()">Test Admin Routes</button>
+        <div id="api-results"></div>
+    </div>
+
+    <!-- Role Testing -->
+    <div class="test-section">
+        <h2>👤 Role-Based Testing</h2>
+        <button class="test-button" onclick="testRolePermissions()">Test Role Permissions</button>
+        <button class="test-button" onclick="simulateRoleChange()">Simulate Role Change</button>
+        <div id="role-results"></div>
+    </div>
+
+    <!-- Comprehensive Test -->
+    <div class="test-section">
+        <h2>🧪 Comprehensive Test</h2>
+        <button class="test-button" onclick="runAllTests()">Run All Tests</button>
+        <div id="comprehensive-results"></div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:8000';
+        let currentUser = null;
+
+        // Helper function to display results
+        function displayResult(elementId, content, isError = false) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = content;
+            if (isError) {
+                element.classList.add('error');
+            } else {
+                element.classList.remove('error');
+            }
+        }
+
+        // Test backend connection
+        async function testBackendConnection() {
+            try {
+                displayResult('backend-status', '🔄 Testing connection...');
+                
+                const response = await fetch(`${BASE_URL}/health`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    displayResult('backend-status', '<span class="status online">✅ Backend Online</span> - Connected to localhost:8000');
+                } else {
+                    displayResult('backend-status', '<span class="status offline">❌ Backend Error</span> - Status: ' + response.status);
+                }
+            } catch (error) {
+                displayResult('backend-status', '<span class="status offline">❌ Backend Offline</span> - Cannot connect to localhost:8000<br><strong>Make sure your backend is running!</strong>', true);
+            }
+        }
+
+        // Check authentication status
+        async function checkAuthStatus() {
+            try {
+                displayResult('auth-results', '🔄 Checking authentication...');
+                
+                const response = await fetch(`${BASE_URL}/api/me`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    currentUser = user;
+                    
+                    const roleClass = user.role === 'TPO_ADMIN' ? 'role-admin' : 'role-student';
+                    const roleText = user.role === 'TPO_ADMIN' ? 'TPO Admin' : 'Student';
+                    
+                    displayResult('auth-results', 
+                        '<div class="user-info">' +
+                        '<h3>✅ Authenticated User</h3>' +
+                        '<p><strong>Name:</strong> ' + (user.display_name || user.name) + '</p>' +
+                        '<p><strong>Email:</strong> ' + user.email + '</p>' +
+                        '<p><strong>Role:</strong> <span class="role-badge ' + roleClass + '">' + roleText + '</span></p>' +
+                        '<p><strong>User ID:</strong> ' + user.id + '</p>' +
+                        '<p><strong>Profile Picture:</strong> ' + (user.profilePicture ? '✅ Available' : '❌ Not set') + '</p>' +
+                        '</div>'
+                    );
+                } else if (response.status === 401) {
+                    currentUser = null;
+                    displayResult('auth-results', '<div class="warning">❌ Not authenticated - Please login first</div>', true);
+                } else {
+                    displayResult('auth-results', '<div class="error">❌ Auth check failed - Status: ' + response.status + '</div>', true);
+                }
+            } catch (error) {
+                displayResult('auth-results', '<div class="error">❌ Network error: ' + error.message + '</div>', true);
+            }
+        }
+
+        // Check cookies
+        function checkCookies() {
+            const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+                const [name, value] = cookie.trim().split('=');
+                acc[name] = value;
+                return acc;
+            }, {});
+
+            let cookieInfo = '<h3>🍪 Cookie Analysis</h3>';
+            
+            if (cookies['outmail_auth']) {
+                cookieInfo += '<p>✅ <strong>outmail_auth</strong> cookie found</p>';
+                cookieInfo += '<p><em>Note: Cookie value is hidden due to httpOnly flag (this is good for security)</em></p>';
+            } else {
+                cookieInfo += '<p>❌ <strong>outmail_auth</strong> cookie not found</p>';
+                cookieInfo += '<p><em>You may need to login or the cookie might be httpOnly</em></p>';
+            }
+            
+            cookieInfo += '<p><strong>All cookies:</strong> ' + (Object.keys(cookies).length > 0 ? Object.keys(cookies).join(', ') : 'None visible') + '</p>';
+
+            displayResult('auth-results', cookieInfo);
+        }
+
+        // Start OAuth flow
+        function startOAuthFlow() {
+            displayResult('oauth-results', '🚀 Redirecting to Google OAuth...');
+            // Open in new tab so we can continue testing
+            window.open(`${BASE_URL}/auth/google`, '_blank');
+        }
+
+        // Test logout
+        async function testLogout() {
+            try {
+                displayResult('oauth-results', '🔄 Testing logout...');
+                
+                const response = await fetch(`${BASE_URL}/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    currentUser = null;
+                    displayResult('oauth-results', '✅ Logout successful - Cookie should be cleared');
+                } else {
+                    displayResult('oauth-results', '❌ Logout failed - Status: ' + response.status, true);
+                }
+            } catch (error) {
+                displayResult('oauth-results', '❌ Logout error: ' + error.message, true);
+            }
+        }
+
+        // Test /api/me endpoint
+        async function testUserMeEndpoint() {
+            try {
+                displayResult('api-results', '🔄 Testing /api/me endpoint...');
+                
+                const response = await fetch(`${BASE_URL}/api/me`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                const responseText = await response.text();
+                
+                if (response.ok) {
+                    const user = JSON.parse(responseText);
+                    displayResult('api-results', 
+                        '✅ /api/me endpoint working<br>' +
+                        '<strong>Response:</strong><br>' +
+                        '<pre>' + JSON.stringify(user, null, 2) + '</pre>'
+                    );
+                } else {
+                    displayResult('api-results', 
+                        '❌ /api/me failed<br>' +
+                        '<strong>Status:</strong> ' + response.status + '<br>' +
+                        '<strong>Response:</strong> ' + responseText, 
+                        true
+                    );
+                }
+            } catch (error) {
+                displayResult('api-results', '❌ Network error: ' + error.message, true);
+            }
+        }
+
+        // Test student routes
+        async function testStudentRoutes() {
+            try {
+                displayResult('api-results', '🔄 Testing student routes...');
+                
+                const routes = [
+                    '/api/student/test',
+                    '/api/student/profile', 
+                    '/api/student/campaigns'
+                ];
+
+                let results = '<h3>Student Route Tests:</h3>';
+                
+                for (const route of routes) {
+                    try {
+                        const response = await fetch(`${BASE_URL}${route}`, {
+                            method: 'GET',
+                            credentials: 'include'
+                        });
+
+                        if (response.ok || response.status === 404) {
+                            results += '<p>✅ ' + route + ' - Status: ' + response.status + '</p>';
+                        } else if (response.status === 403) {
+                            results += '<p>⚠️ ' + route + ' - Forbidden (check role permissions)</p>';
+                        } else if (response.status === 401) {
+                            results += '<p>❌ ' + route + ' - Unauthorized (login required)</p>';
+                        } else {
+                            results += '<p>❌ ' + route + ' - Status: ' + response.status + '</p>';
+                        }
+                    } catch (error) {
+                        results += '<p>❌ ' + route + ' - Network error</p>';
+                    }
+                }
+
+                displayResult('api-results', results);
+            } catch (error) {
+                displayResult('api-results', '❌ Error testing student routes: ' + error.message, true);
+            }
+        }
+
+        // Test admin routes
+        async function testAdminRoutes() {
+            try {
+                displayResult('api-results', '🔄 Testing admin routes...');
+                
+                const routes = [
+                    '/api/admin/test',
+                    '/api/admin/students',
+                    '/api/admin/campaigns'
+                ];
+
+                let results = '<h3>Admin Route Tests:</h3>';
+                
+                for (const route of routes) {
+                    try {
+                        const response = await fetch(`${BASE_URL}${route}`, {
+                            method: 'GET',
+                            credentials: 'include'
+                        });
+
+                        if (response.ok || response.status === 404) {
+                            results += '<p>✅ ' + route + ' - Status: ' + response.status + ' (Access granted)</p>';
+                        } else if (response.status === 403) {
+                            results += '<p>⚠️ ' + route + ' - Forbidden (need TPO_ADMIN role)</p>';
+                        } else if (response.status === 401) {
+                            results += '<p>❌ ' + route + ' - Unauthorized (login required)</p>';
+                        } else {
+                            results += '<p>❌ ' + route + ' - Status: ' + response.status + '</p>';
+                        }
+                    } catch (error) {
+                        results += '<p>❌ ' + route + ' - Network error</p>';
+                    }
+                }
+
+                displayResult('api-results', results);
+            } catch (error) {
+                displayResult('api-results', '❌ Error testing admin routes: ' + error.message, true);
+            }
+        }
+
+        // Test role permissions
+        async function testRolePermissions() {
+            if (!currentUser) {
+                await checkAuthStatus();
+            }
+
+            if (!currentUser) {
+                displayResult('role-results', '❌ Please login first to test role permissions', true);
+                return;
+            }
+
+            let results = '<h3>Role Permission Analysis:</h3>';
+            results += '<p><strong>Current Role:</strong> ' + currentUser.role + '</p>';
+
+            if (currentUser.role === 'STUDENT') {
+                results += '<p>✅ Should have access to /api/student/* routes</p>';
+                results += '<p>❌ Should NOT have access to /api/admin/* routes</p>';
+                results += '<p>🎯 Frontend should redirect to /student/dashboard</p>';
+            } else if (currentUser.role === 'TPO_ADMIN') {
+                results += '<p>✅ Should have access to /api/admin/* routes</p>';
+                results += '<p>✅ Should have access to /api/student/* routes</p>';
+                results += '<p>🎯 Frontend should redirect to /admin/dashboard</p>';
+            }
+
+            displayResult('role-results', results);
+        }
+
+        // Simulate role change (for testing)
+        function simulateRoleChange() {
+            let results = '<h3>Role Change Simulation:</h3>';
+            results += '<p>⚠️ To test role changes:</p>';
+            results += '<ol>';
+            results += '<li>Access your database</li>';
+            results += '<li>Find your user record (email: ' + (currentUser?.email || 'your-email') + ')</li>';
+            results += '<li>Change role field:</li>';
+            results += '<ul><li><code>STUDENT</code> → <code>TPO_ADMIN</code></li>';
+            results += '<li><code>TPO_ADMIN</code> → <code>STUDENT</code></li></ul>';
+            results += '<li>Refresh this page and test again</li>';
+            results += '</ol>';
+            results += '<p><strong>SQL Example:</strong></p>';
+            results += '<code>UPDATE users SET role = \'TPO_ADMIN\' WHERE email = \'your@email.com\';</code>';
+
+            displayResult('role-results', results);
+        }
+
+        // Run all tests
+        async function runAllTests() {
+            displayResult('comprehensive-results', '🧪 Running comprehensive tests...<br><br>');
+            
+            await testBackendConnection();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await checkAuthStatus();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testUserMeEndpoint();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testStudentRoutes();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testAdminRoutes();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            displayResult('comprehensive-results', '✅ All tests completed! Check individual sections for detailed results.');
+        }
+
+        // Auto-check backend connection on page load
+        window.onload = function() {
+            testBackendConnection();
+        };
+
+        // Auto-refresh user status every 10 seconds if authenticated
+        setInterval(async function() {
+            if (currentUser) {
+                await checkAuthStatus();
+            }
+        }, 10000);
+    </script>
+</body>
+</html>

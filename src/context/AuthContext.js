@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
-      const response = await fetch('https://outmail-backend-using-upstash-redis.onrender.com/api/me', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/me`, {
         method: 'GET',
         credentials: 'include', // Important: Send HTTP-only cookies
         headers: {
@@ -89,7 +89,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       console.log('🚪 Logging out...');
-      const response = await fetch('https://outmail-backend-using-upstash-redis.onrender.com/api/auth/logout', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`, {
         method: 'POST',
         credentials: 'include',
         headers: {

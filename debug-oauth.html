@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OAuth Debug - Port Issue</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .result { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; white-space: pre-wrap; font-family: monospace; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 OAuth Port Debug Tool</h1>
+        <p>This tool helps debug the port 3001 vs 3000 issue in your OAuth flow.</p>
+        
+        <div>
+            <h3>1. Check Frontend Environment</h3>
+            <button onclick="checkFrontendEnv()">Check Frontend Env Variables</button>
+            <div id="frontend-env" class="result"></div>
+        </div>
+
+        <div>
+            <h3>2. Test OAuth Initialization URL</h3>
+            <button onclick="checkOAuthURL()">Check OAuth URL</button>
+            <div id="oauth-url" class="result"></div>
+        </div>
+
+        <div>
+            <h3>3. Test Backend Health</h3>
+            <button onclick="checkBackendHealth()">Test Backend Connection</button>
+            <div id="backend-health" class="result"></div>
+        </div>
+
+        <div>
+            <h3>4. Debug OAuth Flow</h3>
+            <p class="warning">⚠️ This will start OAuth flow - check where it redirects you!</p>
+            <a href="http://localhost:8000/api/auth/google" target="_blank" style="text-decoration: none;">
+                <button>🚀 Start OAuth (New Tab)</button>
+            </a>
+            <div id="oauth-debug" class="result">
+                After clicking OAuth, check the URL in the new tab when it completes.
+                Look for: localhost:3000 vs localhost:3001
+            </div>
+        </div>
+
+        <div>
+            <h3>5. Manual URL Test</h3>
+            <input type="text" id="manual-url" placeholder="http://localhost:3000/dashboard" style="width: 400px; padding: 8px;">
+            <button onclick="testManualURL()">Test URL</button>
+            <div id="manual-result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function checkFrontendEnv() {
+            const result = document.getElementById('frontend-env');
+            const env = {
+                'Current URL': window.location.href,
+                'Current Port': window.location.port || '80',
+                'Current Host': window.location.host,
+                'Current Origin': window.location.origin,
+                'User Agent': navigator.userAgent
+            };
+            
+            result.innerHTML = Object.entries(env)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join('\n');
+            result.className = 'result success';
+        }
+
+        function checkOAuthURL() {
+            const result = document.getElementById('oauth-url');
+            const backendUrl = 'http://localhost:8000'; // Your backend
+            const oauthUrl = `${backendUrl}/api/auth/google`;
+            
+            result.innerHTML = `OAuth URL: ${oauthUrl}\n\nThis should redirect to your backend, then to Google, then back to your frontend.\nExpected final redirect: http://localhost:3000/auth/success\nProblem: Currently going to http://localhost:3001/dashboard`;
+            result.className = 'result';
+        }
+
+        async function checkBackendHealth() {
+            const result = document.getElementById('backend-health');
+            try {
+                result.innerHTML = '🔄 Testing backend connection...';
+                
+                const response = await fetch('http://localhost:8000/health', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    result.innerHTML = '✅ Backend is online\nURL: http://localhost:8000\nStatus: ' + response.status;
+                    result.className = 'result success';
+                } else {
+                    result.innerHTML = '❌ Backend returned error\nStatus: ' + response.status;
+                    result.className = 'result error';
+                }
+            } catch (error) {
+                result.innerHTML = '❌ Cannot connect to backend\nError: ' + error.message + '\n\nMake sure your backend is running on port 8000';
+                result.className = 'result error';
+            }
+        }
+
+        function testManualURL() {
+            const input = document.getElementById('manual-url');
+            const result = document.getElementById('manual-result');
+            const url = input.value || 'http://localhost:3000/dashboard';
+            
+            window.open(url, '_blank');
+            result.innerHTML = `Opened: ${url}\n\nCheck if this URL works correctly in the new tab.`;
+            result.className = 'result';
+        }
+
+        // Auto-check environment on load
+        window.onload = function() {
+            checkFrontendEnv();
+            checkOAuthURL();
+        };
+    </script>
+</body>
+</html>

@@ -103,8 +103,6 @@ export function BarChart({ userRole = 'STUDENT' }) {
     </div>
   );
 }
-  );
-}
 
 export function PieChart({ userRole = 'STUDENT' }) {
   // Different data based on role

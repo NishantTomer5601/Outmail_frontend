@@ -1,5 +1,5 @@
 // Utility function for making authenticated API calls
-const BASE_URL = 'https://outmail-backend-using-upstash-redis.onrender.com';
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const authenticatedFetch = async (url, options = {}) => {
   const defaultOptions = {
@@ -42,7 +42,7 @@ export const createCampaign = async (campaignData) => {
 
 // Get user profile
 export const getUserProfile = async () => {
-  const response = await authenticatedFetch(`${BASE_URL}/api/auth/me`);
+  const response = await authenticatedFetch(`${BASE_URL}/api/me`);
   
   if (response?.ok) {
     return response.json();

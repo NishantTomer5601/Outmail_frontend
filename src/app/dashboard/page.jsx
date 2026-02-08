@@ -1006,6 +1006,9 @@ const OrdersOverview = () => {
 
 // **Corrected CombinedDashboard Component**
 const CombinedDashboard = () => {
+  // Get user data from auth context
+  const { user } = useAuth();
+  
   // State to manage the selected time period
   const [selectedPeriod, setSelectedPeriod] = useState('7');
 

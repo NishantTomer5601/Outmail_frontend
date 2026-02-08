@@ -111,7 +111,7 @@ function Navbar() {
             </div>
           ) : (
             <Link
-              href="https://outmail-backend-using-upstash-redis.onrender.com/api/auth/google"
+              href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google`}
               className="text-white bg-[#AD46FF] font-semibold rounded-full px-4 py-1.5 hover:bg-[#c289f0] transition-colors"
             >
               Login
@@ -211,7 +211,7 @@ function Navbar() {
                 </div>
               ) : (
                 <Link
-                  href="https://outmail-backend-using-upstash-redis.onrender.com/api/auth/google"
+                  href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google`}
                   className="text-center text-white bg-[#AD46FF] font-semibold rounded-full px-8 py-3 mt-4 hover:bg-[#c289f0] transition-colors"
                 >
                   Login
