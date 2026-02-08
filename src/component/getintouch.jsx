@@ -10,7 +10,6 @@ const ContactUs = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Contact form submitted:", { name, email, message });
     // In a real application, you would send this data to a backend API.
   };
 

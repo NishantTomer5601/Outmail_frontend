@@ -461,16 +461,7 @@ const CampaignForm = ({ templates, attachments }) => {
 
 
   const handleStartCampaign = () => {
-    console.log("Starting Campaign:", {
-      campaignName,
-      emailSubject,
-      emailBody,
-      startTime,
-      endTime,
-      timezone,
-      selectedTemplate,
-      selectedAttachment
-    });
+    // Handle campaign start logic
   };
   return (
     <>
@@ -1356,12 +1347,26 @@ const Templates = ({ templates, handleSaveTemplate, handleUpdateTemplate, handle
 
 // Settings Component
 const SettingsComponent = () => {
+  // Get user data from auth context
+  const { user } = useAuth();
+  
   // State to manage the user's settings.
   const [profileSettings, setProfileSettings] = useState({
-    name: "Yash",
-    email: "yash@gmail.com",
+    name: user?.display_name || user?.name || "",
+    email: user?.email || "",
     notifications: true,
   });
+
+  // Update settings when user data changes
+  useEffect(() => {
+    if (user) {
+      setProfileSettings(prev => ({
+        ...prev,
+        name: user.display_name || user.name || "",
+        email: user.email || ""
+      }));
+    }
+  }, [user]);
 
   // Handle changes in the form inputs.
   const handleChange = (e) => {
@@ -1375,7 +1380,6 @@ const SettingsComponent = () => {
   // Handle the save action for the profile information.
   const handleSave = () => {
     // In a real application, you would send this data to a server.
-    console.log("Saving profile settings:", profileSettings);
   };
 
   return (
@@ -1757,7 +1761,6 @@ export default function Page() {
         )
       );
       // Here you would typically make an API call to your backend
-      console.log(`Applied to job ${jobId}`);
     };
 
     const handleDiscard = (jobId) => {
@@ -1767,7 +1770,6 @@ export default function Page() {
         )
       );
       // Here you would typically make an API call to your backend
-      console.log(`Discarded job ${jobId}`);
     };
 
     const handleOpenJob = (url) => {

@@ -24,7 +24,6 @@ export const AuthProvider = ({ children }) => {
   // Check authentication status
   const checkAuth = async () => {
     if (DEV_MODE) {
-      console.log('🚧 Development mode - skipping auth check');
       setLoading(false);
       setUser(null);
       setIsAuthenticated(false);
@@ -34,7 +33,6 @@ export const AuthProvider = ({ children }) => {
 
     try {
       setLoading(true);
-      console.log('🔍 Checking authentication...');
       
       // Add timeout to prevent infinite loading
       const controller = new AbortController();
@@ -50,23 +48,17 @@ export const AuthProvider = ({ children }) => {
       });
 
       clearTimeout(timeoutId);
-      console.log('📡 Auth response status:', response.status);
 
       if (response.ok) {
         const userData = await response.json();
-        console.log('✅ User authenticated:', userData);
         setUser(userData);
         setUserRole(userData.role || 'STUDENT'); // Default to STUDENT role
         setIsAuthenticated(true);
       } else if (response.status === 401) {
-        console.log('❌ Not authenticated - no valid session');
         setUser(null);
         setUserRole(null);
         setIsAuthenticated(false);
       } else {
-        console.log('❌ Auth check failed with status:', response.status);
-        const errorText = await response.text();
-        console.log('❌ Error response body:', errorText);
         setUser(null);
         setUserRole(null);
         setIsAuthenticated(false);
@@ -81,14 +73,12 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false);
     } finally {
       setLoading(false);
-      console.log('✅ Auth check completed');
     }
   };
 
   // Logout function
   const logout = async () => {
     try {
-      console.log('🚪 Logging out...');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`, {
         method: 'POST',
         credentials: 'include',
@@ -97,18 +87,13 @@ export const AuthProvider = ({ children }) => {
         },
       });
       
-      if (response.ok) {
-        console.log('✅ Logout successful');
-      } else {
-        console.log('⚠️ Logout response:', response.status);
-      }
+      // Logout request completed
     } catch (error) {
       console.error('🚨 Logout error:', error);
     } finally {
       setUser(null);
       setUserRole(null);
       setIsAuthenticated(false);
-      console.log('🏠 Redirecting to home');
       // Redirect to home page
       window.location.href = '/';
     }

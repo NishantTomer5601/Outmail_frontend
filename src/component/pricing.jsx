@@ -9,7 +9,7 @@ export default function ZPricing() {
         'Send Up to 100 emails',
         'Store 3 resume + 3 email template',
         'Access to basic/fixed 100 company outreach',
-        'Campaign status tracking',
+        'Campaign status tracking ',
       ],
       buttonText: 'Start with Starter',
       description: 'A perfect way to try Outmail and kickstart your job outreach journey.'
