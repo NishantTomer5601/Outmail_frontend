@@ -10,7 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const { user, isAuthenticated, loading, logout } = useAuth();
+  const { user, isAuthenticated, loading, logout, userRole, isAdmin, isStudent } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -64,13 +64,41 @@ function Navbar() {
               {/* User Dropdown Menu */}
               {isUserMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50">
+                  {/* Role Badge */}
+                  <div className="px-4 py-2 text-xs text-gray-500 border-b border-gray-100">
+                    {userRole === 'TPO_ADMIN' ? 'TPO Admin' : 'Student'}
+                  </div>
+                  
+                  {/* Dashboard Link - Role-based */}
                   <Link
-                    href="/dashboard"
+                    href={isAdmin() ? "/admin/dashboard" : "/student/dashboard"}
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition"
                     onClick={() => setIsUserMenuOpen(false)}
                   >
                     Dashboard
                   </Link>
+                  
+                  {/* Admin-only links */}
+                  {isAdmin() && (
+                    <>
+                      <Link
+                        href="/admin/students"
+                        className="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        Manage Students
+                      </Link>
+                      <Link
+                        href="/admin/reports"
+                        className="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        Reports
+                      </Link>
+                    </>
+                  )}
+                  
+                  {/* Logout */}
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 transition flex items-center gap-2"
@@ -143,15 +171,36 @@ function Navbar() {
                     ) : (
                       <User size={24} />
                     )}
-                    <span>{user.display_name || user.name || user.email}</span>
+                    <div className="text-center">
+                      <span>{user.display_name || user.name || user.email}</span>
+                      <div className="text-xs text-white/60">
+                        {userRole === 'TPO_ADMIN' ? 'TPO Admin' : 'Student'}
+                      </div>
+                    </div>
                   </div>
+                  
+                  {/* Dashboard Link */}
                   <Link
-                    href="/dashboard"
+                    href={isAdmin() ? "/admin/dashboard" : "/student/dashboard"}
                     className="text-center text-white bg-[#AD46FF] font-semibold rounded-full px-8 py-3 hover:bg-[#c289f0] transition-colors"
                     onClick={() => setIsOpen(false)}
                   >
                     Dashboard
                   </Link>
+                  
+                  {/* Admin-only mobile links */}
+                  {isAdmin() && (
+                    <>
+                      <Link
+                        href="/admin/students"
+                        className="text-center text-white bg-purple-700 font-semibold rounded-full px-8 py-2 hover:bg-purple-800 transition-colors"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Manage Students
+                      </Link>
+                    </>
+                  )}
+                  
                   <button
                     onClick={handleLogout}
                     className="text-center text-white bg-red-600 font-semibold rounded-full px-8 py-3 hover:bg-red-700 transition-colors flex items-center gap-2"

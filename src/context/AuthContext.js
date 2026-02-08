@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
   // *PRODUCTION MODE - BACKEND IS READY*
   // Backend HTTP-only cookie authentication is now working
@@ -27,6 +28,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
       setUser(null);
       setIsAuthenticated(false);
+      setUserRole(null);
       return;
     }
 
@@ -38,7 +40,7 @@ export const AuthProvider = ({ children }) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
-      const response = await fetch('https://outmail-backend-using-upstash-redis.onrender.com/api/auth/me', {
+      const response = await fetch('https://outmail-backend-using-upstash-redis.onrender.com/api/me', {
         method: 'GET',
         credentials: 'include', // Important: Send HTTP-only cookies
         headers: {
@@ -54,16 +56,19 @@ export const AuthProvider = ({ children }) => {
         const userData = await response.json();
         console.log('✅ User authenticated:', userData);
         setUser(userData);
+        setUserRole(userData.role || 'STUDENT'); // Default to STUDENT role
         setIsAuthenticated(true);
       } else if (response.status === 401) {
         console.log('❌ Not authenticated - no valid session');
         setUser(null);
+        setUserRole(null);
         setIsAuthenticated(false);
       } else {
         console.log('❌ Auth check failed with status:', response.status);
         const errorText = await response.text();
         console.log('❌ Error response body:', errorText);
         setUser(null);
+        setUserRole(null);
         setIsAuthenticated(false);
       }
     } catch (error) {
@@ -72,6 +77,7 @@ export const AuthProvider = ({ children }) => {
         console.error('🚨 Request timed out - backend might be down');
       }
       setUser(null);
+      setUserRole(null);
       setIsAuthenticated(false);
     } finally {
       setLoading(false);
@@ -100,6 +106,7 @@ export const AuthProvider = ({ children }) => {
       console.error('🚨 Logout error:', error);
     } finally {
       setUser(null);
+      setUserRole(null);
       setIsAuthenticated(false);
       console.log('🏠 Redirecting to home');
       // Redirect to home page
@@ -111,6 +118,30 @@ export const AuthProvider = ({ children }) => {
   const login = async () => {
     await checkAuth();
   };
+
+  // Role-based navigation helper
+  const navigateByRole = () => {
+    if (!isAuthenticated || !userRole) return '/';
+    
+    switch (userRole) {
+      case 'TPO_ADMIN':
+        return '/admin/dashboard';
+      case 'STUDENT':
+      default:
+        return '/student/dashboard';
+    }
+  };
+
+  // Check if user has specific role
+  const hasRole = (requiredRole) => {
+    return userRole === requiredRole;
+  };
+
+  // Check if user is admin
+  const isAdmin = () => hasRole('TPO_ADMIN');
+
+  // Check if user is student  
+  const isStudent = () => hasRole('STUDENT');
 
   // Check auth on mount and when focus returns to window
   useEffect(() => {
@@ -131,9 +162,14 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     isAuthenticated,
+    userRole,
     login,
     logout,
     checkAuth,
+    navigateByRole,
+    hasRole,
+    isAdmin,
+    isStudent,
   };
 
   return (
