@@ -104,6 +104,76 @@ export const AuthProvider = ({ children }) => {
     await checkAuth();
   };
 
+  // Update user profile function
+  const updateUser = async (userData) => {
+    // TEMPORARY MOCK - REMOVE WHEN BACKEND IS READY
+    const ENABLE_MOCK = false; // Set to false when backend is implemented
+    
+    if (ENABLE_MOCK) {
+      console.log('🔧 Using mock update (backend not ready)');
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Update local user state with new name
+      const updatedUser = { 
+        ...user, 
+        display_name: userData.display_name,
+        name: userData.name 
+      };
+      setUser(updatedUser);
+      return { success: true, user: updatedUser };
+    }
+    
+    try {
+      console.log('🔍 Attempting to update user profile:', userData);
+      console.log('🌐 API URL:', `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/update`);
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/update`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response headers:', response.headers);
+
+      if (response.ok) {
+        const updatedUser = await response.json();
+        console.log('✅ Profile updated successfully:', updatedUser);
+        setUser(updatedUser);
+        return { success: true, user: updatedUser };
+      } else {
+        console.log('❌ Response not OK, status:', response.status);
+        try {
+          const errorData = await response.json();
+          console.log('❌ Error response:', errorData);
+          return { success: false, error: errorData.message || `Server error (${response.status})` };
+        } catch (parseError) {
+          console.log('❌ Could not parse error response:', parseError);
+          return { success: false, error: `Server error (${response.status}): ${response.statusText}` };
+        }
+      }
+    } catch (error) {
+      console.error('🚨 Update user failed:', error);
+      console.error('🚨 Error type:', error.constructor.name);
+      console.error('🚨 Error message:', error.message);
+      
+      // Provide more specific error messages
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        return { success: false, error: 'Cannot connect to server. Check if backend is running.' };
+      } else if (error.name === 'TypeError' && error.message.includes('NetworkError')) {
+        return { success: false, error: 'Network error. Check your internet connection.' };
+      } else if (error.message.includes('CORS')) {
+        return { success: false, error: 'CORS error. Check backend CORS configuration.' };
+      } else {
+        return { success: false, error: `Network error: ${error.message}` };
+      }
+    }
+  };
+
   // Role-based navigation helper
   const navigateByRole = () => {
     if (!isAuthenticated || !userRole) return '/';
@@ -151,6 +221,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     checkAuth,
+    updateUser,
     navigateByRole,
     hasRole,
     isAdmin,

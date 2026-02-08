@@ -1348,7 +1348,7 @@ const Templates = ({ templates, handleSaveTemplate, handleUpdateTemplate, handle
 // Settings Component
 const SettingsComponent = () => {
   // Get user data from auth context
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   
   // State to manage the user's settings.
   const [profileSettings, setProfileSettings] = useState({
@@ -1356,6 +1356,8 @@ const SettingsComponent = () => {
     email: user?.email || "",
     notifications: true,
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [lastSaveTime, setLastSaveTime] = useState(0);
 
   // Update settings when user data changes
   useEffect(() => {
@@ -1378,8 +1380,39 @@ const SettingsComponent = () => {
   };
 
   // Handle the save action for the profile information.
-  const handleSave = () => {
-    // In a real application, you would send this data to a server.
+  const handleSave = async () => {
+    if (!profileSettings.name.trim()) {
+      alert('Name cannot be empty');
+      return;
+    }
+    
+    // Client-side rate limiting: Prevent saves within 2 seconds of last save
+    const now = Date.now();
+    if (now - lastSaveTime < 2000) {
+      alert('Please wait a moment before saving again');
+      return;
+    }
+    
+    setIsLoading(true);
+    setLastSaveTime(now);
+    
+    try {
+      const result = await updateUser({
+        display_name: profileSettings.name,
+        name: profileSettings.name
+      });
+      
+      if (result.success) {
+        alert('Profile updated successfully!');
+      } else {
+         alert('Failed to update profile: ' + result.error);
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('An error occurred while updating your profile.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -1424,10 +1457,24 @@ const SettingsComponent = () => {
                     />
                     <button
                       onClick={handleSave}
-                      className="flex items-center gap-2 px-4 py-3 bg-purple-700 text-white rounded-lg font-medium hover:bg-purple-600 transition-colors"
+                      disabled={isLoading}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-colors ${
+                        isLoading 
+                          ? 'bg-gray-500 cursor-not-allowed' 
+                          : 'bg-purple-700 hover:bg-purple-600'
+                      } text-white`}
                     >
-                      <Save size={18} />
-                      Save
+                      {isLoading ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save size={18} />
+                          Save
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
