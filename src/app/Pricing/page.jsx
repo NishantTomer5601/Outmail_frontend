@@ -9,7 +9,6 @@ import Faq from '@/component/faq'
 import Testimonials from '@/component/Testimonials'
 import MembershipBenefits from '@/component/membershipbenefits'
 
-
 function page() {
   return (
     <div>
