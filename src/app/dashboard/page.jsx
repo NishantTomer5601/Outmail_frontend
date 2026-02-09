@@ -1612,9 +1612,29 @@ export default function Page() {
   const [templateToView, setTemplateToView] = useState(null);
   const ATTACHMENT_LIMIT = 3;
 
+  // Handle OAuth token from URL (for cross-domain auth)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      if (token) {
+        localStorage.setItem('authToken', token);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+  }, []);
+
+  // Check if user has stored token
+  const hasStoredToken = () => {
+    if (typeof window !== 'undefined') {
+      return !!localStorage.getItem('authToken');
+    }
+    return false;
+  };
+
   // Redirect if not authenticated
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    if (!loading && !isAuthenticated && !hasStoredToken()) {
       window.location.href = '/';
     }
   }, [isAuthenticated, loading]);
