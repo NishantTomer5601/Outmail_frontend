@@ -1838,9 +1838,9 @@ export default function Page() {
     try {
       // Use the working resume upload endpoint
       const formData = new FormData();
-      formData.append('resume', file); // Backend expects 'resume' field
+      formData.append('file', file); // Backend expects 'file' field
 
-      const response = await fetch(`${API_BASE_URL}/api/resumes/upload`, {
+      const response = await fetch(`${API_BASE_URL}/api/resumes/`, {
         method: 'POST',
         headers: getAuthHeaders(),
         credentials: 'include',
@@ -1856,18 +1856,18 @@ export default function Page() {
       
       // Add successful upload to attachments list
       const newAttachment = {
-        id: result.resume.id,
-        name: result.resume.filename,
+        id: result.id,
+        name: result.filename,
         type: file.type,
-        size: `${(result.resume.fileSize / 1024 / 1024).toFixed(2)} MB`,
+        size: `${(result.fileSize / 1024 / 1024).toFixed(2)} MB`,
         uploadDate: new Date().toISOString().slice(0, 10),
-        url: result.resume.s3Url,
+        url: result.s3Url,
         file: null,
         uploaded: true
       };
       
       setAttachments(prev => [...prev, newAttachment]);
-      console.log('✅ File uploaded successfully:', result.resume.filename);
+      console.log('✅ File uploaded successfully:', result.filename);
       
     } catch (error) {
       console.error('❌ Upload error:', error);
