@@ -459,7 +459,7 @@ const CampaignForm = ({ templates, attachments }) => {
     // Validate CSV file
     if (file.type !== 'text/csv' && !file.name.toLowerCase().endsWith('.csv')) {
       alert('Please select a valid CSV file.');
-      e.target.value = ''; // Reset file input
+      e.target.value = '';
       return;
     }
 
@@ -469,15 +469,17 @@ const CampaignForm = ({ templates, attachments }) => {
       return;
     }
 
+    // Just store locally for now - no upload
     setSelectedCsvFile(file);
-    
-    // Optional: Upload CSV immediately for validation
+    console.log('📄 CSV file selected (upload disabled until backend ready):', file.name);
+
+    // TODO: Uncomment when backend implements CSV upload
+    /*
     try {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('category', 'document');
 
-      console.log('📤 Uploading CSV for validation...');
       const response = await fetch(`${API_BASE_URL}/api/uploads/single`, {
         method: 'POST',
         headers: getAuthHeaders(),
@@ -487,23 +489,17 @@ const CampaignForm = ({ templates, attachments }) => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log('✅ CSV uploaded and validated:', result.data.filename);
-        // Store the uploaded CSV URL for campaign use
         setSelectedCsvFile({ 
           ...file, 
           uploaded: true, 
           url: result.data.s3Url,
           id: result.data.id 
         });
-      } else {
-        const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
-        console.warn('⚠️ CSV upload failed:', errorData.error);
-        // Still allow local file selection even if upload fails
       }
     } catch (error) {
       console.warn('⚠️ CSV upload error:', error.message);
-      // Continue with local file - upload can be retried later
     }
+    */
   };
 
 
@@ -1719,8 +1715,10 @@ export default function Page() {
     return token ? { 'Authorization': `Bearer ${token}` } : {};
   };
 
-  // Load user's existing files from backend
+  // Load user's existing files from backend (DISABLED - endpoints not implemented)
   useEffect(() => {
+    // TODO: Uncomment when backend implements GET /api/uploads/attachments
+    /*
     const loadUserFiles = async () => {
       if (!isAuthenticated || !user) return;
       
@@ -1736,7 +1734,6 @@ export default function Page() {
         if (response.ok) {
           const data = await response.json();
           if (data.data && data.data.attachments) {
-            // Transform backend data to match UI format
             const transformedAttachments = data.data.attachments.map(att => ({
               id: att.id,
               name: att.filename,
@@ -1747,17 +1744,16 @@ export default function Page() {
               uploaded: true
             }));
             setAttachments(transformedAttachments);
-            console.log(`✅ Loaded ${transformedAttachments.length} existing attachments`);
           }
-        } else {
-          console.warn('⚠️ Failed to load user files:', response.status);
         }
       } catch (error) {
         console.warn('⚠️ Error loading user files:', error.message);
       }
     };
-
     loadUserFiles();
+    */
+    
+    console.log('📝 File loading disabled - backend endpoints not implemented yet');
   }, [isAuthenticated, user]);
 
   // Check if user has stored token
@@ -1838,6 +1834,66 @@ export default function Page() {
 
     const fileId = `upload_${Date.now()}`;
     setUploadingFiles(prev => new Set(prev).add(fileId));
+
+    try {
+      // Use the working resume upload endpoint
+      const formData = new FormData();
+      formData.append('resume', file); // Backend expects 'resume' field
+
+      const response = await fetch(`${API_BASE_URL}/api/resumes/upload`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        credentials: 'include',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      
+      // Add successful upload to attachments list
+      const newAttachment = {
+        id: result.resume.id,
+        name: result.resume.filename,
+        type: file.type,
+        size: `${(result.resume.fileSize / 1024 / 1024).toFixed(2)} MB`,
+        uploadDate: new Date().toISOString().slice(0, 10),
+        url: result.resume.s3Url,
+        file: null,
+        uploaded: true
+      };
+      
+      setAttachments(prev => [...prev, newAttachment]);
+      console.log('✅ File uploaded successfully:', result.resume.filename);
+      
+    } catch (error) {
+      console.error('❌ Upload error:', error);
+      alert(`Upload failed: ${error.message}`);
+    } finally {
+      setUploadingFiles(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(fileId);
+        return newSet;
+      });
+    }
+  };
+    // Validate file first
+    const validationErrors = validateFile(file);
+    if (validationErrors.length > 0) {
+      alert(`Upload failed:\n${validationErrors.join('\n')}`);
+      return;
+    }
+
+    if (attachments.length >= ATTACHMENT_LIMIT) {
+      alert("You have reached the maximum limit of 3 attachments.");
+      return;
+    }
+
+    const fileId = `upload_${Date.now()}`;
+    setUploadingFiles(prev => new Set(prev).add(fileId));
     setUploadProgress(prev => ({ ...prev, [fileId]: 0 }));
     setApiErrors(prev => ({ ...prev, [fileId]: null }));
 
@@ -1848,7 +1904,7 @@ export default function Page() {
       formData.append('category', 'attachment'); // Backend expects 'category' not 'type'
 
       // Upload to backend with progress tracking
-      const response = await fetch(`${API_BASE_URL}/api/uploads/single`, {
+      const response = await fetch(`${API_BASE_URL}/api/upload-attachment`, {
         method: 'POST',
         headers: getAuthHeaders(),
         credentials: 'include',
@@ -1913,7 +1969,12 @@ export default function Page() {
     );
     if (!confirmDelete) return;
 
-    // If it's an uploaded file, delete from backend
+    // TEMPORARY: Backend endpoints not implemented yet
+    alert('⚠️ Delete functionality not available yet.\n\nBackend needs to implement:\n• DELETE /api/uploads/attachments/:id');
+    return;
+
+    // TODO: Uncomment when backend implements delete endpoint
+    /*
     if (attachment.uploaded && attachment.id) {
       try {
         const response = await fetch(`${API_BASE_URL}/api/uploads/attachments/${attachment.id}`, {
@@ -1934,15 +1995,15 @@ export default function Page() {
       } catch (error) {
         console.error('❌ Delete error:', error);
         alert(`Delete failed: ${error.message}`);
-        return; // Don't remove from UI if backend delete failed
+        return;
       }
     }
 
-    // Remove from local state
     const updatedAttachments = attachments.filter(
       (att) => att.id !== attachment.id
     );
     setAttachments(updatedAttachments);
+    */
   };
   
   const handleViewAttachment = (file) => {
