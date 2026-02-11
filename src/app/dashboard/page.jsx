@@ -452,10 +452,57 @@ const CampaignForm = ({ templates, attachments }) => {
     }
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setSelectedCsvFile(file);
+    if (!file) return;
+
+    // Validate CSV file
+    if (file.type !== 'text/csv' && !file.name.toLowerCase().endsWith('.csv')) {
+      alert('Please select a valid CSV file.');
+      e.target.value = ''; // Reset file input
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      alert(`File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`);
+      e.target.value = '';
+      return;
+    }
+
+    setSelectedCsvFile(file);
+    
+    // Optional: Upload CSV immediately for validation
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'csv');
+
+      console.log('📤 Uploading CSV for validation...');
+      const response = await fetch(`${API_BASE_URL}/api/uploads/attachment`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        credentials: 'include',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ CSV uploaded and validated:', result.attachment.name);
+        // Store the uploaded CSV URL for campaign use
+        setSelectedCsvFile({ 
+          ...file, 
+          uploaded: true, 
+          url: result.attachment.url,
+          id: result.attachment.id 
+        });
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
+        console.warn('⚠️ CSV upload failed:', errorData.error);
+        // Still allow local file selection even if upload fails
+      }
+    } catch (error) {
+      console.warn('⚠️ CSV upload error:', error.message);
+      // Continue with local file - upload can be retried later
     }
   };
 
@@ -1061,8 +1108,8 @@ const PdfViewerModal = ({ isOpen, onClose, pdfUrl }) => {
 };
 
 
-// AttachmentManager Component with corrected confirm logic
-const AttachmentManager = ({ attachments, handleUploadAttachment, handleDeleteAttachment, handleViewAttachment }) => {
+// AttachmentManager Component with S3 upload support
+const AttachmentManager = ({ attachments, handleUploadAttachment, handleDeleteAttachment, handleViewAttachment, uploadingFiles = new Set() }) => {
   const ATTACHMENT_LIMIT = 3;
   const fileInputRef = useRef(null);
   
@@ -1076,15 +1123,14 @@ const AttachmentManager = ({ attachments, handleUploadAttachment, handleDeleteAt
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    if (file && file.type === "application/pdf") {
+    if (file) {
       handleUploadAttachment(file);
       // Reset the file input to allow re-uploading the same file
       event.target.value = null; 
-    } else if (file) {
-      alert("Please upload a PDF file.");
-      event.target.value = null;
     }
   };
+
+  const isUploading = uploadingFiles.size > 0;
 
 
   return (
@@ -1099,22 +1145,27 @@ const AttachmentManager = ({ attachments, handleUploadAttachment, handleDeleteAt
         </div>
         <button
           onClick={handleButtonClick}
-          disabled={isAttachmentLimitReached}
-          className={`mt-4 sm:mt-0 text-white font-semibold  py-2 px-4 rounded-lg flex items-center shadow-lg transition duration-200 ease-in-out transform ${
-            isAttachmentLimitReached
+          disabled={isAttachmentLimitReached || isUploading}
+          className={`mt-4 sm:mt-0 text-white font-semibold py-2 px-4 rounded-lg flex items-center shadow-lg transition duration-200 ease-in-out transform ${
+            isAttachmentLimitReached || isUploading
               ? "bg-gray-500 cursor-not-allowed"
               : "bg-purple-600 hover:bg-purple-700 hover:-translate-y-0.5"
           }`}
         >
-          <Upload size={18} className="mr-2" />
-          {isAttachmentLimitReached ? "Max 3 Allowed" : "Upload Attachment"}
+          <Upload size={18} className={`mr-2 ${isUploading ? 'animate-spin' : ''}`} />
+          {isUploading 
+            ? "Uploading..." 
+            : isAttachmentLimitReached 
+            ? "Max 3 Allowed" 
+            : "Upload Attachment"
+          }
         </button>
          <input 
           type="file" 
           ref={fileInputRef} 
           onChange={handleFileChange} 
           className="hidden" 
-          accept=".pdf"
+          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.csv,.xls,.xlsx"
         />
       </div>
 
@@ -1161,17 +1212,22 @@ const AttachmentManager = ({ attachments, handleUploadAttachment, handleDeleteAt
                       {attachment.uploadDate}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button onClick={() => handleViewAttachment(attachment.file)} className="text-purple-400 hover:text-purple-600 mr-4">
+                      <button onClick={() => handleViewAttachment(attachment)} className="text-purple-400 hover:text-purple-600 mr-4">
                         <Eye size={16} className="inline-block mr-1" />
                         View
                       </button>
                       <button
-                        onClick={() => handleDeleteAttachment(attachment.id)}
+                        onClick={() => handleDeleteAttachment(attachment)}
                         className="text-red-400 hover:text-red-600"
                       >
                         <Trash2 size={16} className="inline-block mr-1" />
                         Delete
                       </button>
+                      {attachment.uploaded && (
+                        <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-500/20 text-green-400 rounded-full ml-2">
+                          ☁️ Uploaded
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -1610,7 +1666,25 @@ export default function Page() {
   const [pdfToView, setPdfToView] = useState(null);
   const [isTemplateViewerOpen, setIsTemplateViewerOpen] = useState(false);
   const [templateToView, setTemplateToView] = useState(null);
+  const [uploadingFiles, setUploadingFiles] = useState(new Set()); // Track uploading files
+  const [uploadProgress, setUploadProgress] = useState({}); // Track upload progress
+  const [apiErrors, setApiErrors] = useState({}); // Track API errors
   const ATTACHMENT_LIMIT = 3;
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  // File validation constants
+  const ALLOWED_FILE_TYPES = {
+    'application/pdf': 'PDF',
+    'application/msword': 'DOC',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX',
+    'image/jpeg': 'JPEG',
+    'image/jpg': 'JPG', 
+    'image/png': 'PNG',
+    'text/csv': 'CSV',
+    'application/vnd.ms-excel': 'XLS',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLSX'
+  };
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
   // Handle OAuth token from URL (for cross-domain auth)
   useEffect(() => {
@@ -1623,6 +1697,68 @@ export default function Page() {
       }
     }
   }, []);
+
+  // File validation utility
+  const validateFile = (file) => {
+    const errors = [];
+    
+    if (file.size > MAX_FILE_SIZE) {
+      errors.push(`File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`);
+    }
+    
+    if (!ALLOWED_FILE_TYPES[file.type]) {
+      errors.push(`File type not supported. Allowed: ${Object.values(ALLOWED_FILE_TYPES).join(', ')}`);
+    }
+    
+    return errors;
+  };
+
+  // Get authentication headers
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('authToken');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+  };
+
+  // Load user's existing files from backend
+  useEffect(() => {
+    const loadUserFiles = async () => {
+      if (!isAuthenticated || !user) return;
+      
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/uploads/files?type=attachments`, {
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
+          },
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.attachments) {
+            // Transform backend data to match UI format
+            const transformedAttachments = data.attachments.map(att => ({
+              id: att.id,
+              name: att.name,
+              type: att.attachmentType || 'attachment',
+              size: `${(att.size / 1024 / 1024).toFixed(2)} MB`,
+              uploadDate: new Date(att.uploadedAt).toISOString().slice(0, 10),
+              url: att.url,
+              uploaded: true
+            }));
+            setAttachments(transformedAttachments);
+            console.log(`✅ Loaded ${transformedAttachments.length} existing attachments`);
+          }
+        } else {
+          console.warn('⚠️ Failed to load user files:', response.status);
+        }
+      } catch (error) {
+        console.warn('⚠️ Error loading user files:', error.message);
+      }
+    };
+
+    loadUserFiles();
+  }, [isAuthenticated, user]);
 
   // Check if user has stored token
   const hasStoredToken = () => {
@@ -1687,30 +1823,124 @@ export default function Page() {
     setTemplateToView(null);
   };
 
-  const handleUploadAttachment = (file) => {
+  const handleUploadAttachment = async (file) => {
+    // Validate file first
+    const validationErrors = validateFile(file);
+    if (validationErrors.length > 0) {
+      alert(`Upload failed:\n${validationErrors.join('\n')}`);
+      return;
+    }
+
     if (attachments.length >= ATTACHMENT_LIMIT) {
       alert("You have reached the maximum limit of 3 attachments.");
       return;
     }
-    const newAttachment = {
-      id: Date.now(),
-      name: file.name,
-      type: file.type,
-      size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-      uploadDate: new Date().toISOString().slice(0, 10),
-      file: file, // Store the actual file object
-    };
-    setAttachments([...attachments, newAttachment]);
+
+    const fileId = `upload_${Date.now()}`;
+    setUploadingFiles(prev => new Set(prev).add(fileId));
+    setUploadProgress(prev => ({ ...prev, [fileId]: 0 }));
+    setApiErrors(prev => ({ ...prev, [fileId]: null }));
+
+    try {
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'campaign'); // or 'template' based on context
+
+      // Upload to backend with progress tracking
+      const response = await fetch(`${API_BASE_URL}/api/uploads/attachment`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        credentials: 'include',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      
+      // Add successful upload to attachments list
+      const newAttachment = {
+        id: result.attachment.id,
+        name: result.attachment.name,
+        type: file.type,
+        size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
+        uploadDate: new Date().toISOString().slice(0, 10),
+        url: result.attachment.url,
+        file: null, // Don't store file object for uploaded files
+        uploaded: true
+      };
+      
+      setAttachments(prev => [...prev, newAttachment]);
+      setUploadProgress(prev => ({ ...prev, [fileId]: 100 }));
+      
+      // Show success message
+      console.log('✅ File uploaded successfully:', result.attachment.name);
+      
+    } catch (error) {
+      console.error('❌ Upload error:', error);
+      setApiErrors(prev => ({ ...prev, [fileId]: error.message }));
+      alert(`Upload failed: ${error.message}`);
+    } finally {
+      setUploadingFiles(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(fileId);
+        return newSet;
+      });
+      
+      // Clear progress after delay
+      setTimeout(() => {
+        setUploadProgress(prev => {
+          const newProgress = { ...prev };
+          delete newProgress[fileId];
+          return newProgress;
+        });
+        setApiErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors[fileId];
+          return newErrors;
+        });
+      }, 3000);
+    }
   };
 
-  const handleDeleteAttachment = (id) => {
+  const handleDeleteAttachment = async (attachment) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this attachment?"
     );
     if (!confirmDelete) return;
 
+    // If it's an uploaded file, delete from backend
+    if (attachment.uploaded && attachment.id) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/uploads/file/attachment/${attachment.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Delete failed' }));
+          throw new Error(errorData.error || `HTTP ${response.status}`);
+        }
+
+        console.log('✅ File deleted from S3 and database');
+      } catch (error) {
+        console.error('❌ Delete error:', error);
+        alert(`Delete failed: ${error.message}`);
+        return; // Don't remove from UI if backend delete failed
+      }
+    }
+
+    // Remove from local state
     const updatedAttachments = attachments.filter(
-      (attachment) => attachment.id !== id
+      (att) => att.id !== attachment.id
     );
     setAttachments(updatedAttachments);
   };
@@ -2265,7 +2495,7 @@ export default function Page() {
         {/* Conditional rendering based on activeSection */}
         {activeSection === "dashboard" && <CombinedDashboard />}
         {activeSection === "campaign" && <CampaignForm templates={templates} attachments={attachments} />}
-        {activeSection === "attachments" && <AttachmentManager attachments={attachments} handleUploadAttachment={handleUploadAttachment} handleDeleteAttachment={handleDeleteAttachment} handleViewAttachment={handleViewAttachment} />}
+        {activeSection === "attachments" && <AttachmentManager attachments={attachments} handleUploadAttachment={handleUploadAttachment} handleDeleteAttachment={handleDeleteAttachment} handleViewAttachment={handleViewAttachment} uploadingFiles={uploadingFiles} />}
         {activeSection === "templates" && <Templates templates={templates} handleSaveTemplate={handleSaveTemplate} handleUpdateTemplate={handleUpdateTemplate} handleDeleteTemplate={handleDeleteTemplate} handleViewTemplate={handleViewTemplate} />}
         {activeSection === "jobOpenings" && <JobOpenings />}
         {activeSection === "settings" && <SettingsComponent />}
