@@ -475,10 +475,10 @@ const CampaignForm = ({ templates, attachments }) => {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('type', 'csv');
+      formData.append('category', 'document');
 
       console.log('📤 Uploading CSV for validation...');
-      const response = await fetch(`${API_BASE_URL}/api/uploads/attachment`, {
+      const response = await fetch(`${API_BASE_URL}/api/uploads/single`, {
         method: 'POST',
         headers: getAuthHeaders(),
         credentials: 'include',
@@ -487,13 +487,13 @@ const CampaignForm = ({ templates, attachments }) => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log('✅ CSV uploaded and validated:', result.attachment.name);
+        console.log('✅ CSV uploaded and validated:', result.data.filename);
         // Store the uploaded CSV URL for campaign use
         setSelectedCsvFile({ 
           ...file, 
           uploaded: true, 
-          url: result.attachment.url,
-          id: result.attachment.id 
+          url: result.data.s3Url,
+          id: result.data.id 
         });
       } else {
         const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
@@ -1725,7 +1725,7 @@ export default function Page() {
       if (!isAuthenticated || !user) return;
       
       try {
-        const response = await fetch(`${API_BASE_URL}/api/uploads/files?type=attachments`, {
+        const response = await fetch(`${API_BASE_URL}/api/uploads/attachments`, {
           headers: {
             'Content-Type': 'application/json',
             ...getAuthHeaders()
@@ -1735,15 +1735,15 @@ export default function Page() {
 
         if (response.ok) {
           const data = await response.json();
-          if (data.success && data.attachments) {
+          if (data.data && data.data.attachments) {
             // Transform backend data to match UI format
-            const transformedAttachments = data.attachments.map(att => ({
+            const transformedAttachments = data.data.attachments.map(att => ({
               id: att.id,
-              name: att.name,
-              type: att.attachmentType || 'attachment',
-              size: `${(att.size / 1024 / 1024).toFixed(2)} MB`,
-              uploadDate: new Date(att.uploadedAt).toISOString().slice(0, 10),
-              url: att.url,
+              name: att.filename,
+              type: 'attachment',
+              size: `${(att.fileSize / 1024 / 1024).toFixed(2)} MB`,
+              uploadDate: new Date(att.createdAt).toISOString().slice(0, 10),
+              url: att.s3Url,
               uploaded: true
             }));
             setAttachments(transformedAttachments);
@@ -1845,10 +1845,10 @@ export default function Page() {
       // Create FormData for file upload
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('type', 'campaign'); // or 'template' based on context
+      formData.append('category', 'attachment'); // Backend expects 'category' not 'type'
 
       // Upload to backend with progress tracking
-      const response = await fetch(`${API_BASE_URL}/api/uploads/attachment`, {
+      const response = await fetch(`${API_BASE_URL}/api/uploads/single`, {
         method: 'POST',
         headers: getAuthHeaders(),
         credentials: 'include',
@@ -1864,12 +1864,12 @@ export default function Page() {
       
       // Add successful upload to attachments list
       const newAttachment = {
-        id: result.attachment.id,
-        name: result.attachment.name,
+        id: result.data.id,
+        name: result.data.filename,
         type: file.type,
         size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
         uploadDate: new Date().toISOString().slice(0, 10),
-        url: result.attachment.url,
+        url: result.data.s3Url,
         file: null, // Don't store file object for uploaded files
         uploaded: true
       };
@@ -1916,7 +1916,7 @@ export default function Page() {
     // If it's an uploaded file, delete from backend
     if (attachment.uploaded && attachment.id) {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/uploads/file/attachment/${attachment.id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/uploads/attachments/${attachment.id}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
