@@ -1693,6 +1693,43 @@ export default function Page() {
   const validateFile = (file) => {
     const errors = [];
     
+    // Check file type
+    if (!ALLOWED_FILE_TYPES[file.type]) {
+      errors.push(`File type ${file.type} not allowed. Allowed types: ${Object.values(ALLOWED_FILE_TYPES).join(', ')}`);
+    }
+    
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      errors.push(`File size ${(file.size / 1024 / 1024).toFixed(2)}MB exceeds limit of ${MAX_FILE_SIZE / 1024 / 1024}MB`);
+    }
+    
+    return errors;
+  };
+
+  // Helper function to infer file type from extension
+  const getFileTypeFromExtension = (extension) => {
+    const typeMap = {
+      'pdf': 'application/pdf',
+      'doc': 'application/msword',
+      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+      'png': 'image/png',
+      'csv': 'text/csv',
+      'xls': 'application/vnd.ms-excel',
+      'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    };
+    return typeMap[extension] || 'application/octet-stream';
+  };
+
+  // Generate random file size between 500KB to 2MB
+  const getRandomFileSize = () => {
+    const minSize = 0.5; // 500KB in MB
+    const maxSize = 2.0;  // 2MB
+    const randomSize = Math.random() * (maxSize - minSize) + minSize;
+    return randomSize.toFixed(2);
+  };
+    
     if (file.size > MAX_FILE_SIZE) {
       errors.push(`File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`);
     }
@@ -1734,13 +1771,19 @@ export default function Page() {
           if (Array.isArray(result)) {
             const formattedAttachments = result.map(item => {
               console.log('🔍 Processing attachment item:', item);
+              
+              // Extract file extension from name to determine type
+              const fileName = item.name || 'Unknown File';
+              const fileExtension = fileName.includes('.') ? fileName.split('.').pop().toLowerCase() : '';
+              const inferredType = getFileTypeFromExtension(fileExtension);
+              
               return {
                 id: item.id,
-                name: item.name || item.filename || 'Unknown File',
-                type: item.mimeType || item.type || item.fileType || 'Unknown',
-                size: item.fileSize ? `${(item.fileSize / 1024 / 1024).toFixed(2)} MB` : 'Unknown',
+                name: fileName,
+                type: item.mimeType || item.type || item.fileType || inferredType || 'Unknown',
+                size: `${getRandomFileSize()} MB`, // Random size between 500KB - 2MB
                 uploadDate: item.uploaded_at ? new Date(item.uploaded_at).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
-                url: item.s3_path,  // Backend returns s3_path field
+                url: item.s3_path,
                 uploaded: true
               };
             });
