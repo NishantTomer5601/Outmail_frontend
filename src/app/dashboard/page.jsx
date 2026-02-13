@@ -1732,15 +1732,19 @@ export default function Page() {
           
           // Process attachments - assuming result is array of resumes/attachments
           if (Array.isArray(result)) {
-            const formattedAttachments = result.map(item => ({
-              id: item.id,
-              name: item.filename || item.name,
-              type: item.mimeType || item.type,
-              size: item.fileSize ? `${(item.fileSize / 1024 / 1024).toFixed(2)} MB` : 'Unknown',
-              uploadDate: item.uploadedAt ? new Date(item.uploadedAt).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
-              url: item.s3Url || item.url,
-              uploaded: true
-            }));
+            const formattedAttachments = result.map(item => {
+              console.log('🔍 Processing attachment item:', item);
+              return {
+                id: item.id,
+                name: item.filename || item.name || item.originalName || 'Unknown File',
+                type: item.mimeType || item.type || item.fileType || 'Unknown',
+                size: item.fileSize ? `${(item.fileSize / 1024 / 1024).toFixed(2)} MB` : 'Unknown',
+                uploadDate: item.uploadedAt || item.createdAt ? new Date(item.uploadedAt || item.createdAt).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
+                url: item.s3Url || item.url || item.downloadUrl || item.fileUrl,
+                uploaded: true
+              };
+            });
+            console.log('📝 Formatted attachments:', formattedAttachments);
             setAttachments(formattedAttachments);
           }
         } else {
@@ -1924,11 +1928,19 @@ export default function Page() {
   };
   
   const handleViewAttachment = (attachment) => {
-    if (attachment && attachment.url) {
-      // Open file in new tab - works for PDFs, images, and most file types
+    console.log('🔍 Attempting to view attachment:', attachment);
+    
+    if (!attachment) {
+      alert('Attachment data not found.');
+      return;
+    }
+    
+    if (attachment.url) {
+      console.log('✅ Opening file URL:', attachment.url);
       window.open(attachment.url, '_blank');
     } else {
-      alert('File URL not available. Please try re-uploading the file.');
+      console.error('❌ No URL found in attachment object. Available properties:', Object.keys(attachment));
+      alert('File URL not available. Please check console for details or contact support.');
     }
   };
   
