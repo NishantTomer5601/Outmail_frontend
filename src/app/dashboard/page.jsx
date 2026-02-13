@@ -1717,13 +1717,13 @@ export default function Page() {
 
   // Load user's existing files from backend (DISABLED - endpoints not implemented)
   useEffect(() => {
-    // TODO: Uncomment when backend implements GET /api/uploads/attachments
-    /*
     const loadUserFiles = async () => {
       if (!isAuthenticated || !user) return;
       
       try {
-        const response = await fetch(`${API_BASE_URL}/api/uploads/attachments`, {
+        // Load attachments from /api/resumes endpoint
+        const response = await fetch(`${API_BASE_URL}/api/resumes`, {
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             ...getAuthHeaders()
@@ -1732,28 +1732,30 @@ export default function Page() {
         });
 
         if (response.ok) {
-          const data = await response.json();
-          if (data.data && data.data.attachments) {
-            const transformedAttachments = data.data.attachments.map(att => ({
-              id: att.id,
-              name: att.filename,
-              type: 'attachment',
-              size: `${(att.fileSize / 1024 / 1024).toFixed(2)} MB`,
-              uploadDate: new Date(att.createdAt).toISOString().slice(0, 10),
-              url: att.s3Url,
+          const result = await response.json();
+          console.log('📁 Loaded user attachments:', result);
+          
+          // Process attachments - assuming result is array of resumes/attachments
+          if (Array.isArray(result)) {
+            const formattedAttachments = result.map(item => ({
+              id: item.id,
+              name: item.filename || item.name,
+              type: item.mimeType || item.type,
+              size: item.fileSize ? `${(item.fileSize / 1024 / 1024).toFixed(2)} MB` : 'Unknown',
+              uploadDate: item.uploadedAt ? new Date(item.uploadedAt).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
+              url: item.s3Url || item.url,
               uploaded: true
             }));
-            setAttachments(transformedAttachments);
+            setAttachments(formattedAttachments);
           }
+        } else {
+          console.warn('⚠️ Failed to load attachments:', response.status, response.statusText);
         }
       } catch (error) {
         console.warn('⚠️ Error loading user files:', error.message);
       }
     };
     loadUserFiles();
-    */
-    
-    console.log('📝 File loading disabled - backend endpoints not implemented yet');
   }, [isAuthenticated, user]);
 
   // Check if user has stored token
