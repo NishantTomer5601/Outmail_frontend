@@ -1736,11 +1736,11 @@ export default function Page() {
               console.log('🔍 Processing attachment item:', item);
               return {
                 id: item.id,
-                name: item.filename || item.name || item.originalName || 'Unknown File',
+                name: item.name || item.filename || 'Unknown File',
                 type: item.mimeType || item.type || item.fileType || 'Unknown',
                 size: item.fileSize ? `${(item.fileSize / 1024 / 1024).toFixed(2)} MB` : 'Unknown',
-                uploadDate: item.uploadedAt || item.createdAt ? new Date(item.uploadedAt || item.createdAt).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
-                url: item.s3Url || item.url || item.downloadUrl || item.fileUrl,
+                uploadDate: item.uploaded_at ? new Date(item.uploaded_at).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
+                url: item.s3_path,  // Backend returns s3_path field
                 uploaded: true
               };
             });
