@@ -1219,11 +1219,6 @@ const AttachmentManager = ({ attachments, handleUploadAttachment, handleDeleteAt
                         <Trash2 size={16} className="inline-block mr-1" />
                         Delete
                       </button>
-                      {attachment.uploaded && (
-                        <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-500/20 text-green-400 rounded-full ml-2">
-                          ☁️ Uploaded
-                        </span>
-                      )}
                     </td>
                   </tr>
                 ))}
@@ -1889,15 +1884,10 @@ export default function Page() {
     );
     if (!confirmDelete) return;
 
-    // TEMPORARY: Backend endpoints not implemented yet
-    alert('⚠️ Delete functionality not available yet.\n\nBackend needs to implement:\n• DELETE /api/uploads/attachments/:id');
-    return;
-
-    // TODO: Uncomment when backend implements delete endpoint
-    /*
+    // Delete attachment using the backend API
     if (attachment.uploaded && attachment.id) {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/uploads/attachments/${attachment.id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/resumes/${attachment.id}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -1908,29 +1898,37 @@ export default function Page() {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({ error: 'Delete failed' }));
-          throw new Error(errorData.error || `HTTP ${response.status}`);
+          throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
         }
 
-        console.log('✅ File deleted from S3 and database');
+        console.log('✅ Attachment deleted successfully from backend');
+        
+        // Remove from local state after successful deletion
+        const updatedAttachments = attachments.filter(
+          (att) => att.id !== attachment.id
+        );
+        setAttachments(updatedAttachments);
+        
       } catch (error) {
         console.error('❌ Delete error:', error);
         alert(`Delete failed: ${error.message}`);
         return;
       }
+    } else {
+      // For local files not yet uploaded, just remove from state
+      const updatedAttachments = attachments.filter(
+        (att) => att.id !== attachment.id
+      );
+      setAttachments(updatedAttachments);
     }
-
-    const updatedAttachments = attachments.filter(
-      (att) => att.id !== attachment.id
-    );
-    setAttachments(updatedAttachments);
-    */
   };
   
-  const handleViewAttachment = (file) => {
-    if (file) {
-      const fileUrl = URL.createObjectURL(file);
-      setPdfToView(fileUrl);
-      setIsPdfViewerOpen(true);
+  const handleViewAttachment = (attachment) => {
+    if (attachment && attachment.url) {
+      // Open file in new tab - works for PDFs, images, and most file types
+      window.open(attachment.url, '_blank');
+    } else {
+      alert('File URL not available. Please try re-uploading the file.');
     }
   };
   
