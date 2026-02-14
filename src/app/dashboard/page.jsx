@@ -67,8 +67,6 @@ import {
   ExternalLink,
   X,
 } from "lucide-react";
-import { authenticatedFetch } from "@/lib/api";
-import config from "@/lib/config";
 
 // Funding Trends Component
 const FundingTrends = ({ selectedPeriod, onPeriodChange }) => {
@@ -1769,7 +1767,14 @@ export default function Page() {
   const loadTemplates = async () => {
     try {
       console.log('📋 Loading user templates...');
-      const response = await authenticatedFetch(config.getApiUrl('/api/templates/'));
+      const response = await fetch(`${API_BASE_URL}/api/templates/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
+        credentials: 'include',
+      });
       
       if (response.ok) {
         const result = await response.json();
@@ -1848,11 +1853,13 @@ export default function Page() {
         html_content: newTemplate.html_content || newTemplate.content
       };
       
-      const response = await authenticatedFetch(config.getApiUrl('/api/templates/'), {
+      const response = await fetch(`${API_BASE_URL}/api/templates/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...getAuthHeaders()
         },
+        credentials: 'include',
         body: JSON.stringify(templateData)
       });
       
@@ -1890,8 +1897,13 @@ export default function Page() {
     if (confirmDelete) {
       try {
         console.log('🗑️ Deleting template:', id);
-        const response = await authenticatedFetch(config.getApiUrl(`/api/templates/${id}`), {
-          method: 'DELETE'
+        const response = await fetch(`${API_BASE_URL}/api/templates/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
+          },
+          credentials: 'include',
         });
         
         if (response.ok) {
@@ -1921,11 +1933,13 @@ export default function Page() {
         html_content: updatedTemplate.html_content || updatedTemplate.content
       };
       
-      const response = await authenticatedFetch(config.getApiUrl(`/api/templates/${updatedTemplate.id}`), {
+      const response = await fetch(`${API_BASE_URL}/api/templates/${updatedTemplate.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          ...getAuthHeaders()
         },
+        credentials: 'include',
         body: JSON.stringify(templateData)
       });
       
