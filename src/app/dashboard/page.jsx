@@ -274,16 +274,37 @@ const EditTemplateModal = ({ isOpen, onClose, onUpdate, template }) => {
   }, [template]);
 
   const handleUpdate = () => {
-    if (templateName && emailSubject && emailBody) {
-      onUpdate({
-        ...template,
-        title: templateName,
-        description: `Subject: ${emailSubject}`,
-        emailSubject: emailSubject,
-        emailBody: emailBody,
-      });
-      onClose();
+    // Validate according to backend requirements
+    if (!templateName || templateName.trim().length < 3 || templateName.trim().length > 100) {
+      alert('Template name must be between 3-100 characters');
+      return;
     }
+    
+    if (!emailSubject || emailSubject.trim().length < 3 || emailSubject.trim().length > 200) {
+      alert('Email subject must be between 3-200 characters');
+      return;
+    }
+    
+    if (!emailBody || emailBody.trim().length < 10) {
+      alert('Email body must be at least 10 characters');
+      return;
+    }
+
+    console.log('📝 EditModal sending data:', {
+      id: template.id,
+      title: templateName.trim(),
+      emailSubject: emailSubject.trim(),
+      emailBody: emailBody.trim()
+    });
+
+    onUpdate({
+      ...template,
+      title: templateName.trim(),
+      description: `Subject: ${emailSubject.trim()}`,
+      emailSubject: emailSubject.trim(),
+      emailBody: emailBody.trim(),
+    });
+    onClose();
   };
 
   if (!isOpen || !template) return null;
@@ -1962,6 +1983,12 @@ export default function Page() {
       if (response.ok) {
         const updated = await response.json();
         console.log('✅ Template updated successfully:', updated);
+        console.log('🔍 API Response fields:', {
+          id: updated.id,
+          name: updated.name,
+          subject: updated.subject,
+          html_content: updated.html_content
+        });
         
         // Update local state with the updated template
         const formattedTemplate = {
@@ -1980,13 +2007,17 @@ export default function Page() {
           rating: 0 // UI expects 'rating'
         };
         
+        console.log('🎨 Formatted template for UI:', formattedTemplate);
+        
         const updatedTemplates = templates.map(t =>
           t.id === updatedTemplate.id ? formattedTemplate : t
         );
         setTemplates(updatedTemplates);
       } else {
         console.error('❌ Failed to update template:', response.status);
-        alert('Failed to update template. Please try again.');
+        const errorData = await response.text();
+        console.error('❌ Error details:', errorData);
+        alert(`Failed to update template: ${response.status} - ${errorData}`);
         if (response.status === 401) {
           window.location.href = '/';
         }
