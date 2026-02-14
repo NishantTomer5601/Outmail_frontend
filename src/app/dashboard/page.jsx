@@ -1942,10 +1942,12 @@ export default function Page() {
     try {
       console.log('📝 Updating template:', updatedTemplate);
       const templateData = {
-        name: updatedTemplate.name,
-        subject: updatedTemplate.subject,
-        html_content: updatedTemplate.html_content || updatedTemplate.content
+        name: updatedTemplate.title || updatedTemplate.name,
+        subject: updatedTemplate.emailSubject || updatedTemplate.subject,
+        html_content: updatedTemplate.emailBody || updatedTemplate.html_content || updatedTemplate.content
       };
+      
+      console.log('📤 Sending update data:', templateData);
       
       const response = await fetch(`${API_BASE_URL}/api/templates/${updatedTemplate.id}`, {
         method: 'PUT',
