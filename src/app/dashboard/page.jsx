@@ -67,6 +67,8 @@ import {
   ExternalLink,
   X,
 } from "lucide-react";
+import { authenticatedFetch } from "@/lib/api";
+import config from "@/lib/config";
 
 // Funding Trends Component
 const FundingTrends = ({ selectedPeriod, onPeriodChange }) => {
