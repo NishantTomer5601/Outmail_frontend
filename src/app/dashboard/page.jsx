@@ -1983,36 +1983,13 @@ export default function Page() {
       if (response.ok) {
         const updated = await response.json();
         console.log('✅ Template updated successfully:', updated);
-        console.log('🔍 API Response fields:', {
-          id: updated.id,
-          name: updated.name,
-          subject: updated.subject,
-          html_content: updated.html_content
-        });
         
-        // Update local state with the updated template
-        const formattedTemplate = {
-          id: updated.id,
-          name: updated.name,
-          title: updated.name, // UI expects 'title'
-          subject: updated.subject,
-          emailSubject: updated.subject, // UI expects 'emailSubject'
-          html_content: updated.html_content,
-          emailBody: updated.html_content, // UI expects 'emailBody'
-          description: `Subject: ${updated.subject}`, // UI expects 'description'
-          created_at: updated.created_at,
-          category: "Custom",
-          type: "email",
-          icon: <Mail size={20} />, // UI expects 'icon'
-          rating: 0 // UI expects 'rating'
-        };
+        // Instead of manually updating state, reload all templates from API
+        // This ensures UI stays in sync with backend
+        console.log('🔄 Reloading templates to ensure consistency...');
+        await loadTemplates();
         
-        console.log('🎨 Formatted template for UI:', formattedTemplate);
-        
-        const updatedTemplates = templates.map(t =>
-          t.id === updatedTemplate.id ? formattedTemplate : t
-        );
-        setTemplates(updatedTemplates);
+        console.log('✅ Templates reloaded successfully');
       } else {
         console.error('❌ Failed to update template:', response.status);
         const errorData = await response.text();
