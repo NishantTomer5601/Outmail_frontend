@@ -267,9 +267,9 @@ const EditTemplateModal = ({ isOpen, onClose, onUpdate, template }) => {
 
   useEffect(() => {
     if (template) {
-      setTemplateName(template.title);
-      setEmailSubject(template.emailSubject);
-      setEmailBody(template.emailBody);
+      setTemplateName(template.title || template.name || "");
+      setEmailSubject(template.emailSubject || template.subject || "");
+      setEmailBody(template.emailBody || template.html_content || "");
     }
   }, [template]);
 
@@ -1785,11 +1785,17 @@ export default function Page() {
           const formattedTemplates = result.map(item => ({
             id: item.id,
             name: item.name,
+            title: item.name, // UI expects 'title'
             subject: item.subject,
+            emailSubject: item.subject, // UI expects 'emailSubject'
             html_content: item.html_content,
+            emailBody: item.html_content, // UI expects 'emailBody'
+            description: `Subject: ${item.subject}`, // UI expects 'description'
             created_at: item.created_at,
-            category: "Custom", // All user templates are custom
-            type: "email"
+            category: "Custom",
+            type: "email",
+            icon: <Mail size={20} />, // UI expects 'icon'
+            rating: 0 // UI expects 'rating'
           }));
           console.log('✅ Formatted templates:', formattedTemplates);
           setTemplates(formattedTemplates);
@@ -1873,11 +1879,17 @@ export default function Page() {
         const formattedTemplate = {
           id: createdTemplate.id,
           name: createdTemplate.name,
+          title: createdTemplate.name, // UI expects 'title'
           subject: createdTemplate.subject,
+          emailSubject: createdTemplate.subject, // UI expects 'emailSubject'
           html_content: createdTemplate.html_content,
+          emailBody: createdTemplate.html_content, // UI expects 'emailBody'
+          description: `Subject: ${createdTemplate.subject}`, // UI expects 'description'
           created_at: createdTemplate.created_at,
           category: "Custom",
-          type: "email"
+          type: "email",
+          icon: <Mail size={20} />, // UI expects 'icon'
+          rating: 0 // UI expects 'rating'
         };
         
         setTemplates([...templates, formattedTemplate]);
@@ -1953,11 +1965,17 @@ export default function Page() {
         const formattedTemplate = {
           id: updated.id,
           name: updated.name,
+          title: updated.name, // UI expects 'title'
           subject: updated.subject,
+          emailSubject: updated.subject, // UI expects 'emailSubject'
           html_content: updated.html_content,
+          emailBody: updated.html_content, // UI expects 'emailBody'
+          description: `Subject: ${updated.subject}`, // UI expects 'description'
           created_at: updated.created_at,
           category: "Custom",
-          type: "email"
+          type: "email",
+          icon: <Mail size={20} />, // UI expects 'icon'
+          rating: 0 // UI expects 'rating'
         };
         
         const updatedTemplates = templates.map(t =>
