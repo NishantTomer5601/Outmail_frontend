@@ -1795,24 +1795,166 @@ export default function Page() {
     return null;
   }
 
-
-  const handleSaveTemplate = (newTemplate) => {
-    setTemplates([...templates, newTemplate]);
-  };
-
-  const handleDeleteTemplate = (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this template?");
-    if (confirmDelete) {
-      const updatedTemplates = templates.filter(template => template.id !== id);
-      setTemplates(updatedTemplates);
+  // Load templates from API
+  const loadTemplates = async () => {
+    try {
+      console.log('📋 Loading user templates...');
+      const response = await authenticatedFetch(config.getApiUrl('/api/templates/'));
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('📋 Loaded user templates:', result);
+        
+        // Process templates based on API response structure
+        if (Array.isArray(result)) {
+          const formattedTemplates = result.map(item => ({
+            id: item.id,
+            name: item.name,
+            subject: item.subject,
+            html_content: item.html_content,
+            created_at: item.created_at,
+            category: "Custom", // All user templates are custom
+            type: "email"
+          }));
+          console.log('✅ Formatted templates:', formattedTemplates);
+          setTemplates(formattedTemplates);
+        }
+      } else {
+        console.error('❌ Failed to load templates:', response.status);
+        if (response.status === 401) {
+          window.location.href = '/';
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error loading templates:', error);
     }
   };
 
-  const handleUpdateTemplate = (updatedTemplate) => {
-    const updatedTemplates = templates.map(t =>
-      t.id === updatedTemplate.id ? updatedTemplate : t
-    );
-    setTemplates(updatedTemplates);
+  // Load templates on component mount
+  useEffect(() => {
+    loadTemplates();
+  }, []);
+
+  const handleSaveTemplate = async (newTemplate) => {
+    try {
+      console.log('💾 Creating new template:', newTemplate);
+      const templateData = {
+        name: newTemplate.name,
+        subject: newTemplate.subject,
+        html_content: newTemplate.html_content || newTemplate.content
+      };
+      
+      const response = await authenticatedFetch(config.getApiUrl('/api/templates/'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(templateData)
+      });
+      
+      if (response.ok) {
+        const createdTemplate = await response.json();
+        console.log('✅ Template created successfully:', createdTemplate);
+        
+        // Add the new template to local state
+        const formattedTemplate = {
+          id: createdTemplate.id,
+          name: createdTemplate.name,
+          subject: createdTemplate.subject,
+          html_content: createdTemplate.html_content,
+          created_at: createdTemplate.created_at,
+          category: "Custom",
+          type: "email"
+        };
+        
+        setTemplates([...templates, formattedTemplate]);
+      } else {
+        console.error('❌ Failed to create template:', response.status);
+        alert('Failed to create template. Please try again.');
+        if (response.status === 401) {
+          window.location.href = '/';
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error creating template:', error);
+      alert('Error creating template. Please try again.');
+    }
+  };
+
+  const handleDeleteTemplate = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this template?");
+    if (confirmDelete) {
+      try {
+        console.log('🗑️ Deleting template:', id);
+        const response = await authenticatedFetch(config.getApiUrl(`/api/templates/${id}`), {
+          method: 'DELETE'
+        });
+        
+        if (response.ok) {
+          console.log('✅ Template deleted successfully');
+          const updatedTemplates = templates.filter(template => template.id !== id);
+          setTemplates(updatedTemplates);
+        } else {
+          console.error('❌ Failed to delete template:', response.status);
+          alert('Failed to delete template. Please try again.');
+          if (response.status === 401) {
+            window.location.href = '/';
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error deleting template:', error);
+        alert('Error deleting template. Please try again.');
+      }
+    }
+  };
+
+  const handleUpdateTemplate = async (updatedTemplate) => {
+    try {
+      console.log('📝 Updating template:', updatedTemplate);
+      const templateData = {
+        name: updatedTemplate.name,
+        subject: updatedTemplate.subject,
+        html_content: updatedTemplate.html_content || updatedTemplate.content
+      };
+      
+      const response = await authenticatedFetch(config.getApiUrl(`/api/templates/${updatedTemplate.id}`), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(templateData)
+      });
+      
+      if (response.ok) {
+        const updated = await response.json();
+        console.log('✅ Template updated successfully:', updated);
+        
+        // Update local state with the updated template
+        const formattedTemplate = {
+          id: updated.id,
+          name: updated.name,
+          subject: updated.subject,
+          html_content: updated.html_content,
+          created_at: updated.created_at,
+          category: "Custom",
+          type: "email"
+        };
+        
+        const updatedTemplates = templates.map(t =>
+          t.id === updatedTemplate.id ? formattedTemplate : t
+        );
+        setTemplates(updatedTemplates);
+      } else {
+        console.error('❌ Failed to update template:', response.status);
+        alert('Failed to update template. Please try again.');
+        if (response.status === 401) {
+          window.location.href = '/';
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error updating template:', error);
+      alert('Error updating template. Please try again.');
+    }
   };
 
   // NEW handler for viewing a template
