@@ -1848,10 +1848,12 @@ export default function Page() {
     try {
       console.log('💾 Creating new template:', newTemplate);
       const templateData = {
-        name: newTemplate.name,
-        subject: newTemplate.subject,
-        html_content: newTemplate.html_content || newTemplate.content
+        name: newTemplate.title || newTemplate.name,
+        subject: newTemplate.emailSubject || newTemplate.subject,
+        html_content: newTemplate.emailBody || newTemplate.html_content || newTemplate.content
       };
+      
+      console.log('📤 Sending template data:', templateData);
       
       const response = await fetch(`${API_BASE_URL}/api/templates/`, {
         method: 'POST',
