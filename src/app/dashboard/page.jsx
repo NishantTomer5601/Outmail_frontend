@@ -1282,30 +1282,36 @@ const TemplateViewerModal = ({ isOpen, onClose, template }) => {
 
 // Mentorship Section Component
 const MentorshipSection = () => {
-  // Mock data for mentorship sessions
-  const upcomingSessions = [
+  const [showArchivedSessions, setShowArchivedSessions] = useState(false);
+
+  // Active sessions (currently happening)
+  const activeSessions = [
     {
       id: 1,
       mentorName: "Sarah Johnson",
       mentorTitle: "Senior Product Manager at Google",
-      mentorImage: "https://images.unsplash.com/photo-1494790108755-2616b612b4c0?w=100&h=100&fit=crop&crop=face",
-      sessionDate: "Feb 20, 2026",
+      mentorImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&crop=face",
+      sessionDate: "Feb 17, 2026",
       sessionTime: "2:00 PM - 3:00 PM",
       sessionTopic: "Product Strategy & Roadmap Planning",
       sessionType: "1-on-1 Session",
-      status: "confirmed"
+      status: "active"
     },
     {
       id: 2,
       mentorName: "Michael Chen",
       mentorTitle: "CTO at TechStartup Inc",
       mentorImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
-      sessionDate: "Feb 22, 2026",
+      sessionDate: "Feb 17, 2026",
       sessionTime: "10:00 AM - 11:00 AM",
       sessionTopic: "Technical Leadership & Team Building",
       sessionType: "Group Session",
-      status: "pending"
-    },
+      status: "active"
+    }
+  ];
+
+  // Upcoming sessions
+  const upcomingSessions = [
     {
       id: 3,
       mentorName: "Emily Rodriguez",
@@ -1315,7 +1321,7 @@ const MentorshipSection = () => {
       sessionTime: "4:00 PM - 5:00 PM",
       sessionTopic: "Career Growth & Performance Reviews",
       sessionType: "1-on-1 Session",
-      status: "confirmed"
+      status: "upcoming"
     },
     {
       id: 4,
@@ -1326,98 +1332,178 @@ const MentorshipSection = () => {
       sessionTime: "6:00 PM - 7:00 PM",
       sessionTopic: "Entrepreneurship & Fundraising",
       sessionType: "Workshop",
-      status: "available"
+      status: "upcoming"
+    }
+  ];
+
+  // Archived/Past sessions
+  const archivedSessions = [
+    {
+      id: 5,
+      mentorName: "Jennifer Kim",
+      mentorTitle: "Former VP at Stripe",
+      mentorImage: "https://images.unsplash.com/photo-1494790108755-2616b612b4c0?w=100&h=100&fit=crop&crop=face",
+      sessionDate: "Feb 10, 2026",
+      sessionTime: "3:00 PM - 4:00 PM",
+      sessionTopic: "Scaling Engineering Teams",
+      sessionType: "1-on-1 Session",
+      status: "past"
+    },
+    {
+      id: 6,
+      mentorName: "Robert Singh",
+      mentorTitle: "Product Director at Netflix",
+      mentorImage: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop&crop=face",
+      sessionDate: "Feb 8, 2026",
+      sessionTime: "1:00 PM - 2:00 PM",
+      sessionTopic: "Content Strategy & User Experience",
+      sessionType: "Group Session",
+      status: "past"
+    },
+    {
+      id: 7,
+      mentorName: "Lisa Zhang",
+      mentorTitle: "AI Research Lead at OpenAI",
+      mentorImage: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=face",
+      sessionDate: "Feb 5, 2026",
+      sessionTime: "11:00 AM - 12:00 PM",
+      sessionTopic: "Machine Learning in Production",
+      sessionType: "Workshop",
+      status: "past"
     }
   ];
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'confirmed': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'pending': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'available': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'active': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'upcoming': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'past': return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
       default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
   };
 
+  const renderSessionCard = (session) => (
+    <div
+      key={session.id}
+      className="bg-white/10 backdrop-blur-md p-6 rounded-xl border border-[#2C2C2C] hover:border-white transition-all duration-300 shadow-md"
+    >
+      {/* Header with status */}
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-full overflow-hidden">
+            <img 
+              src={session.mentorImage} 
+              alt={session.mentorName}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-white">{session.mentorName}</h3>
+            <p className="text-sm text-white/70">{session.mentorTitle}</p>
+          </div>
+        </div>
+        <span className={`px-3 py-1 rounded-full border text-xs font-medium capitalize ${getStatusColor(session.status)}`}>
+          {session.status}
+        </span>
+      </div>
+
+      {/* Session Details */}
+      <div className="space-y-3 mb-4">
+        <div className="flex items-center gap-2 text-white/80">
+          <Calendar size={16} />
+          <span className="text-sm">{session.sessionDate} • {session.sessionTime}</span>
+        </div>
+        <div className="flex items-start gap-2 text-white/80">
+          <FileText size={16} className="mt-0.5" />
+          <div>
+            <p className="text-sm font-medium text-white">{session.sessionTopic}</p>
+            <p className="text-xs text-white/60">{session.sessionType}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex gap-2">
+        {session.status === 'past' ? (
+          <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+            <Play size={16} />
+            Watch Video
+          </button>
+        ) : session.status === 'active' ? (
+          <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 ease-in-out flex items-center justify-center gap-2">
+            <ExternalLink size={16} />
+            Join Session
+          </button>
+        ) : (
+          <>
+            <button className="flex-1 bg-white/10 hover:bg-white/20 text-white font-medium py-2 px-4 rounded-lg transition duration-200 ease-in-out flex items-center justify-center gap-2">
+              <Eye size={16} />
+              View Details
+            </button>
+            <button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+              <Plus size={16} />
+              Book a Slot
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div className="p-4 sm:p-6 font-syne">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-10">Mentorship</h1>
           <p className="text-white/70">Connect with industry experts and grow your career</p>
         </div>
-        <button className="mt-4 sm:mt-0 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 flex items-center gap-2">
-          <Plus size={18} />
-          Book Session
+        <button 
+          onClick={() => setShowArchivedSessions(true)}
+          className="mt-4 sm:mt-0 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 flex items-center gap-2"
+        >
+          <Clock size={18} />
+          Archived Sessions
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {upcomingSessions.map((session) => (
-          <div
-            key={session.id}
-            className="bg-white/10 backdrop-blur-md p-6 rounded-xl border border-[#2C2C2C] hover:border-white transition-all duration-300 shadow-md"
-          >
-            {/* Header with status */}
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full overflow-hidden">
-                  <img 
-                    src={session.mentorImage} 
-                    alt={session.mentorName}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-white">{session.mentorName}</h3>
-                  <p className="text-sm text-white/70">{session.mentorTitle}</p>
-                </div>
-              </div>
-              <span className={`px-3 py-1 rounded-full border text-xs font-medium capitalize ${getStatusColor(session.status)}`}>
-                {session.status}
-              </span>
-            </div>
+      {/* Active Sessions */}
+      {activeSessions.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold text-white mb-4">Active Sessions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {activeSessions.map(renderSessionCard)}
+          </div>
+        </div>
+      )}
 
-            {/* Session Details */}
-            <div className="space-y-3 mb-4">
-              <div className="flex items-center gap-2 text-white/80">
-                <Calendar size={16} />
-                <span className="text-sm">{session.sessionDate} • {session.sessionTime}</span>
-              </div>
-              <div className="flex items-start gap-2 text-white/80">
-                <FileText size={16} className="mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-white">{session.sessionTopic}</p>
-                  <p className="text-xs text-white/60">{session.sessionType}</p>
-                </div>
-              </div>
-            </div>
+      {/* Upcoming Sessions */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold text-white mb-4">Upcoming Sessions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {upcomingSessions.map(renderSessionCard)}
+        </div>
+      </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-2">
-              {session.status === 'available' ? (
-                <button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                  <Plus size={16} />
-                  Book Now
-                </button>
-              ) : (
-                <>
-                  <button className="flex-1 bg-white/10 hover:bg-white/20 text-white font-medium py-2 px-4 rounded-lg transition duration-200 ease-in-out flex items-center justify-center gap-2">
-                    <Eye size={16} />
-                    View Details
-                  </button>
-                  {session.status === 'confirmed' && (
-                    <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 ease-in-out flex items-center justify-center gap-2">
-                      <ExternalLink size={16} />
-                      Join Session
-                    </button>
-                  )}
-                </>  
-              )}
+      {/* Archived Sessions Modal */}
+      {showArchivedSessions && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 shadow-xl border border-white/20 w-full max-w-4xl max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-white">Archived Sessions</h2>
+              <button
+                onClick={() => setShowArchivedSessions(false)}
+                className="text-white hover:text-red-400 text-2xl font-bold"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {archivedSessions.map(renderSessionCard)}
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
