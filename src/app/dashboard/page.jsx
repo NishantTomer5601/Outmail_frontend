@@ -1280,7 +1280,147 @@ const TemplateViewerModal = ({ isOpen, onClose, template }) => {
   );
 };
 
+// Mentorship Section Component
+const MentorshipSection = () => {
+  // Mock data for mentorship sessions
+  const upcomingSessions = [
+    {
+      id: 1,
+      mentorName: "Sarah Johnson",
+      mentorTitle: "Senior Product Manager at Google",
+      mentorImage: "https://images.unsplash.com/photo-1494790108755-2616b612b4c0?w=100&h=100&fit=crop&crop=face",
+      sessionDate: "Feb 20, 2026",
+      sessionTime: "2:00 PM - 3:00 PM",
+      sessionTopic: "Product Strategy & Roadmap Planning",
+      sessionType: "1-on-1 Session",
+      status: "confirmed"
+    },
+    {
+      id: 2,
+      mentorName: "Michael Chen",
+      mentorTitle: "CTO at TechStartup Inc",
+      mentorImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+      sessionDate: "Feb 22, 2026",
+      sessionTime: "10:00 AM - 11:00 AM",
+      sessionTopic: "Technical Leadership & Team Building",
+      sessionType: "Group Session",
+      status: "pending"
+    },
+    {
+      id: 3,
+      mentorName: "Emily Rodriguez",
+      mentorTitle: "VP of Engineering at Meta",
+      mentorImage: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
+      sessionDate: "Feb 25, 2026",
+      sessionTime: "4:00 PM - 5:00 PM",
+      sessionTopic: "Career Growth & Performance Reviews",
+      sessionType: "1-on-1 Session",
+      status: "confirmed"
+    },
+    {
+      id: 4,
+      mentorName: "David Kumar",
+      mentorTitle: "Startup Founder & Investor",
+      mentorImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+      sessionDate: "Feb 28, 2026",
+      sessionTime: "6:00 PM - 7:00 PM",
+      sessionTopic: "Entrepreneurship & Fundraising",
+      sessionType: "Workshop",
+      status: "available"
+    }
+  ];
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'confirmed': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'pending': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      case 'available': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+    }
+  };
+
+  return (
+    <div className="p-4 sm:p-6 font-syne">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-10">Mentorship</h1>
+          <p className="text-white/70">Connect with industry experts and grow your career</p>
+        </div>
+        <button className="mt-4 sm:mt-0 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 flex items-center gap-2">
+          <Plus size={18} />
+          Book Session
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {upcomingSessions.map((session) => (
+          <div
+            key={session.id}
+            className="bg-white/10 backdrop-blur-md p-6 rounded-xl border border-[#2C2C2C] hover:border-white transition-all duration-300 shadow-md"
+          >
+            {/* Header with status */}
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full overflow-hidden">
+                  <img 
+                    src={session.mentorImage} 
+                    alt={session.mentorName}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white">{session.mentorName}</h3>
+                  <p className="text-sm text-white/70">{session.mentorTitle}</p>
+                </div>
+              </div>
+              <span className={`px-3 py-1 rounded-full border text-xs font-medium capitalize ${getStatusColor(session.status)}`}>
+                {session.status}
+              </span>
+            </div>
+
+            {/* Session Details */}
+            <div className="space-y-3 mb-4">
+              <div className="flex items-center gap-2 text-white/80">
+                <Calendar size={16} />
+                <span className="text-sm">{session.sessionDate} • {session.sessionTime}</span>
+              </div>
+              <div className="flex items-start gap-2 text-white/80">
+                <FileText size={16} className="mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-white">{session.sessionTopic}</p>
+                  <p className="text-xs text-white/60">{session.sessionType}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-2">
+              {session.status === 'available' ? (
+                <button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                  <Plus size={16} />
+                  Book Now
+                </button>
+              ) : (
+                <>
+                  <button className="flex-1 bg-white/10 hover:bg-white/20 text-white font-medium py-2 px-4 rounded-lg transition duration-200 ease-in-out flex items-center justify-center gap-2">
+                    <Eye size={16} />
+                    View Details
+                  </button>
+                  {session.status === 'confirmed' && (
+                    <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 ease-in-out flex items-center justify-center gap-2">
+                      <ExternalLink size={16} />
+                      Join Session
+                    </button>
+                  )}
+                </>  
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const Templates = ({ templates, handleSaveTemplate, handleUpdateTemplate, handleDeleteTemplate, handleViewTemplate }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
