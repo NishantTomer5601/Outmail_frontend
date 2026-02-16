@@ -2611,6 +2611,20 @@ export default function Page() {
     </a>
     <a
       onClick={() => {
+        setActiveSection("mentorship");
+        setIsSidebarOpen(false);
+      }}
+      className={`block transition cursor-pointer flex items-center gap-2 ${
+        activeSection === "mentorship"
+          ? "text-purple-400 font-semibold"
+          : "text-white hover:text-purple-400"
+      }`}
+    >
+      <Users size={18} />
+      Mentorship
+    </a>
+    <a
+      onClick={() => {
         setActiveSection("jobOpenings");
         setIsSidebarOpen(false);
       }}
@@ -2684,6 +2698,7 @@ export default function Page() {
         {activeSection === "campaign" && <CampaignForm templates={templates} attachments={attachments} />}
         {activeSection === "attachments" && <AttachmentManager attachments={attachments} handleUploadAttachment={handleUploadAttachment} handleDeleteAttachment={handleDeleteAttachment} handleViewAttachment={handleViewAttachment} uploadingFiles={uploadingFiles} />}
         {activeSection === "templates" && <Templates templates={templates} handleSaveTemplate={handleSaveTemplate} handleUpdateTemplate={handleUpdateTemplate} handleDeleteTemplate={handleDeleteTemplate} handleViewTemplate={handleViewTemplate} />}
+        {activeSection === "mentorship" && <MentorshipSection />}
         {activeSection === "jobOpenings" && <JobOpenings />}
         {activeSection === "settings" && <SettingsComponent />}
         {activeSection === "contact" && (
