@@ -1527,9 +1527,10 @@ const ColdOutreach = () => {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
+          ...getAuthHeaders()
         },
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -1570,8 +1571,9 @@ const ColdOutreach = () => {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          ...getAuthHeaders()
         },
+        credentials: 'include',
         body: formData,
       });
 
@@ -1608,8 +1610,9 @@ const ColdOutreach = () => {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/${templateId}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          ...getAuthHeaders()
         },
+        credentials: 'include',
         body: formData,
       });
 
@@ -1640,8 +1643,10 @@ const ColdOutreach = () => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/${templateId}`, {
           method: 'DELETE',
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
           },
+          credentials: 'include',
         });
 
         if (response.ok) {
@@ -1667,8 +1672,10 @@ const ColdOutreach = () => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/attachments/${attachmentId}`, {
           method: 'DELETE',
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
           },
+          credentials: 'include',
         });
 
         if (response.ok) {
