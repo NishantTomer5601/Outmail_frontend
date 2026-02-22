@@ -1527,8 +1527,8 @@ const ColdOutreach = () => {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates`, {
         method: 'GET',
         headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
           'Content-Type': 'application/json',
-          ...getAuthHeaders()
         },
         credentials: 'include',
       });
@@ -1571,7 +1571,7 @@ const ColdOutreach = () => {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates`, {
         method: 'POST',
         headers: {
-          ...getAuthHeaders()
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
         },
         credentials: 'include',
         body: formData,
@@ -1581,14 +1581,11 @@ const ColdOutreach = () => {
         const newTemplate = await response.json();
         setColdOutreachTemplates(prev => [...prev, newTemplate]);
         setIsCreateModalOpen(false);
-        alert('Cold outreach template created successfully!');
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to create template');
       }
     } catch (error) {
       console.error('Error creating template:', error);
-      alert('Error creating template. Please try again.');
     }
   };
 
@@ -1610,7 +1607,7 @@ const ColdOutreach = () => {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/${templateId}`, {
         method: 'PUT',
         headers: {
-          ...getAuthHeaders()
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
         },
         credentials: 'include',
         body: formData,
@@ -1640,11 +1637,11 @@ const ColdOutreach = () => {
   const handleDeleteTemplate = async (templateId) => {
     if (confirm('Are you sure you want to delete this template? This will also delete all its attachments.')) {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/${templateId}`, {
+        const response = await fetch(`${API_BASE_URL}/api/cold-outreach/templates/${templateId}`, {
           method: 'DELETE',
           headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
             'Content-Type': 'application/json',
-            ...getAuthHeaders()
           },
           credentials: 'include',
         });
@@ -1672,8 +1669,8 @@ const ColdOutreach = () => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/attachments/${attachmentId}`, {
           method: 'DELETE',
           headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
             'Content-Type': 'application/json',
-            ...getAuthHeaders()
           },
           credentials: 'include',
         });
@@ -1691,10 +1688,8 @@ const ColdOutreach = () => {
               return template;
             })
           );
-          alert('Attachment deleted successfully!');
         } else {
           const error = await response.json();
-          alert(error.error || 'Failed to delete attachment');
         }
       } catch (error) {
         console.error('Error deleting attachment:', error);
@@ -1944,9 +1939,12 @@ const ColdOutreachCreateModal = ({ isOpen, onClose, onSave }) => {
     setLoading(true);
     try {
       await onSave(formData, files);
-      // Reset form
+      // Reset form only on success
       setFormData({ name: '', subject: '', html_content: '' });
       setFiles([]);
+    } catch (error) {
+      // Don't reset form on error - keep user data
+      console.error('Error saving template:', error);
     } finally {
       setLoading(false);
     }
