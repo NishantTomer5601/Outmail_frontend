@@ -1508,6 +1508,774 @@ const MentorshipSection = () => {
   );
 };
 
+// Cold Outreach Component - combines templates + attachments management
+const ColdOutreach = () => {
+  const [coldOutreachTemplates, setColdOutreachTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [templateToEdit, setTemplateToEdit] = useState(null);
+  const [uploadingFiles, setUploadingFiles] = useState(new Set());
+  
+  const TEMPLATE_LIMIT = 3;
+  const ATTACHMENT_LIMIT_PER_TEMPLATE = 3;
+
+  // Load Cold Outreach Templates
+  const loadColdOutreachTemplates = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/cold-outreach/templates', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const templates = await response.json();
+        setColdOutreachTemplates(templates);
+      } else if (response.status === 401) {
+        window.location.href = '/';
+      } else {
+        console.error('Failed to load cold outreach templates');
+        alert('Failed to load templates. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error loading cold outreach templates:', error);
+      alert('Error loading templates. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Create Cold Outreach Template
+  const handleCreateTemplate = async (templateData, files) => {
+    try {
+      const formData = new FormData();
+      formData.append('name', templateData.name);
+      formData.append('subject', templateData.subject);
+      formData.append('html_content', templateData.html_content);
+      
+      // Add files
+      if (files && files.length > 0) {
+        files.forEach(file => {
+          formData.append('attachments', file);
+        });
+      }
+
+      const response = await fetch('/api/cold-outreach/templates', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        const newTemplate = await response.json();
+        setColdOutreachTemplates(prev => [...prev, newTemplate]);
+        setIsCreateModalOpen(false);
+        alert('Cold outreach template created successfully!');
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to create template');
+      }
+    } catch (error) {
+      console.error('Error creating template:', error);
+      alert('Error creating template. Please try again.');
+    }
+  };
+
+  // Update Cold Outreach Template
+  const handleUpdateTemplate = async (templateId, templateData, files) => {
+    try {
+      const formData = new FormData();
+      formData.append('name', templateData.name);
+      formData.append('subject', templateData.subject);
+      formData.append('html_content', templateData.html_content);
+      
+      // Add new files if any
+      if (files && files.length > 0) {
+        files.forEach(file => {
+          formData.append('attachments', file);
+        });
+      }
+
+      const response = await fetch(`/api/cold-outreach/templates/${templateId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        const updatedTemplate = await response.json();
+        setColdOutreachTemplates(prev => 
+          prev.map(template => 
+            template.id === templateId ? updatedTemplate : template
+          )
+        );
+        setIsEditModalOpen(false);
+        setTemplateToEdit(null);
+        alert('Cold outreach template updated successfully!');
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to update template');
+      }
+    } catch (error) {
+      console.error('Error updating template:', error);
+      alert('Error updating template. Please try again.');
+    }
+  };
+
+  // Delete Cold Outreach Template
+  const handleDeleteTemplate = async (templateId) => {
+    if (confirm('Are you sure you want to delete this template? This will also delete all its attachments.')) {
+      try {
+        const response = await fetch(`/api/cold-outreach/templates/${templateId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        if (response.ok) {
+          setColdOutreachTemplates(prev => 
+            prev.filter(template => template.id !== templateId)
+          );
+          alert('Template deleted successfully!');
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Failed to delete template');
+        }
+      } catch (error) {
+        console.error('Error deleting template:', error);
+        alert('Error deleting template. Please try again.');
+      }
+    }
+  };
+
+  // Delete Individual Attachment
+  const handleDeleteAttachment = async (attachmentId, templateId) => {
+    if (confirm('Are you sure you want to delete this attachment?')) {
+      try {
+        const response = await fetch(`/api/cold-outreach/attachments/${attachmentId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        if (response.ok) {
+          // Update the template in state to remove the attachment
+          setColdOutreachTemplates(prev => 
+            prev.map(template => {
+              if (template.id === templateId) {
+                return {
+                  ...template,
+                  attachments: template.attachments.filter(att => att.id !== attachmentId)
+                };
+              }
+              return template;
+            })
+          );
+          alert('Attachment deleted successfully!');
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Failed to delete attachment');
+        }
+      } catch (error) {
+        console.error('Error deleting attachment:', error);
+        alert('Error deleting attachment. Please try again.');
+      }
+    }
+  };
+
+  // Load data on component mount
+  useEffect(() => {
+    loadColdOutreachTemplates();
+  }, []);
+
+  const handleCreateNew = () => {
+    if (coldOutreachTemplates.length >= TEMPLATE_LIMIT) {
+      alert('You have reached the maximum limit of 3 cold outreach templates.');
+      return;
+    }
+    setIsCreateModalOpen(true);
+  };
+
+  const handleEditTemplate = (template) => {
+    setTemplateToEdit(template);
+    setIsEditModalOpen(true);
+  };
+
+  const isTemplateLimitReached = coldOutreachTemplates.length >= TEMPLATE_LIMIT;
+
+  // Format file size
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px] bg-gradient-to-l from-black via-[#6c00ff] to-black">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 sm:p-6 font-syne">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-10">Cold Outreach</h1>
+          <p className="text-white text-sm sm:text-base">
+            Create and manage outreach templates with attachments
+          </p>
+        </div>
+        <button
+          onClick={handleCreateNew}
+          disabled={isTemplateLimitReached}
+          className={`mt-4 sm:mt-0 text-white font-semibold py-2 px-4 rounded-lg flex items-center shadow-lg transition duration-200 ease-in-out transform ${
+            isTemplateLimitReached
+              ? "bg-gray-500 cursor-not-allowed"
+              : "bg-purple-600 hover:bg-purple-700 hover:-translate-y-0.5"
+          }`}
+        >
+          <Plus size={20} className="mr-2" />
+          {isTemplateLimitReached ? "Max 3 Allowed" : "Create Template"}
+        </button>
+      </div>
+
+      {/* Templates Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        {coldOutreachTemplates.length > 0 ? (
+          coldOutreachTemplates.map((template) => (
+            <div
+              key={template.id}
+              className="bg-white/10 backdrop-blur-md p-6 rounded-xl border border-[#2C2C2C] hover:border-white transition-all duration-300 shadow-md flex flex-col"
+            >
+              {/* Template Header */}
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center flex-1">
+                  <div className="p-2 bg-[#2C2C2C] rounded-full mr-3 text-white">
+                    <Mail size={20} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-semibold text-white truncate">
+                      {template.name}
+                    </h3>
+                    <p className="text-sm text-gray-300 truncate">
+                      {template.subject}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Template Body Preview */}
+              <div className="mb-4 flex-1">
+                <div 
+                  className="text-sm text-gray-300 bg-black/20 p-3 rounded-lg max-h-20 overflow-hidden"
+                  dangerouslySetInnerHTML={{ 
+                    __html: template.html_content.length > 100 
+                      ? template.html_content.substring(0, 100) + '...'
+                      : template.html_content 
+                  }}
+                />
+              </div>
+
+              {/* Attachments Section */}
+              {template.attachments && template.attachments.length > 0 && (
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-white mb-2 flex items-center">
+                    <Paperclip size={14} className="mr-1" />
+                    Attachments ({template.attachments.length})
+                  </h4>
+                  <div className="space-y-1">
+                    {template.attachments.map((attachment) => (
+                      <div key={attachment.id} className="flex items-center justify-between bg-black/20 p-2 rounded text-xs">
+                        <span className="text-gray-300 truncate flex-1">
+                          {attachment.original_filename}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-400">
+                            {formatFileSize(attachment.file_size)}
+                          </span>
+                          <button
+                            onClick={() => window.open(attachment.s3_path, '_blank')}
+                            className="text-purple-400 hover:text-purple-300"
+                          >
+                            <Eye size={12} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteAttachment(attachment.id, template.id)}
+                            className="text-red-400 hover:text-red-300"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Template Meta */}
+              <div className="text-xs text-gray-400 mb-4">
+                Created: {formatDate(template.created_at)}
+                {template.updated_at !== template.created_at && (
+                  <span> • Updated: {formatDate(template.updated_at)}</span>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2 mt-auto">
+                <button
+                  onClick={() => handleEditTemplate(template)}
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 flex items-center justify-center gap-1"
+                >
+                  <Edit size={16} /> Edit
+                </button>
+                <button
+                  onClick={() => handleDeleteTemplate(template.id)}
+                  className="p-2 bg-red-600 hover:bg-red-700 rounded-lg text-white transition duration-200 ease-in-out transform hover:-translate-y-0.5"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="col-span-full text-center py-12">
+            <Mail size={48} className="mx-auto text-gray-500 mb-4" />
+            <p className="text-white text-lg mb-2">No cold outreach templates yet</p>
+            <p className="text-gray-400 mb-6">Create your first template to get started with cold outreach</p>
+            <button
+              onClick={handleCreateNew}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 inline-flex items-center gap-2"
+            >
+              <Plus size={20} /> Create Your First Template
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Modals */}
+      <ColdOutreachCreateModal 
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSave={handleCreateTemplate}
+      />
+      
+      <ColdOutreachEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setTemplateToEdit(null);
+        }}
+        onUpdate={handleUpdateTemplate}
+        template={templateToEdit}
+      />
+    </div>
+  );
+};
+
+// Modal Components for Cold Outreach
+const ColdOutreachCreateModal = ({ isOpen, onClose, onSave }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    subject: '',
+    html_content: ''
+  });
+  const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleInputChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    if (files.length + selectedFiles.length > 3) {
+      alert('Maximum 3 attachments allowed per template');
+      return;
+    }
+    setFiles(prev => [...prev, ...selectedFiles]);
+  };
+
+  const removeFile = (index) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.name.trim() || !formData.subject.trim() || !formData.html_content.trim()) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await onSave(formData, files);
+      // Reset form
+      setFormData({ name: '', subject: '', html_content: '' });
+      setFiles([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    setFormData({ name: '', subject: '', html_content: '' });
+    setFiles([]);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/20">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-white">Create Cold Outreach Template</h2>
+          <button onClick={handleClose} className="text-gray-400 hover:text-white">
+            <X size={24} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Template Name *
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              placeholder="Enter template name"
+              required
+              minLength={3}
+              maxLength={100}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Email Subject *
+            </label>
+            <input
+              type="text"
+              name="subject"
+              value={formData.subject}
+              onChange={handleInputChange}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              placeholder="Enter email subject"
+              required
+              minLength={3}
+              maxLength={200}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Email Body (HTML) *
+            </label>
+            <textarea
+              name="html_content"
+              value={formData.html_content}
+              onChange={handleInputChange}
+              rows={8}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              placeholder="Enter email body HTML content"
+              required
+              minLength={10}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Attachments (Max 3 files, 10MB each)
+            </label>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              multiple
+              accept=".pdf,.doc,.docx,.txt"
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+            />
+            {files.length > 0 && (
+              <div className="mt-2 space-y-1">
+                {files.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between bg-black/20 p-2 rounded">
+                    <span className="text-sm text-gray-300">{file.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(index)}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 rounded-lg transition duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-500 text-white font-semibold py-2 rounded-lg transition duration-200 flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Creating...
+                </>
+              ) : (
+                'Create Template'
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const ColdOutreachEditModal = ({ isOpen, onClose, onUpdate, template }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    subject: '',
+    html_content: ''
+  });
+  const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  // Update form data when template changes
+  useEffect(() => {
+    if (template) {
+      setFormData({
+        name: template.name || '',
+        subject: template.subject || '',
+        html_content: template.html_content || ''
+      });
+    }
+  }, [template]);
+
+  const handleInputChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    const currentAttachmentCount = template?.attachments?.length || 0;
+    
+    if (currentAttachmentCount + files.length + selectedFiles.length > 3) {
+      alert('Maximum 3 attachments allowed per template (including existing attachments)');
+      return;
+    }
+    setFiles(prev => [...prev, ...selectedFiles]);
+  };
+
+  const removeFile = (index) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.name.trim() || !formData.subject.trim() || !formData.html_content.trim()) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await onUpdate(template.id, formData, files);
+      setFiles([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    setFiles([]);
+    onClose();
+  };
+
+  if (!isOpen || !template) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/20">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-white">Edit Cold Outreach Template</h2>
+          <button onClick={handleClose} className="text-gray-400 hover:text-white">
+            <X size={24} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Template Name *
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              placeholder="Enter template name"
+              required
+              minLength={3}
+              maxLength={100}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Email Subject *
+            </label>
+            <input
+              type="text"
+              name="subject"
+              value={formData.subject}
+              onChange={handleInputChange}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              placeholder="Enter email subject"
+              required
+              minLength={3}
+              maxLength={200}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Email Body (HTML) *
+            </label>
+            <textarea
+              name="html_content"
+              value={formData.html_content}
+              onChange={handleInputChange}
+              rows={8}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              placeholder="Enter email body HTML content"
+              required
+              minLength={10}
+            />
+          </div>
+
+          {/* Current Attachments */}
+          {template.attachments && template.attachments.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-white mb-2">
+                Current Attachments ({template.attachments.length}/3)
+              </label>
+              <div className="space-y-1 mb-3">
+                {template.attachments.map((attachment) => (
+                  <div key={attachment.id} className="flex items-center justify-between bg-black/20 p-2 rounded">
+                    <span className="text-sm text-gray-300">{attachment.original_filename}</span>
+                    <span className="text-xs text-gray-400">
+                      {(attachment.file_size / 1024 / 1024).toFixed(2)} MB
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Add New Attachments
+            </label>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              multiple
+              accept=".pdf,.doc,.docx,.txt"
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+            />
+            {files.length > 0 && (
+              <div className="mt-2 space-y-1">
+                {files.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between bg-black/20 p-2 rounded">
+                    <span className="text-sm text-gray-300">{file.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(index)}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 rounded-lg transition duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-500 text-white font-semibold py-2 rounded-lg transition duration-200 flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Updating...
+                </>
+              ) : (
+                'Update Template'
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 const Templates = ({ templates, handleSaveTemplate, handleUpdateTemplate, handleDeleteTemplate, handleViewTemplate }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -2796,44 +3564,16 @@ export default function Page() {
     </a>
     <a
       onClick={() => {
-        setActiveSection("campaign");
+        setActiveSection("coldOutreach");
         setIsSidebarOpen(false);
       }}
       className={`flex items-center gap-2 transition cursor-pointer ${
-        activeSection === "campaign"
+        activeSection === "coldOutreach"
           ? "text-purple-400 font-bold"
           : "text-white hover:text-purple-400"
       }`}
     >
-      <Mail size={16} /> Campaign
-    </a>
-    <a
-      onClick={() => {
-        setActiveSection("attachments");
-        setIsSidebarOpen(false);
-      }}
-      className={`block transition cursor-pointer flex items-center gap-2 ${
-        activeSection === "attachments"
-          ? "text-purple-400 font-semibold"
-          : "text-white hover:text-purple-400"
-      }`}
-    >
-      <Paperclip size={18} />
-      Attachments
-    </a>
-    <a
-      onClick={() => {
-        setActiveSection("templates");
-        setIsSidebarOpen(false);
-      }}
-      className={`block transition cursor-pointer flex items-center gap-2 ${
-        activeSection === "templates"
-          ? "text-purple-400 font-semibold"
-          : "text-white hover:text-purple-400"
-      }`}
-    >
-      <FileText size={18} />
-      Templates
+      <Mail size={16} /> Cold Outreach
     </a>
     <a
       onClick={() => {
@@ -2921,9 +3661,7 @@ export default function Page() {
         <Header setIsSidebarOpen={setIsSidebarOpen} isSidebarOpen={isSidebarOpen} />
         {/* Conditional rendering based on activeSection */}
         {activeSection === "dashboard" && <CombinedDashboard />}
-        {activeSection === "campaign" && <CampaignForm templates={templates} attachments={attachments} />}
-        {activeSection === "attachments" && <AttachmentManager attachments={attachments} handleUploadAttachment={handleUploadAttachment} handleDeleteAttachment={handleDeleteAttachment} handleViewAttachment={handleViewAttachment} uploadingFiles={uploadingFiles} />}
-        {activeSection === "templates" && <Templates templates={templates} handleSaveTemplate={handleSaveTemplate} handleUpdateTemplate={handleUpdateTemplate} handleDeleteTemplate={handleDeleteTemplate} handleViewTemplate={handleViewTemplate} />}
+        {activeSection === "coldOutreach" && <ColdOutreach />}
         {activeSection === "mentorship" && <MentorshipSection />}
         {activeSection === "jobOpenings" && <JobOpenings />}
         {activeSection === "settings" && <SettingsComponent />}
