@@ -1524,7 +1524,7 @@ const ColdOutreach = () => {
   const loadColdOutreachTemplates = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/cold-outreach/templates`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -1567,7 +1567,7 @@ const ColdOutreach = () => {
         });
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/cold-outreach/templates`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -1605,7 +1605,7 @@ const ColdOutreach = () => {
         });
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/cold-outreach/templates/${templateId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/${templateId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -1637,7 +1637,7 @@ const ColdOutreach = () => {
   const handleDeleteTemplate = async (templateId) => {
     if (confirm('Are you sure you want to delete this template? This will also delete all its attachments.')) {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/cold-outreach/templates/${templateId}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/${templateId}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -1664,7 +1664,7 @@ const ColdOutreach = () => {
   const handleDeleteAttachment = async (attachmentId, templateId) => {
     if (confirm('Are you sure you want to delete this attachment?')) {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/cold-outreach/attachments/${attachmentId}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/attachments/${attachmentId}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
