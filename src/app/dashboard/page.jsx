@@ -1516,6 +1516,7 @@ const ColdOutreach = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [templateToEdit, setTemplateToEdit] = useState(null);
   const [uploadingFiles, setUploadingFiles] = useState(new Set());
+  const [activatingTemplate, setActivatingTemplate] = useState(null); // Track which template is being activated
   
   const TEMPLATE_LIMIT = 3;
   const ATTACHMENT_LIMIT_PER_TEMPLATE = 3;
@@ -1622,14 +1623,11 @@ const ColdOutreach = () => {
         );
         setIsEditModalOpen(false);
         setTemplateToEdit(null);
-        alert('Cold outreach template updated successfully!');
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to update template');
       }
     } catch (error) {
       console.error('Error updating template:', error);
-      alert('Error updating template. Please try again.');
     }
   };
 
@@ -1637,7 +1635,7 @@ const ColdOutreach = () => {
   const handleDeleteTemplate = async (templateId) => {
     if (confirm('Are you sure you want to delete this template? This will also delete all its attachments.')) {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/cold-outreach/templates/${templateId}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/${templateId}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
@@ -1650,14 +1648,11 @@ const ColdOutreach = () => {
           setColdOutreachTemplates(prev => 
             prev.filter(template => template.id !== templateId)
           );
-          alert('Template deleted successfully!');
         } else {
           const error = await response.json();
-          alert(error.error || 'Failed to delete template');
         }
       } catch (error) {
         console.error('Error deleting template:', error);
-        alert('Error deleting template. Please try again.');
       }
     }
   };
@@ -1693,8 +1688,62 @@ const ColdOutreach = () => {
         }
       } catch (error) {
         console.error('Error deleting attachment:', error);
-        alert('Error deleting attachment. Please try again.');
       }
+    }
+  };
+
+  // Set Active Template
+  const handleSetActiveTemplate = async (templateId) => {
+    setActivatingTemplate(templateId);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/${templateId}/activate`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        // Refresh templates to get updated active states
+        await loadColdOutreachTemplates();
+      } else {
+        const error = await response.json();
+        console.error('Failed to activate template:', error);
+      }
+    } catch (error) {
+      console.error('Error activating template:', error);
+    } finally {
+      setActivatingTemplate(null);
+    }
+  };
+
+  // Get Active Template
+  const getActiveTemplate = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/active`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const activeTemplate = await response.json();
+        return activeTemplate;
+      } else if (response.status === 400) {
+        // No active template found
+        return null;
+      } else {
+        console.error('Failed to get active template:', response.status);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error getting active template:', error);
+      return null;
     }
   };
 
@@ -1705,7 +1754,6 @@ const ColdOutreach = () => {
 
   const handleCreateNew = () => {
     if (coldOutreachTemplates.length >= TEMPLATE_LIMIT) {
-      alert('You have reached the maximum limit of 3 cold outreach templates.');
       return;
     }
     setIsCreateModalOpen(true);
@@ -1770,7 +1818,11 @@ const ColdOutreach = () => {
           coldOutreachTemplates.map((template) => (
             <div
               key={template.id}
-              className="bg-white/10 backdrop-blur-md p-6 rounded-xl border border-[#2C2C2C] hover:border-white transition-all duration-300 shadow-md flex flex-col"
+              className={`bg-white/10 backdrop-blur-md p-6 rounded-xl border transition-all duration-300 shadow-md flex flex-col ${
+                template.is_active 
+                  ? 'border-green-500 bg-green-500/10' 
+                  : 'border-[#2C2C2C] hover:border-white'
+              }`}
             >
               {/* Template Header */}
               <div className="flex justify-between items-start mb-4">
@@ -1779,9 +1831,16 @@ const ColdOutreach = () => {
                     <Mail size={20} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-white truncate">
-                      {template.name}
-                    </h3>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-lg font-semibold text-white truncate">
+                        {template.name}
+                      </h3>
+                      {template.is_active && (
+                        <span className="px-2 py-1 bg-green-500 text-white text-xs rounded-full font-medium">
+                          Active
+                        </span>
+                      )}
+                    </div>
                     <p className="text-sm text-gray-300 truncate">
                       {template.subject}
                     </p>
@@ -1853,6 +1912,35 @@ const ColdOutreach = () => {
                 >
                   <Edit size={16} /> Edit
                 </button>
+                
+                {/* Set Active Button */}
+                <button
+                  onClick={() => handleSetActiveTemplate(template.id)}
+                  disabled={template.is_active || activatingTemplate === template.id}
+                  className={`flex-1 font-semibold py-2 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 flex items-center justify-center gap-1 ${
+                    template.is_active 
+                      ? 'bg-green-500 text-white cursor-not-allowed'
+                      : activatingTemplate === template.id
+                      ? 'bg-gray-500 text-white cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                >
+                  {activatingTemplate === template.id ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Setting...
+                    </>
+                  ) : template.is_active ? (
+                    <>
+                      <Check size={16} /> Active
+                    </>
+                  ) : (
+                    <>
+                      <Zap size={16} /> Set Active
+                    </>
+                  )}
+                </button>
+                
                 <button
                   onClick={() => handleDeleteTemplate(template.id)}
                   className="p-2 bg-red-600 hover:bg-red-700 rounded-lg text-white transition duration-200 ease-in-out transform hover:-translate-y-0.5"
@@ -1918,7 +2006,6 @@ const ColdOutreachCreateModal = ({ isOpen, onClose, onSave }) => {
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
     if (files.length + selectedFiles.length > 3) {
-      alert('Maximum 3 attachments allowed per template');
       return;
     }
     setFiles(prev => [...prev, ...selectedFiles]);
@@ -1932,7 +2019,6 @@ const ColdOutreachCreateModal = ({ isOpen, onClose, onSave }) => {
     e.preventDefault();
     
     if (!formData.name.trim() || !formData.subject.trim() || !formData.html_content.trim()) {
-      alert('Please fill in all required fields');
       return;
     }
 
@@ -2111,7 +2197,6 @@ const ColdOutreachEditModal = ({ isOpen, onClose, onUpdate, template }) => {
     const currentAttachmentCount = template?.attachments?.length || 0;
     
     if (currentAttachmentCount + files.length + selectedFiles.length > 3) {
-      alert('Maximum 3 attachments allowed per template (including existing attachments)');
       return;
     }
     setFiles(prev => [...prev, ...selectedFiles]);
@@ -2125,7 +2210,6 @@ const ColdOutreachEditModal = ({ isOpen, onClose, onUpdate, template }) => {
     e.preventDefault();
     
     if (!formData.name.trim() || !formData.subject.trim() || !formData.html_content.trim()) {
-      alert('Please fill in all required fields');
       return;
     }
 
@@ -2949,14 +3033,12 @@ export default function Page() {
           setTemplates(updatedTemplates);
         } else {
           console.error('❌ Failed to delete template:', response.status);
-          alert('Failed to delete template. Please try again.');
           if (response.status === 401) {
             window.location.href = '/';
           }
         }
       } catch (error) {
         console.error('❌ Error deleting template:', error);
-        alert('Error deleting template. Please try again.');
       }
     }
   };
