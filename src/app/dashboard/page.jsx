@@ -1818,7 +1818,7 @@ const ColdOutreach = () => {
           coldOutreachTemplates.map((template) => (
             <div
               key={template.id}
-              className={`bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-lg p-4 sm:p-6 rounded-2xl border transition-all duration-300 shadow-lg hover:shadow-xl flex flex-col min-h-[400px] w-full ${
+              className={`bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-lg p-4 sm:p-6 rounded-2xl border transition-all duration-300 shadow-lg hover:shadow-xl flex flex-col w-full overflow-hidden ${
                 template.is_active 
                   ? 'border-green-400 bg-gradient-to-br from-green-500/20 to-green-500/5 shadow-green-500/25' 
                   : 'border-purple-500/30 hover:border-purple-400/60'
@@ -1871,7 +1871,7 @@ const ColdOutreach = () => {
               </div>
 
               {/* Template Body Preview */}
-              <div className="mb-4 flex-1">
+              <div className="mb-4">
                 <h4 className="text-sm font-semibold text-white mb-2 flex items-center">
                   <FileText size={14} className="mr-2" />
                   Preview
