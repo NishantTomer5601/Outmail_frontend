@@ -1783,7 +1783,7 @@ const ColdOutreach = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px] bg-gradient-to-l from-black via-[#6c00ff] to-black">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-white/20 border-t-white"></div>
       </div>
     );
   }
@@ -1813,48 +1813,73 @@ const ColdOutreach = () => {
       </div>
 
       {/* Templates Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
         {coldOutreachTemplates.length > 0 ? (
           coldOutreachTemplates.map((template) => (
             <div
               key={template.id}
-              className={`bg-white/10 backdrop-blur-md p-6 rounded-xl border transition-all duration-300 shadow-md flex flex-col ${
+              className={`bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-lg p-4 sm:p-6 rounded-2xl border transition-all duration-300 shadow-lg hover:shadow-xl flex flex-col min-h-[400px] hover:scale-105 hover:rotate-1 ${
                 template.is_active 
-                  ? 'border-green-500 bg-green-500/10' 
-                  : 'border-[#2C2C2C] hover:border-white'
+                  ? 'border-green-400 bg-gradient-to-br from-green-500/20 to-green-500/5 shadow-green-500/25' 
+                  : 'border-purple-500/30 hover:border-purple-400/60'
               }`}
             >
               {/* Template Header */}
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center flex-1">
-                  <div className="p-2 bg-[#2C2C2C] rounded-full mr-3 text-white">
-                    <Mail size={20} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-lg font-semibold text-white truncate">
-                        {template.name}
-                      </h3>
-                      {template.is_active && (
-                        <span className="px-2 py-1 bg-green-500 text-white text-xs rounded-full font-medium">
-                          Active
-                        </span>
-                      )}
+              <div className="mb-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-3 rounded-xl text-white shadow-md ${
+                      template.is_active ? 'bg-green-500' : 'bg-gradient-to-r from-purple-600 to-purple-700'
+                    }`}>
+                      <Mail size={18} />
                     </div>
-                    <p className="text-sm text-gray-300 truncate">
-                      {template.subject}
-                    </p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-lg font-bold text-white truncate">
+                          {template.name}
+                        </h3>
+                        {template.is_active && (
+                          <span className="px-3 py-1 bg-green-500 text-white text-xs rounded-full font-bold shadow-md animate-pulse">
+                            ACTIVE
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-300 truncate font-medium">
+                        {template.subject}
+                      </p>
+                    </div>
                   </div>
                 </div>
+                
+                {/* Category Badge */}
+                {template.category && (
+                  <div className="mb-3">
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                      template.category === 'technical' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
+                      template.category === 'non-technical' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' :
+                      template.category === 'core' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
+                      template.category === 'operations' ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30' :
+                      template.category === 'sales' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
+                      template.category === 'marketing' ? 'bg-pink-500/20 text-pink-300 border border-pink-500/30' :
+                      'bg-gray-500/20 text-gray-300 border border-gray-500/30'
+                    }`}>
+                      {template.category.charAt(0).toUpperCase() + template.category.slice(1).replace('-', ' ')}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Template Body Preview */}
               <div className="mb-4 flex-1">
+                <h4 className="text-sm font-semibold text-white mb-2 flex items-center">
+                  <FileText size={14} className="mr-2" />
+                  Preview
+                </h4>
                 <div 
-                  className="text-sm text-gray-300 bg-black/20 p-3 rounded-lg max-h-20 overflow-hidden"
+                  className="text-sm text-gray-200 bg-gradient-to-r from-black/30 to-black/20 p-4 rounded-xl border border-white/10 max-h-24 overflow-hidden shadow-inner leading-relaxed font-medium"
                   dangerouslySetInnerHTML={{ 
-                    __html: template.html_content.length > 100 
-                      ? template.html_content.substring(0, 100) + '...'
+                    __html: template.html_content.length > 120 
+                      ? template.html_content.substring(0, 120) + '...'
                       : template.html_content 
                   }}
                 />
@@ -1863,31 +1888,31 @@ const ColdOutreach = () => {
               {/* Attachments Section */}
               {template.attachments && template.attachments.length > 0 && (
                 <div className="mb-4">
-                  <h4 className="text-sm font-medium text-white mb-2 flex items-center">
-                    <Paperclip size={14} className="mr-1" />
+                  <h4 className="text-sm font-semibold text-white mb-3 flex items-center">
+                    <Paperclip size={14} className="mr-2" />
                     Attachments ({template.attachments.length})
                   </h4>
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     {template.attachments.map((attachment) => (
-                      <div key={attachment.id} className="flex items-center justify-between bg-black/20 p-2 rounded text-xs">
-                        <span className="text-gray-300 truncate flex-1">
+                      <div key={attachment.id} className="flex items-center justify-between bg-gradient-to-r from-black/30 to-black/20 p-3 rounded-xl border border-white/10 text-xs shadow-md hover:shadow-lg transition-all duration-200">
+                        <span className="text-gray-200 truncate flex-1 font-medium">
                           {attachment.original_filename}
                         </span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-400">
+                        <div className="flex items-center gap-3">
+                          <span className="text-gray-400 font-medium">
                             {formatFileSize(attachment.file_size)}
                           </span>
                           <button
                             onClick={() => window.open(attachment.s3_path, '_blank')}
-                            className="text-purple-400 hover:text-purple-300"
+                            className="text-purple-400 hover:text-purple-300 p-1 rounded-full hover:bg-purple-500/20 transition-all duration-200"
                           >
-                            <Eye size={12} />
+                            <Eye size={14} />
                           </button>
                           <button
                             onClick={() => handleDeleteAttachment(attachment.id, template.id)}
-                            className="text-red-400 hover:text-red-300"
+                            className="text-red-400 hover:text-red-300 p-1 rounded-full hover:bg-red-500/20 transition-all duration-200"
                           >
-                            <Trash2 size={12} />
+                            <Trash2 size={14} />
                           </button>
                         </div>
                       </div>
@@ -1897,18 +1922,18 @@ const ColdOutreach = () => {
               )}
 
               {/* Template Meta */}
-              <div className="text-xs text-gray-400 mb-4">
-                Created: {formatDate(template.created_at)}
+              <div className="text-xs text-gray-400 mb-4 p-3 bg-black/20 rounded-lg border border-white/5">
+                <div className="font-medium">Created: {formatDate(template.created_at)}</div>
                 {template.updated_at !== template.created_at && (
-                  <span> • Updated: {formatDate(template.updated_at)}</span>
+                  <div className="font-medium mt-1">Updated: {formatDate(template.updated_at)}</div>
                 )}
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-2 mt-auto">
+              <div className="flex flex-col sm:flex-row gap-2 mt-auto">
                 <button
                   onClick={() => handleEditTemplate(template)}
-                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 flex items-center justify-center gap-1"
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg flex items-center justify-center gap-2 shadow-md"
                 >
                   <Edit size={16} /> Edit
                 </button>
@@ -1917,17 +1942,17 @@ const ColdOutreach = () => {
                 <button
                   onClick={() => handleSetActiveTemplate(template.id)}
                   disabled={template.is_active || activatingTemplate === template.id}
-                  className={`flex-1 font-semibold py-2 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 flex items-center justify-center gap-1 ${
+                  className={`flex-1 font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg flex items-center justify-center gap-2 shadow-md ${
                     template.is_active 
-                      ? 'bg-green-500 text-white cursor-not-allowed'
+                      ? 'bg-gradient-to-r from-green-500 to-green-600 text-white cursor-not-allowed'
                       : activatingTemplate === template.id
-                      ? 'bg-gray-500 text-white cursor-not-allowed'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                      ? 'bg-gradient-to-r from-gray-500 to-gray-600 text-white cursor-not-allowed'
+                      : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white'
                   }`}
                 >
                   {activatingTemplate === template.id ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/20 border-t-white"></div>
                       Setting...
                     </>
                   ) : template.is_active ? (
@@ -1943,7 +1968,7 @@ const ColdOutreach = () => {
                 
                 <button
                   onClick={() => handleDeleteTemplate(template.id)}
-                  className="p-2 bg-red-600 hover:bg-red-700 rounded-lg text-white transition duration-200 ease-in-out transform hover:-translate-y-0.5"
+                  className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl text-white transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg p-3 shadow-md"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -1990,7 +2015,8 @@ const ColdOutreachCreateModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     name: '',
     subject: '',
-    html_content: ''
+    html_content: '',
+    category: ''
   });
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -2018,7 +2044,7 @@ const ColdOutreachCreateModal = ({ isOpen, onClose, onSave }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!formData.name.trim() || !formData.subject.trim() || !formData.html_content.trim()) {
+    if (!formData.name.trim() || !formData.subject.trim() || !formData.html_content.trim() || !formData.category) {
       return;
     }
 
@@ -2026,7 +2052,7 @@ const ColdOutreachCreateModal = ({ isOpen, onClose, onSave }) => {
     try {
       await onSave(formData, files);
       // Reset form only on success
-      setFormData({ name: '', subject: '', html_content: '' });
+      setFormData({ name: '', subject: '', html_content: '', category: '' });
       setFiles([]);
     } catch (error) {
       // Don't reset form on error - keep user data
@@ -2037,7 +2063,7 @@ const ColdOutreachCreateModal = ({ isOpen, onClose, onSave }) => {
   };
 
   const handleClose = () => {
-    setFormData({ name: '', subject: '', html_content: '' });
+    setFormData({ name: '', subject: '', html_content: '', category: '' });
     setFiles([]);
     onClose();
   };
@@ -2087,6 +2113,27 @@ const ColdOutreachCreateModal = ({ isOpen, onClose, onSave }) => {
               minLength={3}
               maxLength={200}
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Template Category *
+            </label>
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleInputChange}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              required
+            >
+              <option value="" className="text-gray-400">Select template category</option>
+              <option value="technical" className="text-white">Technical</option>
+              <option value="non-technical" className="text-white">Non-Technical</option>
+              <option value="core" className="text-white">Core</option>
+              <option value="operations" className="text-white">Operations</option>
+              <option value="sales" className="text-white">Sales</option>
+              <option value="marketing" className="text-white">Marketing</option>
+            </select>
           </div>
 
           <div>
@@ -2150,7 +2197,7 @@ const ColdOutreachCreateModal = ({ isOpen, onClose, onSave }) => {
             >
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/20 border-t-white"></div>
                   Creating...
                 </>
               ) : (
@@ -2168,7 +2215,8 @@ const ColdOutreachEditModal = ({ isOpen, onClose, onUpdate, template }) => {
   const [formData, setFormData] = useState({
     name: '',
     subject: '',
-    html_content: ''
+    html_content: '',
+    category: ''
   });
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -2180,7 +2228,8 @@ const ColdOutreachEditModal = ({ isOpen, onClose, onUpdate, template }) => {
       setFormData({
         name: template.name || '',
         subject: template.subject || '',
-        html_content: template.html_content || ''
+        html_content: template.html_content || '',
+        category: template.category || ''
       });
     }
   }, [template]);
@@ -2209,7 +2258,7 @@ const ColdOutreachEditModal = ({ isOpen, onClose, onUpdate, template }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!formData.name.trim() || !formData.subject.trim() || !formData.html_content.trim()) {
+    if (!formData.name.trim() || !formData.subject.trim() || !formData.html_content.trim() || !formData.category) {
       return;
     }
 
@@ -2272,6 +2321,27 @@ const ColdOutreachEditModal = ({ isOpen, onClose, onUpdate, template }) => {
               minLength={3}
               maxLength={200}
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Template Category *
+            </label>
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleInputChange}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              required
+            >
+              <option value="" className="text-gray-400">Select template category</option>
+              <option value="technical" className="text-white">Technical</option>
+              <option value="non-technical" className="text-white">Non-Technical</option>
+              <option value="core" className="text-white">Core</option>
+              <option value="operations" className="text-white">Operations</option>
+              <option value="sales" className="text-white">Sales</option>
+              <option value="marketing" className="text-white">Marketing</option>
+            </select>
           </div>
 
           <div>
@@ -2354,7 +2424,7 @@ const ColdOutreachEditModal = ({ isOpen, onClose, onUpdate, template }) => {
             >
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/20 border-t-white"></div>
                   Updating...
                 </>
               ) : (
