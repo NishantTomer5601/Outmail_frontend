@@ -3309,8 +3309,7 @@ export default function Page() {
     const [jobOpenings, setJobOpenings] = useState([]);
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState('all'); // 'all', 'applied', 'discarded'
-    
-    // Mock job openings data - replace with your API call
+
     const mockJobOpenings = [
       {
         id: 1,
@@ -3320,10 +3319,12 @@ export default function Page() {
         type: "Full-time",
         salary: "$120k - $150k",
         posted: "2 days ago",
-        description: "We're looking for a senior frontend developer with React experience...",
-        requirements: ["5+ years React experience", "TypeScript", "Next.js", "Team leadership"],
-        status: "pending", // 'pending', 'applied', 'discarded'
-        matchScore: 95,
+        description: "We're looking for a senior frontend developer with React and TypeScript experience to lead our web platform team.",
+        requirements: ["5+ years React", "TypeScript", "Next.js", "Team leadership"],
+        status: "pending",
+        priorityScore: 92,
+        outreachSent: true,
+        signals: ["🔥 Funded Recently", "📈 Hiring Surge", "⚡ Hot Industry"],
         url: "https://example.com/job/1"
       },
       {
@@ -3334,10 +3335,12 @@ export default function Page() {
         type: "Full-time",
         salary: "$100k - $130k",
         posted: "1 day ago",
-        description: "Join our growing team as a full stack engineer working on cutting-edge...",
+        description: "Join our growing team as a full stack engineer working on cutting-edge fintech products used by thousands daily.",
         requirements: ["Node.js", "React", "PostgreSQL", "AWS"],
         status: "pending",
-        matchScore: 88,
+        priorityScore: 85,
+        outreachSent: false,
+        signals: ["💰 Series B+", "🚀 Fast Growing", "🎯 High Demand Role"],
         url: "https://example.com/job/2"
       },
       {
@@ -3348,10 +3351,12 @@ export default function Page() {
         type: "Contract",
         salary: "$80 - $100/hr",
         posted: "3 days ago",
-        description: "Remote React developer position for various client projects...",
+        description: "Remote React developer position for various high-impact client projects across SaaS and e-commerce sectors.",
         requirements: ["3+ years React", "Redux", "REST APIs", "Git"],
         status: "applied",
-        matchScore: 82,
+        priorityScore: 78,
+        outreachSent: true,
+        signals: ["🌍 Remote Friendly", "🤝 Active Recruiter", "⏰ Act Fast"],
         url: "https://example.com/job/3"
       },
       {
@@ -3362,10 +3367,12 @@ export default function Page() {
         type: "Full-time",
         salary: "$90k - $110k",
         posted: "5 days ago",
-        description: "Looking for a creative UI/UX developer to join our design team...",
+        description: "Looking for a creative UI/UX developer to shape next-generation design systems for enterprise clients.",
         requirements: ["Figma", "HTML/CSS", "JavaScript", "User research"],
         status: "discarded",
-        matchScore: 76,
+        priorityScore: 68,
+        outreachSent: false,
+        signals: ["📊 Market Leader", "🎯 High Demand Role", "🌍 Remote Friendly"],
         url: "https://example.com/job/4"
       },
       {
@@ -3376,16 +3383,65 @@ export default function Page() {
         type: "Full-time",
         salary: "$110k - $140k",
         posted: "1 week ago",
-        description: "JavaScript engineer role focusing on modern web applications...",
+        description: "JavaScript engineer role focused on building modern web applications with a strong emphasis on performance.",
         requirements: ["ES6+", "Node.js", "MongoDB", "Docker"],
         status: "pending",
-        matchScore: 91,
+        priorityScore: 88,
+        outreachSent: true,
+        signals: ["🔥 Funded Recently", "💰 Series B+", "📈 Hiring Surge"],
         url: "https://example.com/job/5"
+      },
+      {
+        id: 6,
+        title: "Backend Engineer",
+        company: "CloudBase",
+        location: "Remote",
+        type: "Full-time",
+        salary: "$105k - $135k",
+        posted: "4 days ago",
+        description: "Build and scale distributed backend services powering a fast-growing cloud infrastructure product.",
+        requirements: ["Python", "Go", "Kubernetes", "Microservices"],
+        status: "pending",
+        priorityScore: 63,
+        outreachSent: false,
+        signals: ["⚡ Hot Industry", "🚀 Fast Growing", "🤝 Active Recruiter"],
+        url: "https://example.com/job/6"
+      },
+      {
+        id: 7,
+        title: "Product Engineer",
+        company: "NexaFlow",
+        location: "Boston, MA",
+        type: "Full-time",
+        salary: "$95k - $125k",
+        posted: "6 days ago",
+        description: "Product engineer who can own features end-to-end, from design to deployment, in a fast-moving startup.",
+        requirements: ["React", "Node.js", "Product thinking", "Agile"],
+        status: "pending",
+        priorityScore: 57,
+        outreachSent: false,
+        signals: ["⏰ Act Fast", "🎯 High Demand Role", "📊 Market Leader"],
+        url: "https://example.com/job/7"
+      },
+      {
+        id: 8,
+        title: "Mobile Developer (React Native)",
+        company: "AppVault",
+        location: "Chicago, IL",
+        type: "Full-time",
+        salary: "$100k - $120k",
+        posted: "2 days ago",
+        description: "Build cross-platform mobile experiences for a consumer app with 2M+ active users.",
+        requirements: ["React Native", "TypeScript", "iOS/Android", "REST APIs"],
+        status: "pending",
+        priorityScore: 72,
+        outreachSent: false,
+        signals: ["📈 Hiring Surge", "💰 Series B+", "🌍 Remote Friendly"],
+        url: "https://example.com/job/8"
       }
     ];
 
     useEffect(() => {
-      // Simulate API call
       setLoading(true);
       setTimeout(() => {
         setJobOpenings(mockJobOpenings);
@@ -3394,31 +3450,27 @@ export default function Page() {
     }, []);
 
     const handleApply = (jobId) => {
-      setJobOpenings(prev => 
-        prev.map(job => 
-          job.id === jobId ? { ...job, status: 'applied' } : job
-        )
+      setJobOpenings(prev =>
+        prev.map(job => job.id === jobId ? { ...job, status: 'applied' } : job)
       );
-      // Here you would typically make an API call to your backend
     };
 
     const handleDiscard = (jobId) => {
-      setJobOpenings(prev => 
-        prev.map(job => 
-          job.id === jobId ? { ...job, status: 'discarded' } : job
-        )
+      setJobOpenings(prev =>
+        prev.map(job => job.id === jobId ? { ...job, status: 'discarded' } : job)
       );
-      // Here you would typically make an API call to your backend
     };
 
     const handleOpenJob = (url) => {
       window.open(url, '_blank');
     };
 
-    const filteredJobs = jobOpenings.filter(job => {
-      if (filter === 'all') return job.status === 'pending';
-      return job.status === filter;
-    });
+    const filteredJobs = jobOpenings
+      .filter(job => {
+        if (filter === 'all') return job.status === 'pending';
+        return job.status === filter;
+      })
+      .sort((a, b) => b.priorityScore - a.priorityScore);
 
     const getStatusColor = (status) => {
       switch (status) {
@@ -3436,17 +3488,162 @@ export default function Page() {
       }
     };
 
+    const getPriorityTier = (score) => {
+      if (score > 75) return { label: 'High Priority', color: 'text-red-400', dot: 'bg-red-400', border: 'border-red-500/30' };
+      if (score >= 60) return { label: 'Medium Priority', color: 'text-yellow-400', dot: 'bg-yellow-400', border: 'border-yellow-500/30' };
+      return { label: 'Standard', color: 'text-gray-400', dot: 'bg-gray-400', border: 'border-white/10' };
+    };
+
+    const getPriorityScoreColor = (score) => {
+      if (score > 75) return 'text-red-400';
+      if (score >= 60) return 'text-yellow-400';
+      return 'text-gray-400';
+    };
+
+    // Group jobs by tier for rendering with tier headers
+    const highPriority = filteredJobs.filter(j => j.priorityScore > 75);
+    const mediumPriority = filteredJobs.filter(j => j.priorityScore >= 60 && j.priorityScore <= 75);
+    const standard = filteredJobs.filter(j => j.priorityScore < 60);
+
+    const renderJobCard = (job) => {
+      const tier = getPriorityTier(job.priorityScore);
+      return (
+        <div
+          key={job.id}
+          className={`bg-white/10 backdrop-blur-md rounded-2xl p-6 border ${tier.border} hover:border-white/30 transition-all duration-300`}
+        >
+          {/* Job Header */}
+          <div className="flex justify-between items-start mb-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <h3 className="text-lg font-bold text-white">{job.title}</h3>
+                <span className={`text-xs font-medium ${getStatusColor(job.status)}`}>
+                  {getStatusText(job.status)}
+                </span>
+                {job.outreachSent && (
+                  <span className="px-2 py-0.5 bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded-full text-xs font-semibold">
+                    📧 Outreach Sent
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 text-sm text-white/60 mb-3">
+                <div className="flex items-center gap-1">
+                  <Building size={14} />
+                  {job.company}
+                </div>
+                <div className="flex items-center gap-1">
+                  <MapPin size={14} />
+                  {job.location}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Briefcase size={14} />
+                  {job.type}
+                </div>
+                <div className="flex items-center gap-1">
+                  <DollarSign size={14} />
+                  {job.salary}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock size={14} />
+                  {job.posted}
+                </div>
+              </div>
+            </div>
+
+            {/* Priority Score */}
+            <div className="ml-4 flex flex-col items-center bg-white/5 rounded-xl px-3 py-2 border border-white/10 shrink-0">
+              <span className={`text-2xl font-bold ${getPriorityScoreColor(job.priorityScore)}`}>
+                {job.priorityScore}
+              </span>
+              <span className="text-white/40 text-xs mt-0.5 whitespace-nowrap">Outmail Score</span>
+            </div>
+          </div>
+
+          {/* Signal Badges */}
+          <div className="flex flex-wrap gap-2 mb-3">
+            {job.signals.map((signal, i) => (
+              <span key={i} className="px-2 py-1 bg-purple-500/15 border border-purple-500/25 text-purple-200 rounded-full text-xs font-medium">
+                {signal}
+              </span>
+            ))}
+          </div>
+
+          {/* Description */}
+          <p className="text-white/70 text-sm mb-3 line-clamp-2">
+            {job.description}
+          </p>
+
+          {/* Requirements */}
+          <div className="mb-4">
+            <div className="flex flex-wrap gap-2">
+              {job.requirements.map((req, index) => (
+                <span key={index} className="px-2 py-1 bg-white/10 text-white/70 rounded-lg text-xs">
+                  {req}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-2">
+            {job.status === 'pending' && (
+              <>
+                <button
+                  onClick={() => handleApply(job.id)}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors text-sm"
+                >
+                  <CheckCircle size={16} /> Apply
+                </button>
+                <button
+                  onClick={() => handleDiscard(job.id)}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors text-sm"
+                >
+                  <X size={16} /> Discard
+                </button>
+              </>
+            )}
+            <button
+              onClick={() => handleOpenJob(job.url)}
+              className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors text-sm"
+            >
+              <ExternalLink size={16} /> View Details
+            </button>
+            {job.status !== 'pending' && (
+              <button
+                onClick={() => setJobOpenings(prev =>
+                  prev.map(j => j.id === job.id ? { ...j, status: 'pending' } : j)
+                )}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm"
+              >
+                Reset Status
+              </button>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    const TierHeader = ({ label, color, dot, count }) => (
+      <div className="flex items-center gap-3 mt-6 mb-3">
+        <span className={`w-2.5 h-2.5 rounded-full ${dot} shrink-0`}></span>
+        <span className={`text-sm font-bold uppercase tracking-wider ${color}`}>{label}</span>
+        <span className="text-white/30 text-xs font-medium">({count})</span>
+        <div className="flex-1 h-px bg-white/10"></div>
+      </div>
+    );
+
     return (
       <div className="p-4 sm:p-6 font-syne">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-10 text-white">Job Openings</h1>
-            <p className="text-white text-sm sm:text-base">
-              Personalized job recommendations based on your resume
+            <p className="text-white/60 text-sm sm:text-base">
+              Ranked by Outmail Priority Score · signals-backed recommendations
             </p>
           </div>
-          
+
           {/* Filter Tabs */}
           <div className="flex bg-white/10 rounded-lg p-1 mt-4 sm:mt-0">
             {['all', 'applied', 'discarded'].map((filterType) => (
@@ -3468,123 +3665,32 @@ export default function Page() {
         {/* Loading State */}
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-4 border-white/20 border-t-white"></div>
+          </div>
+        ) : filteredJobs.length === 0 ? (
+          <div className="text-center py-12">
+            <Briefcase size={48} className="text-white/50 mx-auto mb-4" />
+            <p className="text-white/70 text-lg">No job openings found for the selected filter.</p>
           </div>
         ) : (
-          /* Job Cards */
-          <div className="grid gap-6">
-            {filteredJobs.length > 0 ? (
-              filteredJobs.map((job) => (
-                <div
-                  key={job.id}
-                  className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 hover:border-white/40 transition-all duration-300"
-                >
-                  {/* Job Header */}
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-xl font-semibold text-white">{job.title}</h3>
-                        <span className={`text-sm font-medium ${getStatusColor(job.status)}`}>
-                          {getStatusText(job.status)}
-                        </span>
-                        <div className="flex items-center gap-1">
-                          <Star className="text-yellow-400 fill-current" size={16} />
-                          <span className="text-sm text-white/70">{job.matchScore}% match</span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-white/70 mb-3">
-                        <div className="flex items-center gap-1">
-                          <Building size={16} />
-                          {job.company}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MapPin size={16} />
-                          {job.location}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Briefcase size={16} />
-                          {job.type}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <DollarSign size={16} />
-                          {job.salary}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock size={16} />
-                          {job.posted}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Job Description */}
-                  <p className="text-white/80 text-sm mb-4 line-clamp-2">
-                    {job.description}
-                  </p>
-
-                  {/* Requirements */}
-                  <div className="mb-4">
-                    <h4 className="text-sm font-semibold text-white/90 mb-2">Requirements:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {job.requirements.map((req, index) => (
-                        <span
-                          key={index}
-                          className="px-2 py-1 bg-white/10 text-white/80 rounded-lg text-xs"
-                        >
-                          {req}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex flex-wrap gap-3">
-                    {job.status === 'pending' && (
-                      <>
-                        <button
-                          onClick={() => handleApply(job.id)}
-                          className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
-                        >
-                          <CheckCircle size={18} />
-                          Apply
-                        </button>
-                        <button
-                          onClick={() => handleDiscard(job.id)}
-                          className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
-                        >
-                          <X size={18} />
-                          Discard
-                        </button>
-                      </>
-                    )}
-                    
-                    <button
-                      onClick={() => handleOpenJob(job.url)}
-                      className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors"
-                    >
-                      <ExternalLink size={18} />
-                      View Details
-                    </button>
-                    
-                    {job.status !== 'pending' && (
-                      <button
-                        onClick={() => setJobOpenings(prev => 
-                          prev.map(j => j.id === job.id ? { ...j, status: 'pending' } : j)
-                        )}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-                      >
-                        Reset Status
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-12">
-                <Briefcase size={48} className="text-white/50 mx-auto mb-4" />
-                <p className="text-white/70 text-lg">No job openings found for the selected filter.</p>
-              </div>
+          <div className="grid gap-4">
+            {highPriority.length > 0 && (
+              <>
+                <TierHeader label="High Priority" color="text-red-400" dot="bg-red-400" count={highPriority.length} />
+                {highPriority.map(renderJobCard)}
+              </>
+            )}
+            {mediumPriority.length > 0 && (
+              <>
+                <TierHeader label="Medium Priority" color="text-yellow-400" dot="bg-yellow-400" count={mediumPriority.length} />
+                {mediumPriority.map(renderJobCard)}
+              </>
+            )}
+            {standard.length > 0 && (
+              <>
+                <TierHeader label="Standard" color="text-gray-400" dot="bg-gray-400" count={standard.length} />
+                {standard.map(renderJobCard)}
+              </>
             )}
           </div>
         )}
