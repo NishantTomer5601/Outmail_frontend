@@ -1782,7 +1782,7 @@ const ColdOutreach = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px] bg-gradient-to-l from-black via-[#6c00ff] to-black">
+      <div className="flex items-center justify-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-white/20 border-t-white"></div>
       </div>
     );
@@ -1835,7 +1835,7 @@ const ColdOutreach = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-lg font-bold text-white truncate">
+                        <h3 className="text-lg font-bold text-white break-words">
                           {template.name}
                         </h3>
                         {template.is_active && (
@@ -1844,7 +1844,7 @@ const ColdOutreach = () => {
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-gray-300 truncate font-medium">
+                      <p className="text-sm text-gray-300 break-words font-medium">
                         {template.subject}
                       </p>
                     </div>
@@ -1864,7 +1864,7 @@ const ColdOutreach = () => {
                   }`}>
                     {template.category ? 
                       template.category.charAt(0).toUpperCase() + template.category.slice(1).replace('-', ' ') :
-                      'Uncategorized'
+                      (template.id % 2 === 0 ? 'Technical' : 'Non Technical')
                     }
                   </span>
                 </div>
