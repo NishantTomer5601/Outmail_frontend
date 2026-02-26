@@ -1813,12 +1813,12 @@ const ColdOutreach = () => {
       </div>
 
       {/* Templates Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
         {coldOutreachTemplates.length > 0 ? (
           coldOutreachTemplates.map((template) => (
             <div
               key={template.id}
-              className={`bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-lg p-4 sm:p-6 rounded-2xl border transition-all duration-300 shadow-lg hover:shadow-xl flex flex-col min-h-[400px] hover:scale-105 hover:rotate-1 ${
+              className={`bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-lg p-4 sm:p-6 rounded-2xl border transition-all duration-300 shadow-lg hover:shadow-xl flex flex-col min-h-[400px] w-full ${
                 template.is_active 
                   ? 'border-green-400 bg-gradient-to-br from-green-500/20 to-green-500/5 shadow-green-500/25' 
                   : 'border-purple-500/30 hover:border-purple-400/60'
@@ -1852,21 +1852,22 @@ const ColdOutreach = () => {
                 </div>
                 
                 {/* Category Badge */}
-                {template.category && (
-                  <div className="mb-3">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
-                      template.category === 'technical' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
-                      template.category === 'non-technical' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' :
-                      template.category === 'core' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
-                      template.category === 'operations' ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30' :
-                      template.category === 'sales' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
-                      template.category === 'marketing' ? 'bg-pink-500/20 text-pink-300 border border-pink-500/30' :
-                      'bg-gray-500/20 text-gray-300 border border-gray-500/30'
-                    }`}>
-                      {template.category.charAt(0).toUpperCase() + template.category.slice(1).replace('-', ' ')}
-                    </span>
-                  </div>
-                )}
+                <div className="mb-3">
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                    template.category === 'technical' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
+                    template.category === 'non-technical' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' :
+                    template.category === 'core' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
+                    template.category === 'operations' ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30' :
+                    template.category === 'sales' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
+                    template.category === 'marketing' ? 'bg-pink-500/20 text-pink-300 border border-pink-500/30' :
+                    'bg-gray-500/20 text-gray-300 border border-gray-500/30'
+                  }`}>
+                    {template.category ? 
+                      template.category.charAt(0).toUpperCase() + template.category.slice(1).replace('-', ' ') :
+                      'Uncategorized'
+                    }
+                  </span>
+                </div>
               </div>
 
               {/* Template Body Preview */}
@@ -1933,7 +1934,7 @@ const ColdOutreach = () => {
               <div className="flex flex-col sm:flex-row gap-2 mt-auto">
                 <button
                   onClick={() => handleEditTemplate(template)}
-                  className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg flex items-center justify-center gap-2 shadow-md"
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out flex items-center justify-center gap-2 shadow-md"
                 >
                   <Edit size={16} /> Edit
                 </button>
@@ -1942,7 +1943,7 @@ const ColdOutreach = () => {
                 <button
                   onClick={() => handleSetActiveTemplate(template.id)}
                   disabled={template.is_active || activatingTemplate === template.id}
-                  className={`flex-1 font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg flex items-center justify-center gap-2 shadow-md ${
+                  className={`flex-1 font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out flex items-center justify-center gap-2 shadow-md ${
                     template.is_active 
                       ? 'bg-gradient-to-r from-green-500 to-green-600 text-white cursor-not-allowed'
                       : activatingTemplate === template.id
@@ -1968,7 +1969,7 @@ const ColdOutreach = () => {
                 
                 <button
                   onClick={() => handleDeleteTemplate(template.id)}
-                  className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl text-white transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg p-3 shadow-md"
+                  className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl text-white transition duration-300 ease-in-out p-3 shadow-md"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -3015,7 +3016,7 @@ export default function Page() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-l from-black via-[#6c00ff] to-black">
         <div className="text-white text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-white/20 border-t-white mx-auto mb-4"></div>
           <p className="text-lg">Loading...</p>
         </div>
       </div>
