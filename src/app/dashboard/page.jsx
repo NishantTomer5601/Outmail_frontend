@@ -942,8 +942,6 @@ const HiringSpotlight = () => {
     { name: 'Stripe', industry: 'FinTech', roles: 12, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400' },
     { name: 'OpenAI', industry: 'AI/ML', roles: 8, badge: 'new', badgeColor: 'bg-green-500/20 text-green-400' },
     { name: 'Razorpay', industry: 'FinTech', roles: 7, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400' },
-    { name: 'Notion', industry: 'SaaS', roles: 5, badge: '', badgeColor: '' },
-    { name: 'Zepto', industry: 'D2C', roles: 3, badge: 'new', badgeColor: 'bg-green-500/20 text-green-400' },
   ];
 
   return (
@@ -994,8 +992,6 @@ const RecentOutreachFeed = () => {
     { company: 'Stripe', template: 'FinTech Intro', time: '2h ago' },
     { company: 'Razorpay', template: 'FinTech Intro', time: '4h ago' },
     { company: 'Notion', template: 'SaaS Outreach', time: '6h ago' },
-    { company: 'OpenAI', template: 'AI/ML Pitch', time: '1d ago' },
-    { company: 'Zepto', template: 'Startup Growth', time: '1d ago' },
   ];
 
   return (
