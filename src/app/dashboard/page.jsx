@@ -2691,6 +2691,21 @@ const SettingsComponent = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [lastSaveTime, setLastSaveTime] = useState(0);
+  const [toast, setToast] = useState(null);
+  const [preferences, setPreferences] = useState({
+    notifyOnComplete: true,
+    dailySummary: false,
+    pauseOnWeekends: true,
+  });
+
+  const showToast = (type, message) => {
+    setToast({ type, message });
+    setTimeout(() => setToast(null), 3500);
+  };
+
+  const togglePref = (key) => {
+    setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
   // Update settings when user data changes
   useEffect(() => {
@@ -2715,34 +2730,29 @@ const SettingsComponent = () => {
   // Handle the save action for the profile information.
   const handleSave = async () => {
     if (!profileSettings.name.trim()) {
-      alert('Name cannot be empty');
+      showToast('error', 'Name cannot be empty');
       return;
     }
-    
-    // Client-side rate limiting: Prevent saves within 2 seconds of last save
     const now = Date.now();
     if (now - lastSaveTime < 2000) {
-      alert('Please wait a moment before saving again');
+      showToast('error', 'Please wait a moment before saving again');
       return;
     }
-    
     setIsLoading(true);
     setLastSaveTime(now);
-    
     try {
       const result = await updateUser({
         display_name: profileSettings.name,
         name: profileSettings.name
       });
-      
       if (result.success) {
-        alert('Profile updated successfully!');
+        showToast('success', 'Profile updated successfully!');
       } else {
-         alert('Failed to update profile: ' + result.error);
+        showToast('error', 'Failed to update profile: ' + result.error);
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('An error occurred while updating your profile.');
+      showToast('error', 'An error occurred while updating your profile.');
     } finally {
       setIsLoading(false);
     }
@@ -2750,6 +2760,17 @@ const SettingsComponent = () => {
 
   return (
     <div className="p-4 sm:p-6 font-syne">
+      {/* Inline Toast */}
+      {toast && (
+        <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-xl border text-sm font-medium ${
+          toast.type === 'success'
+            ? 'bg-green-500/20 border-green-500/40 text-green-300'
+            : 'bg-red-500/20 border-red-500/40 text-red-300'
+        }`}>
+          {toast.type === 'success' ? <Check size={16} /> : <X size={16} />}
+          {toast.message}
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-10">Settings</h1>
@@ -2861,37 +2882,94 @@ const SettingsComponent = () => {
               </div>
             </div> */}
 
-            {/* Optimal Sending Times Card */}
+            {/* Email Preferences Card */}
             <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
-              <div className="flex items-center gap-4 mb-6">
-                <h2 className="text-xl font-semibold text-white">
-                  Optimal Sending Times
-                </h2>
+              <div className="flex items-center gap-3 mb-6">
+                <Bell className="text-purple-400" size={22} />
+                <h2 className="text-xl font-semibold text-white">Email Preferences</h2>
               </div>
-              <ul className="text-gray-300 space-y-2">
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-500 font-bold">&#8226;</span>
-                  <span>Best time: 9 AM - 11 AM (weekdays)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-500 font-bold">&#8226;</span>
-                  <span>Avoid weekends and holidays</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-500 font-bold">&#8226;</span>
-                  <span>Space emails a few minutes apart</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-500 font-bold">&#8226;</span>
-                  <span>Follow-ups sent only if no reply received</span>
-                </li>
-              </ul>
+              <div className="space-y-1">
+                {[
+                  {
+                    key: 'notifyOnComplete',
+                    label: 'Notify when sending is complete',
+                    desc: 'Get a confirmation once your outreach batch finishes',
+                  },
+                  {
+                    key: 'dailySummary',
+                    label: 'Daily summary email',
+                    desc: 'Receive a daily digest of all emails sent',
+                  },
+                  {
+                    key: 'pauseOnWeekends',
+                    label: 'Pause outreach on weekends',
+                    desc: 'Automatically skip Saturday and Sunday sends',
+                  },
+                ].map((pref) => (
+                  <div
+                    key={pref.key}
+                    className="flex items-start justify-between gap-4 py-3.5 border-b border-white/5 last:border-0"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-white">{pref.label}</p>
+                      <p className="text-xs text-white/40 mt-0.5">{pref.desc}</p>
+                    </div>
+                    <button
+                      onClick={() => togglePref(pref.key)}
+                      className={`relative flex-shrink-0 w-10 h-5 rounded-full transition-colors duration-200 ${
+                        preferences[pref.key] ? 'bg-purple-600' : 'bg-white/20'
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ${
+                          preferences[pref.key] ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Sidebar column */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Preferences Card */}
+            {/* Connected Account Card */}
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
+              <div className="flex items-center gap-3 mb-5">
+                <Globe className="text-blue-400" size={20} />
+                <h2 className="text-lg font-semibold text-white">Connected Account</h2>
+              </div>
+              <div className="flex items-center gap-3 mb-4">
+                {user?.profilePicture ? (
+                  <Image
+                    src={user.profilePicture}
+                    alt="Profile"
+                    width={40}
+                    height={40}
+                    className="rounded-full flex-shrink-0"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-purple-500/30 flex items-center justify-center flex-shrink-0">
+                    <User size={20} className="text-purple-300" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-white truncate">{user?.display_name || user?.name || 'User'}</p>
+                  <p className="text-xs text-white/50 truncate">{user?.email || '—'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 mb-5">
+                <span className="w-2 h-2 rounded-full bg-green-400"></span>
+                <span className="text-xs text-green-400 font-medium">Gmail connected</span>
+              </div>
+              <button
+                onClick={() => showToast('error', 'Disconnect — please contact support to unlink your account')}
+                className="w-full py-2 rounded-lg border border-red-500/30 text-red-400 text-sm hover:bg-red-500/10 transition-colors"
+              >
+                Disconnect Account
+              </button>
+            </div>
 
             {/* Account Status Card */}
             <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
@@ -2925,6 +3003,31 @@ const SettingsComponent = () => {
                 </li>
               </ul>
             </div>
+          </div>
+        </div>
+
+        {/* Danger Zone */}
+        <div className="border border-red-500/30 bg-red-500/5 rounded-2xl p-6">
+          <div className="flex items-center gap-3 mb-1">
+            <Zap className="text-red-400" size={18} />
+            <h2 className="text-base font-semibold text-red-400">Danger Zone</h2>
+          </div>
+          <p className="text-xs text-white/40 mb-5">These actions are permanent and cannot be undone. Proceed with caution.</p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={() => showToast('error', 'Clear all data — feature coming soon')}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-red-500/30 text-red-400 text-sm hover:bg-red-500/10 transition-colors"
+            >
+              <Trash2 size={14} />
+              Clear All Templates &amp; Attachments
+            </button>
+            <button
+              onClick={() => showToast('error', 'Account deletion — please contact support@outmail.io')}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-red-500/15 border border-red-500/30 text-red-400 text-sm hover:bg-red-500/25 transition-colors"
+            >
+              <X size={14} />
+              Delete Account
+            </button>
           </div>
         </div>
       </div>
@@ -4041,69 +4144,84 @@ export default function Page() {
         {activeSection === "jobOpenings" && <JobOpenings />}
         {activeSection === "settings" && <SettingsComponent />}
         {activeSection === "contact" && (
+          <div className="p-6 sm:p-8 font-syne text-white">
+            {/* Heading + SLA badge */}
+            <div className="mb-7">
+              <div className="flex flex-wrap items-center gap-3 mb-1">
+                <h1 className="text-2xl sm:text-3xl font-bold">Contact Us</h1>
+                <span className="flex items-center gap-1.5 text-xs bg-green-500/15 border border-green-500/25 text-green-400 px-3 py-1 rounded-full font-medium">
+                  <Zap size={11} />
+                  We typically reply in &lt; 2 hours
+                </span>
+              </div>
+              <p className="text-white/50 text-sm">Choose a support category below or send us a message directly.</p>
+            </div>
 
-          <div className="flex-1 bg-transparent p-8 text-black">
- {/* Heading & Subtext */}
-<div className="text-left mb-4">
-  <h1 className="text-2xl ml-9 sm:text-3xl text-white font-bold mb-0">
-    Contact Us
-  </h1>
-  <p className="text-white ml-9 text-sm sm:text-base mt-0">
-    Fill the form below to get in touch with us. We will respond within 24 hours.
-  </p>
-</div>
+            <div className="flex flex-col lg:flex-row gap-8 max-w-6xl">
+              {/* Left Column — Support Categories */}
+              <div className="flex-1 flex flex-col gap-4">
+                {[
+                  {
+                    icon: Mail,
+                    color: 'text-purple-400',
+                    bg: 'bg-purple-500/15 border-purple-500/25',
+                    title: 'General Enquiries',
+                    desc: 'Questions about features, onboarding, or anything else about Outmail.',
+                    email: 'hello@outmail.io',
+                  },
+                  {
+                    icon: Settings,
+                    color: 'text-cyan-400',
+                    bg: 'bg-cyan-500/15 border-cyan-500/25',
+                    title: 'Technical Support',
+                    desc: 'Issues with email sending, templates, attachments, or integrations.',
+                    email: 'support@outmail.io',
+                  },
+                  {
+                    icon: CreditCard,
+                    color: 'text-amber-400',
+                    bg: 'bg-amber-500/15 border-amber-500/25',
+                    title: 'Billing & Plans',
+                    desc: 'Subscription queries, invoices, refunds, or plan upgrades.',
+                    email: 'billing@outmail.io',
+                  },
+                ].map((cat) => (
+                  <div
+                    key={cat.title}
+                    className="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors"
+                  >
+                    <div className={`p-2.5 rounded-lg border flex-shrink-0 ${cat.bg}`}>
+                      <cat.icon size={18} className={cat.color} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-white text-sm">{cat.title}</p>
+                      <p className="text-xs text-white/45 mt-0.5 mb-2 leading-relaxed">{cat.desc}</p>
+                      <a
+                        href={`mailto:${cat.email}`}
+                        className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
+                      >
+                        {cat.email}
+                      </a>
+                    </div>
+                  </div>
+                ))}
 
+                {/* Business Hours */}
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
+                  <Clock size={15} className="text-white/35 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold text-white">Business Hours</p>
+                    <p className="text-xs text-white/45">Monday – Friday &nbsp;·&nbsp; 9 AM – 6 PM IST</p>
+                  </div>
+                </div>
+              </div>
 
-
-  {/* Main container */}
- <div className="bg-transparent flex flex-col lg:flex-row items-start justify-start p-4 sm:p-6 lg:p-8 font-inter ">
-  <div className="max-w-6xl w-full bg-white/10 backdrop-blur-md shadow-lg border border-white/30 rounded-xl p-6 sm:p-8 lg:p-12 flex flex-col lg:flex-row gap-8 lg:gap-12  ">
-      
-      {/* Left Column */}
-      <div className="flex-1 flex flex-col gap-8">
-        <div className="bg-purple-200 rounded-xl h-64 w-full flex items-center justify-center text-purple-600 text-lg font-semibold">
-          Placeholder for Image/Map
-        </div>
-
-        <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 p-3 bg-purple-100 rounded-full text-purple-600">
-            <Phone className="w-5 h-5" />
+              {/* Right Column — Contact Form */}
+              <div className="flex-1">
+                <ContactForm />
+              </div>
+            </div>
           </div>
-          <div>
-            <p className="text-white font-semibold text-lg">Phone Number</p>
-            <p className="text-white">+123 456 789 101</p>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 p-3 bg-purple-100 rounded-full text-purple-600">
-            <Clock className="w-5 h-5" />
-          </div>
-          <div>
-            <p className="text-white font-semibold text-lg">Business Hours</p>
-            <p className="text-white">Monday - Friday / 8AM to 5PM</p>
-          </div>
-        </div>
-
-        <div className="flex space-x-4">
-          <a href="#" className="p-3 bg-gray-100 rounded-full text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition duration-200">
-            <Twitter className="w-5 h-5" />
-          </a>
-          <a href="#" className="p-3 bg-gray-100 rounded-full text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition duration-200">
-            <Linkedin className="w-5 h-5" />
-          </a>
-          <a href="#" className="p-3 bg-gray-100 rounded-full text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition duration-200">
-            <Instagram className="w-5 h-5" />
-          </a>
-        </div>
-      </div>
-
-      {/* Right Column */}
-      <ContactForm />
-    </div>
-  </div>
-</div>
-
         )}
       </main>
       <PdfViewerModal
