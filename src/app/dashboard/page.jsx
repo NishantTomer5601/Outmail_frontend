@@ -2991,15 +2991,15 @@ const SettingsComponent = () => {
               <ul className="mt-6 space-y-3">
                 <li className="flex items-center gap-3 text-gray-300">
                   <Check className="text-green-500" size={20} />
-                  <span>Email campaigns</span>
+                  <span>Cold outreach templates</span>
                 </li>
                 <li className="flex items-center gap-3 text-gray-300">
                   <Check className="text-green-500" size={20} />
-                  <span>Basic analytics</span>
+                  <span>Smart company targeting</span>
                 </li>
                 <li className="flex items-center gap-3 text-gray-300">
                   <Check className="text-green-500" size={20} />
-                  <span>CSV list upload</span>
+                  <span>Outmail data-powered sends</span>
                 </li>
               </ul>
             </div>
@@ -3977,7 +3977,7 @@ export default function Page() {
 
   return (
     <div
-      className="relative flex min-h-screen bg-gradient-to-l from-black via-[#6c00ff] to-black text-white font-syne overflow-hidden lg:overflow-visible"
+      className="relative flex h-screen bg-gradient-to-l from-black via-[#6c00ff] to-black text-white font-syne overflow-hidden"
       style={{
         background:
           "radial-gradient(ellipse at center, #6c00ff 0%, #0f0f2d 60%, #000 100%)",
@@ -4131,7 +4131,7 @@ export default function Page() {
 
       {/* Main Content */}
       <main
-        className={`flex-1 flex flex-col transition-all duration-300 ease-in-out lg:ml-64 h-screen overflow-y-auto ${
+        className={`flex-1 flex flex-col transition-all duration-300 ease-in-out lg:ml-64 overflow-y-auto overflow-x-hidden ${
           isSidebarOpen ? "overflow-x-hidden" : "overflow-x-hidden"
         }`}
       >
@@ -4146,7 +4146,7 @@ export default function Page() {
         {activeSection === "contact" && (
           <div className="p-6 sm:p-8 font-syne text-white">
             {/* Heading + SLA badge */}
-            <div className="mb-7">
+            <div className="mb-6">
               <div className="flex flex-wrap items-center gap-3 mb-1">
                 <h1 className="text-2xl sm:text-3xl font-bold">Contact Us</h1>
                 <span className="flex items-center gap-1.5 text-xs bg-green-500/15 border border-green-500/25 text-green-400 px-3 py-1 rounded-full font-medium">
@@ -4154,10 +4154,12 @@ export default function Page() {
                   We typically reply in &lt; 2 hours
                 </span>
               </div>
-              <p className="text-white/50 text-sm">Choose a support category below or send us a message directly.</p>
+              <p className="text-white/50 text-sm">Choose a support category or send us a message directly.</p>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-8 max-w-6xl">
+            {/* Glassmorphism card */}
+            <div className="max-w-6xl w-full bg-white/10 backdrop-blur-md shadow-lg border border-white/30 rounded-xl p-6 sm:p-8 lg:p-10 flex flex-col lg:flex-row gap-8 lg:gap-12">
+
               {/* Left Column — Support Categories */}
               <div className="flex-1 flex flex-col gap-4">
                 {[
@@ -4181,14 +4183,14 @@ export default function Page() {
                     icon: CreditCard,
                     color: 'text-amber-400',
                     bg: 'bg-amber-500/15 border-amber-500/25',
-                    title: 'Billing & Plans',
+                    title: 'Billing &amp; Plans',
                     desc: 'Subscription queries, invoices, refunds, or plan upgrades.',
                     email: 'billing@outmail.io',
                   },
                 ].map((cat) => (
                   <div
                     key={cat.title}
-                    className="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors"
+                    className="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/25 transition-colors"
                   >
                     <div className={`p-2.5 rounded-lg border flex-shrink-0 ${cat.bg}`}>
                       <cat.icon size={18} className={cat.color} />
@@ -4217,9 +4219,7 @@ export default function Page() {
               </div>
 
               {/* Right Column — Contact Form */}
-              <div className="flex-1">
-                <ContactForm />
-              </div>
+              <ContactForm />
             </div>
           </div>
         )}
