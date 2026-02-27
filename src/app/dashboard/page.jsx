@@ -2771,9 +2771,9 @@ const SettingsComponent = () => {
           {toast.message}
         </div>
       )}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-10">Settings</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-4">Settings</h1>
           <p className="text-white text-sm sm:text-base">
             Manage your account and email settings
           </p>
@@ -2782,7 +2782,7 @@ const SettingsComponent = () => {
 
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Main content column */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           <div className="lg:col-span-2 space-y-6">
             {/* Profile Information Card */}
             <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
