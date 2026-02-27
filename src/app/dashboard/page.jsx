@@ -141,58 +141,59 @@ const FundingTrends = ({ selectedPeriod, onPeriodChange }) => {
     .sort((a, b) => b.amount - a.amount)
     .slice(0, 3);
 
+  const totalFunding = fundingData.reduce((acc, d) => acc + d.amount, 0);
+
   return (
-    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-white shadow-xl border border-white/20">
-      <div className="flex justify-between items-center mb-4">
+    <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 text-white shadow-xl border border-white/20 h-full flex flex-col">
+      <div className="flex justify-between items-start mb-2">
         <div>
-          <h3 className="text-xl font-semibold flex items-center gap-2">
-            <TrendingUp size={24} className="text-green-400" />
+          <h3 className="text-sm font-semibold flex items-center gap-1.5">
+            <TrendingUp size={14} className="text-green-400" />
             Industry Funding Trends
           </h3>
-          <p className="text-sm text-white/70 mt-1">
-            Recent funding in last {selectedPeriod} days
+          <p className="text-[10px] text-white/50 mt-0.5">
+            Last {selectedPeriod} days · Total&nbsp;
+            <span className="text-green-400 font-bold">{formatAmount(totalFunding)}</span>
           </p>
         </div>
-        
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setViewType(viewType === 'bar' ? 'pie' : 'bar')}
-            className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
-            title={`Switch to ${viewType === 'bar' ? 'pie' : 'bar'} chart`}
-          >
-            <MoreHorizontal size={16} />
-          </button>
-        </div>
+        <button
+          onClick={() => setViewType(viewType === 'bar' ? 'pie' : 'bar')}
+          className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+          title={`Switch to ${viewType === 'bar' ? 'pie' : 'bar'} chart`}
+        >
+          <MoreHorizontal size={14} />
+        </button>
       </div>
 
       {loading ? (
-        <div className="h-64 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-4 border-white/20 border-t-white"></div>
         </div>
       ) : (
         <>
           {/* Chart Section */}
-          <div className="h-48 mb-4">
+          <div className="flex-1 min-h-0 mb-2" style={{ minHeight: '120px' }}>
             <ResponsiveContainer width="100%" height="100%">
               {viewType === 'bar' ? (
-                <BarChart data={fundingData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis 
-                    dataKey="industry" 
-                    tick={{ fill: 'white', fontSize: 12 }}
-                    angle={-45}
+                <BarChart data={fundingData} margin={{ top: 4, right: 4, bottom: 30, left: -10 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+                  <XAxis
+                    dataKey="industry"
+                    tick={{ fill: 'rgba(255,255,255,0.45)', fontSize: 9 }}
+                    angle={-35}
                     textAnchor="end"
-                    height={80}
+                    height={45}
+                    axisLine={false}
+                    tickLine={false}
                   />
-                  <YAxis 
-                    tick={{ fill: 'white', fontSize: 12 }}
+                  <YAxis
+                    tick={{ fill: 'rgba(255,255,255,0.45)', fontSize: 9 }}
                     tickFormatter={formatAmount}
+                    axisLine={false}
+                    tickLine={false}
                   />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Bar 
-                    dataKey="amount" 
-                    radius={[4, 4, 0, 0]}
-                  >
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
+                  <Bar dataKey="amount" radius={[3, 3, 0, 0]} maxBarSize={22}>
                     {fundingData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
@@ -204,8 +205,8 @@ const FundingTrends = ({ selectedPeriod, onPeriodChange }) => {
                     data={fundingData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={40}
-                    outerRadius={80}
+                    innerRadius={28}
+                    outerRadius={58}
                     paddingAngle={2}
                     dataKey="amount"
                   >
@@ -219,36 +220,21 @@ const FundingTrends = ({ selectedPeriod, onPeriodChange }) => {
             </ResponsiveContainer>
           </div>
 
-          {/* Compact Summary */}
-          <div className="border-t border-white/20 pt-3 space-y-3">
-            {/* Top 3 Industries */}
-            <div>
-              <h4 className="text-sm font-semibold text-white/80 mb-2">Top 3 Industries</h4>
-              <div className="flex flex-wrap gap-3">
-                {topThreeIndustries.map((industry, index) => (
-                  <div key={industry.industry} className="flex items-center gap-2">
-                    <div 
-                      className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: industry.color }}
-                    />
-                    <span className="text-xs text-white/70">{industry.industry}</span>
-                    <span className="text-xs font-bold text-green-400">
-                      {formatAmount(industry.amount)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            {/* Color Legend - Grid Layout */}
-            <div className="grid grid-cols-3 gap-x-4 gap-y-1">
-              {fundingData.map((industry) => (
-                <div key={industry.industry} className="flex items-center gap-1">
-                  <div 
-                    className="w-2 h-2 rounded-full flex-shrink-0"
+          {/* Top 3 Industries — compact chips */}
+          <div className="border-t border-white/10 pt-2">
+            <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1.5">Top Funded</p>
+            <div className="flex flex-wrap gap-1.5">
+              {topThreeIndustries.map((industry, index) => (
+                <div
+                  key={industry.industry}
+                  className="flex items-center gap-1 bg-white/5 rounded-full px-2 py-0.5 border border-white/10"
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                     style={{ backgroundColor: industry.color }}
                   />
-                  <span className="text-xs text-white/60 truncate">{industry.industry}</span>
+                  <span className="text-[10px] text-white/70">{industry.industry}</span>
+                  <span className="text-[10px] font-bold text-green-400">{formatAmount(industry.amount)}</span>
                 </div>
               ))}
             </div>
@@ -814,244 +800,187 @@ const Card = ({ title, value, percentage, icon }) => {
 };
 
 // TopHorizontalCards Component
-const TopHorizontalCards = ({ selectedPeriod, onPeriodChange }) => {
-  return (
-    <div className="flex flex-col gap-4 font-syne text-white">
-     <div className="relative  mt-3 inline-block">
-  <select
-    className="bg-[#2C2C2C] text-gray-300 px-2   ml-70 sm:px-3 py-1 rounded appearance-none pr-8 text-xs sm:text-sm"
-    value={`${selectedPeriod} days`}
-    onChange={(e) => onPeriodChange(e.target.value.split(' ')[0])}
-  >
-    <option value="7 days">7 days</option>
-    <option value="15 days">15 days</option>
-    <option value="30 days">30 days</option>
-  </select>
-  
-  <div className="pointer-events-none absolute  mr-1 inset-y-0 right-2 flex items-center">
-    <ChevronDown className="h-4 w-4 text-gray-300" />
-  </div>
-</div>
-      {/* Card 1: Acceptance Rate */}
-      <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 flex flex-col items-center justify-center shadow-lg border border-white/10 mt-2">
+// Outreach Stat Pills — Row 1 of new overview
+const OutreachStatPills = ({ selectedPeriod }) => {
+  const sentByPeriod = { '7': '145', '15': '312', '30': '624' };
+  const stats = [
+    {
+      label: `Emails Sent (${selectedPeriod}d)`,
+      value: sentByPeriod[selectedPeriod] || '145',
+      icon: Mail,
+      color: 'text-purple-400',
+      bg: 'bg-purple-500/15',
+      border: 'border-purple-500/25',
+    },
+    {
+      label: 'Total Emails Sent',
+      value: '1,465',
+      icon: TrendingUp,
+      color: 'text-green-400',
+      bg: 'bg-green-500/15',
+      border: 'border-green-500/25',
+    },
+    {
+      label: 'Companies Targeted',
+      value: '48',
+      icon: Building,
+      color: 'text-cyan-400',
+      bg: 'bg-cyan-500/15',
+      border: 'border-cyan-500/25',
+    },
+    {
+      label: 'Active Template',
+      value: 'Tech Intro v2',
+      icon: FileText,
+      color: 'text-amber-400',
+      bg: 'bg-amber-500/15',
+      border: 'border-amber-500/25',
+      truncate: true,
+    },
+  ];
 
-        <h2 className="text-lg font-semibold text-white mb-1 ">
-          Email Success Rate 
-        </h2>
-        <div className="relative w-28 h-28">
-          <svg className="w-full h-full" viewBox="0 0 100 100">
-            <circle
-              className="text-white/20 stroke-current"
-              strokeWidth="8"
-              cx="50"
-              cy="50"
-              r="40"
-              fill="transparent"
-            ></circle>
-            <circle
-              className="text-purple-500 stroke-current"
-              strokeWidth="8"
-              strokeLinecap="round"
-              cx="50"
-              cy="50"
-              r="40"
-              fill="transparent"
-              strokeDasharray="251.2"
-              strokeDashoffset="12.56"
-            ></circle>
-          </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-2xl font-bold text-purple-500">95%</span>
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {stats.map((stat) => (
+        <div
+          key={stat.label}
+          className={`${stat.bg} ${stat.border} border backdrop-blur-md rounded-xl p-3 flex items-center gap-3`}
+        >
+          <div className="p-2 rounded-lg bg-white/10 flex-shrink-0">
+            <stat.icon size={15} className={stat.color} />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] text-white/50 uppercase tracking-wide leading-tight">{stat.label}</p>
+            <p className={`text-sm font-bold mt-0.5 ${stat.color} ${stat.truncate ? 'truncate' : ''}`}>{stat.value}</p>
           </div>
         </div>
-      </div>
+      ))}
+    </div>
+  );
+};
 
-      {/* Card 2: Referral Tracking */}
-      <div className="rounded-xl p-4 flex flex-col shadow-xl border border-white/20 backdrop-blur-md bg-white/10">
-        <div className="flex justify-between items-center mb-1">
-          <h2 className="text-lg font-semibold text-white">
-            Statistics
-          </h2>
-          <button className="p-1 bg-white/10 hover:bg-white/20 rounded-full transition">
-            <MoreHorizontal size={16} className="text-white/80" />
-          </button>
+// Daily Outreach Chart — emails sent per day bar chart
+const DailyOutreachChart = ({ selectedPeriod }) => {
+  const chartData = {
+    '7': [
+      { day: 'Mon', sent: 18 },
+      { day: 'Tue', sent: 24 },
+      { day: 'Wed', sent: 15 },
+      { day: 'Thu', sent: 28 },
+      { day: 'Fri', sent: 32 },
+      { day: 'Sat', sent: 12 },
+      { day: 'Sun', sent: 16 },
+    ],
+    '15': [
+      { day: 'D1', sent: 18 }, { day: 'D2', sent: 24 }, { day: 'D3', sent: 15 },
+      { day: 'D4', sent: 28 }, { day: 'D5', sent: 32 }, { day: 'D6', sent: 12 },
+      { day: 'D7', sent: 16 }, { day: 'D8', sent: 22 }, { day: 'D9', sent: 31 },
+      { day: 'D10', sent: 19 }, { day: 'D11', sent: 25 }, { day: 'D12', sent: 38 },
+      { day: 'D13', sent: 9 }, { day: 'D14', sent: 21 }, { day: 'D15', sent: 26 },
+    ],
+    '30': [
+      { day: 'W1', sent: 98 },
+      { day: 'W2', sent: 124 },
+      { day: 'W3', sent: 156 },
+      { day: 'W4', sent: 112 },
+      { day: 'W5', sent: 134 },
+    ],
+  };
+
+  const data = chartData[selectedPeriod] || chartData['7'];
+
+  const DailyTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-[#1a1024] border border-white/20 rounded-lg px-3 py-2 shadow-xl">
+          <p className="text-[10px] text-white/50">{label}</p>
+          <p className="text-sm font-bold text-purple-400">{payload[0].value} emails</p>
         </div>
+      );
+    }
+    return null;
+  };
 
-        <div className="flex flex-row items-center justify-between gap-4">
-          <div>
-            <p className="text-xs text-white/60">Total mails sent in last {selectedPeriod} days</p>
-            <p className="text-xl font-bold text-white">145</p>
-            <p className="text-xs text-white/60 mt-2">Total mails Sent till date</p>
-            <p className="text-xl font-bold text-white">1,465</p>
-          </div>
-
-          <div className="relative w-24 h-24 flex-shrink-0">
-            <svg className="w-full h-full" viewBox="0 0 100 100">
-              <circle
-                className="text-white/20 stroke-current"
-                strokeWidth="8"
-                cx="50"
-                cy="50"
-                r="40"
-                fill="transparent"
-              ></circle>
-              <circle
-                className="text-green-400 stroke-current"
-                strokeWidth="8"
-                strokeLinecap="round"
-                cx="50"
-                cy="50"
-                r="40"
-                fill="transparent"
-                strokeDasharray="251.2"
-                strokeDashoffset="17.584"
-              ></circle>
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-xl font-bold text-green-400">9.3</span>
-              <span className="text-[10px] text-white/60">Score</span>
-            </div>
-          </div>
+  return (
+    <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 h-full flex flex-col">
+      <div className="flex justify-between items-center mb-3">
+        <div>
+          <h3 className="text-sm font-semibold text-white">Daily Outreach Activity</h3>
+          <p className="text-[11px] text-white/40">Emails sent per day</p>
         </div>
+        <span className="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full border border-purple-500/20">
+          Last {selectedPeriod}d
+        </span>
+      </div>
+      <div className="flex-1 min-h-0">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+            <XAxis
+              dataKey="day"
+              tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <Tooltip content={<DailyTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
+            <Bar dataKey="sent" fill="#8B5CF6" radius={[3, 3, 0, 0]} maxBarSize={28} />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
 };
 
-// SalesOverview Component - now includes Funding Trends
-const SalesOverview = ({ selectedPeriod, onPeriodChange, userName }) => {
-  return (
-    <div>
-      {/* Welcome text with dynamic user name */}
-      <h2 className="text-2xl font-bold text-white mb-8">
-        Welcome {userName || 'User'}!
-      </h2>
-  
-      {/* Updated to use FundingTrends component */}
-      <FundingTrends selectedPeriod={selectedPeriod} onPeriodChange={onPeriodChange} />
-    </div>
-  );
-};
-
-// ActiveUsers Component
-const ActiveUsers = () => {
-  return (
-    <div className="bg-white/7 backdrop-blur-md rounded-2xl p-6 text-white shadow-xl border border-white/20">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-semibold">Active Users</h3>
-        <MoreHorizontal size={20} className="text-white/70" />
-      </div>
-      <p className="text-sm text-white/70 mb-4">
-        <span className="text-green-400">+23</span> from last week
-      </p>
-      <div className="h-48">
-        <ChartComponent type="bar" title="Active Users" />
-      </div>
-    </div>
-  );
-};
-
-// Projects Component
-const Projects = () => {
-  const projects = []; // Empty as per your code
+// Hiring Spotlight — compact companies actively hiring
+const HiringSpotlight = () => {
+  const hiringCompanies = [
+    { name: 'Stripe', industry: 'FinTech', roles: 12, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400' },
+    { name: 'OpenAI', industry: 'AI/ML', roles: 8, badge: 'new', badgeColor: 'bg-green-500/20 text-green-400' },
+    { name: 'Razorpay', industry: 'FinTech', roles: 7, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400' },
+    { name: 'Notion', industry: 'SaaS', roles: 5, badge: '', badgeColor: '' },
+    { name: 'Zepto', industry: 'D2C', roles: 3, badge: 'new', badgeColor: 'bg-green-500/20 text-green-400' },
+  ];
 
   return (
-    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-white shadow-lg border border-white/10 col-span-2">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-semibold">Applied Companies</h3>
-        <p className="text-sm text-green-400">+30 done this month</p>
-        <MoreHorizontal size={20} className="text-white/70" />
+    <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 h-full flex flex-col">
+      <div className="flex justify-between items-center mb-3">
+        <div>
+          <h3 className="text-sm font-semibold text-white flex items-center gap-1.5">
+            <Briefcase size={13} className="text-amber-400" />
+            Companies Hiring Now
+          </h3>
+          <p className="text-[11px] text-white/40">Based on your targeted sectors</p>
+        </div>
+        <span className="text-[10px] text-white/30">
+          {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+        </span>
       </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-left">
-          <thead>
-            <tr className="border-b border-white/10">
-              <th className="px-4 py-2 text-sm text-white/60">COMPANIES</th>
-              <th className="px-4 py-2 text-sm text-white/60">MEMBERS</th>
-              <th className="px-4 py-2 text-sm text-white/60">BUDGET</th>
-              <th className="px-4 py-2 text-sm text-white/60">COMPLETION</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map((project) => (
-              <tr
-                key={project.id}
-                className="border-b border-white/5 last:border-b-0"
-              >
-                <td className="px-4 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
-                  <Square size={16} className="text-purple-500" />
-                  {project.name}
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-white/80 flex items-center gap-1">
-                  <span className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs">
-                    M
-                  </span>
-                  <span className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs">
-                    S
-                  </span>
-                  <span className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs">
-                    J
-                  </span>
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-white/80">
-                  {project.budget}
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-24 bg-white/20 rounded-full h-2.5">
-                      <div
-                        className="bg-purple-500 h-2.5 rounded-full"
-                        style={{ width: `${project.completion}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-white/70">
-                      {project.completion}%
-                    </span>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
-
-// OrdersOverview Component
-const OrdersOverview = () => {
-  const orders = []; // Empty as per your code
-
-  return (
-    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-white shadow-lg border border-white/10">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-semibold"> overview</h3>
-        <p className="text-sm text-green-400">+30% this month</p>
-        <MoreHorizontal size={20} className="text-gray-400" />
-      </div>
-      <div className="space-y-4">
-        {orders.map((order, index) => (
+      <div className="flex-1 overflow-hidden space-y-1">
+        {hiringCompanies.map((company, i) => (
           <div
-            key={order.id}
-            className="flex items-start gap-4 border-b border-gray-800 pb-4 last:border-b-0 last:pb-0"
+            key={company.name}
+            className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0"
           >
-            <div className="mt-1">
-              {index === 0 && (
-                <CheckCircle size={20} className="text-green-500" />
+            <div className="flex items-center gap-2.5">
+              <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px] text-white/50 font-bold flex-shrink-0">
+                {i + 1}
+              </span>
+              <div className="min-w-0">
+                <span className="text-xs font-semibold text-white">{company.name}</span>
+                <span className="text-[10px] text-white/40 ml-1.5">{company.industry}</span>
+              </div>
+              {company.badge && (
+                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wide ${company.badgeColor}`}>
+                  {company.badge}
+                </span>
               )}
-              {index === 1 && <Plus size={20} className="text-red-500" />}
-              {index === 2 && (
-                <ShoppingCart size={20} className="text-blue-500" />
-              )}
-              {index === 3 || index === 4 ? (
-                <File size={20} className="text-purple-500" />
-              ) : null}
-              {index === 5 && <Plus size={20} className="text-red-500" />}
             </div>
-            <div>
-              <p className="text-white font-medium">{order.title}</p>
-              <p className="text-sm text-gray-400">{order.date}</p>
-            </div>
+            <span className="text-[11px] text-white/50 flex-shrink-0">{company.roles} roles</span>
           </div>
         ))}
       </div>
@@ -1059,41 +988,92 @@ const OrdersOverview = () => {
   );
 };
 
-// **Corrected CombinedDashboard Component**
-const CombinedDashboard = () => {
-  // Get user data from auth context
-  const { user } = useAuth();
-  
-  // State to manage the selected time period
-  const [selectedPeriod, setSelectedPeriod] = useState('7');
-
-  const handlePeriodChange = (period) => {
-    setSelectedPeriod(period);
-  };
+// Recent Outreach Feed — last 5 emails sent
+const RecentOutreachFeed = () => {
+  const activities = [
+    { company: 'Stripe', template: 'FinTech Intro', time: '2h ago' },
+    { company: 'Razorpay', template: 'FinTech Intro', time: '4h ago' },
+    { company: 'Notion', template: 'SaaS Outreach', time: '6h ago' },
+    { company: 'OpenAI', template: 'AI/ML Pitch', time: '1d ago' },
+    { company: 'Zepto', template: 'Startup Growth', time: '1d ago' },
+  ];
 
   return (
-    <div className="flex-1 flex flex-col p-6 overflow-y-auto">
-      {" "}
-      {/* Added overflow-y-auto to allow scrolling within this specific component */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Sales Overview and Projects (Left side) */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          <SalesOverview 
-            selectedPeriod={selectedPeriod} 
-            onPeriodChange={handlePeriodChange}
-            userName={user?.display_name || user?.name}
-          />
-          <Projects />
-        </div>
+    <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 h-full flex flex-col">
+      <div className="mb-3">
+        <h3 className="text-sm font-semibold text-white flex items-center gap-1.5">
+          <Clock size={13} className="text-cyan-400" />
+          Recent Outreach
+        </h3>
+        <p className="text-[11px] text-white/40">Last 5 emails sent</p>
+      </div>
+      <div className="flex-1 overflow-hidden space-y-1">
+        {activities.map((activity, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-2.5 py-1.5 border-b border-white/5 last:border-0"
+          >
+            <div className="w-7 h-7 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+              <Mail size={12} className="text-purple-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-white truncate">{activity.company}</p>
+              <p className="text-[10px] text-white/40 truncate">{activity.template}</p>
+            </div>
+            <span className="text-[10px] text-white/35 flex-shrink-0">{activity.time}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
-        {/* Top Cards and Active Users (Right side) */}
-        <div className="lg:col-span-1 flex flex-col gap-6">
-          <TopHorizontalCards 
-            selectedPeriod={selectedPeriod} 
-            onPeriodChange={handlePeriodChange} 
-          />
-          <ActiveUsers />
+// **Redesigned CombinedDashboard — single-screen command centre**
+const CombinedDashboard = () => {
+  const { user } = useAuth();
+  const [selectedPeriod, setSelectedPeriod] = useState('7');
+
+  return (
+    <div className="flex-1 flex flex-col p-5 gap-4 overflow-hidden min-h-0">
+      {/* Row 1: Welcome + Period Selector + Stat Pills */}
+      <div className="flex flex-col gap-2.5">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-white">
+            Welcome back,{' '}
+            <span className="text-purple-400">{user?.display_name || user?.name || 'User'}</span> 👋
+          </h2>
+          <div className="relative inline-block">
+            <select
+              className="bg-white/10 text-gray-300 px-3 py-1.5 rounded-lg appearance-none pr-7 text-xs border border-white/10"
+              value={selectedPeriod}
+              onChange={(e) => setSelectedPeriod(e.target.value)}
+            >
+              <option value="7">Last 7 days</option>
+              <option value="15">Last 15 days</option>
+              <option value="30">Last 30 days</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+              <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
+            </div>
+          </div>
         </div>
+        <OutreachStatPills selectedPeriod={selectedPeriod} />
+      </div>
+
+      {/* Row 2: Daily Outreach Chart (left 3/5) + Funding Trends (right 2/5) */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 flex-1 min-h-0">
+        <div className="lg:col-span-3 min-h-0">
+          <DailyOutreachChart selectedPeriod={selectedPeriod} />
+        </div>
+        <div className="lg:col-span-2 min-h-0">
+          <FundingTrends selectedPeriod={selectedPeriod} onPeriodChange={setSelectedPeriod} />
+        </div>
+      </div>
+
+      {/* Row 3: Companies Hiring (left) + Recent Outreach Feed (right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" style={{ height: '200px' }}>
+        <HiringSpotlight />
+        <RecentOutreachFeed />
       </div>
     </div>
   );
