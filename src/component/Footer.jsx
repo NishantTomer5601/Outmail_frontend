@@ -28,7 +28,7 @@ export default function Footer() {
                 <div>
                   <div className="flex items-center gap-2 text-2xl font-bold mb-4">
                     <Image src="/Logo_Outmail.png" alt="Outmail Logo" width={40} height={40} />
-                    <span className="text-white">Outmail</span>
+                    <span className="text-white" style={{ fontFamily: 'var(--font-satisfy)', fontSize: '1.6rem' }}>Outmail</span>
                   </div>
 
                   <p className="text-white/70 text-sm leading-relaxed max-w-md mb-6">

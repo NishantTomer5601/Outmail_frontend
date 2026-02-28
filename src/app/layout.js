@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Satisfy } from 'next/font/google';
 import { Syne } from 'next/font/google';
 import './globals.css';
 import SmoothScrollWrapper from '@/component/SmoothScrollWrapper';
@@ -21,6 +21,12 @@ const syne = Syne({
   variable: '--font-syne',
 });
 
+const satisfy = Satisfy({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-satisfy',
+});
+
 export const metadata = {
   title: 'Outmail',
   description: 'Created by Outmail.in',
@@ -38,7 +44,7 @@ export default function RootLayout({ children }) {
         <link rel="apple-touch-icon" href="/Logo_Outmail.png" />
         <title>Outmail</title>
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${syne.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${syne.variable} ${satisfy.variable} antialiased`}>
         <AuthProvider>
           <SmoothScrollWrapper>
             <div>
