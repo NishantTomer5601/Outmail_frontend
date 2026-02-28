@@ -77,7 +77,7 @@ export default function Sidebar({ isOpen, onClose, userRole = 'STUDENT' }) {
             <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">O</span>
             </div>
-            <span className={`text-xl text-gray-900 ${!isOpen ? 'lg:hidden' : ''}`} style={{ fontFamily: 'var(--font-satisfy)', fontSize: '1.4rem' }}>
+            <span className={`font-satisfy text-xl text-gray-900 ${!isOpen ? 'lg:hidden' : ''}`}>
               Outmail
             </span>
           </div>
