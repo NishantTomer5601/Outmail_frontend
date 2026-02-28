@@ -4010,8 +4010,8 @@ export default function Page() {
       >
        <div className="flex flex-col">
   <div className="flex justify-between items-center mb-8">
-    <h1 className="text-2xl font-bold font-syne">
-      Out<span className="text-purple-500">mail</span>
+    <h1 className="text-2xl font-satisfy">
+      Outmail
     </h1>
     <button
       onClick={() => setIsSidebarOpen(false)}
