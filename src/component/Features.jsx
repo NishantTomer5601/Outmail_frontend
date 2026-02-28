@@ -1,27 +1,27 @@
 import React from 'react';
-import { ShieldCheck, BarChart2, Settings, Zap } from 'lucide-react';
+import { BarChart2, Zap, Briefcase, Users } from 'lucide-react';
 
 export default function Features() {
   const features = [
     {
       icon: <Zap size={28} className="text-white" />,
-      title: 'Automated Email Outreach',
-      desc: 'Send personalized emails to recruiters at scale, directly from your Gmail.',
-    },
-    {
-      icon: <Settings size={28} className="text-white" />,
-      title: 'Personalization Made Easy',
-      desc: 'Create and manage multiple email templates to craft the perfect message for every company, role, and industry — no guesswork.',
+      title: 'Smart Automated Cold Outreach',
+      desc: 'Send personalized emails to recruiters at scale, directly from your Gmail — safely throttled and fully automated.',
     },
     {
       icon: <BarChart2 size={28} className="text-white" />,
-      title: 'Data-Powered Targeting',
-      desc: 'Outmail tracks live hiring signals, recent funding rounds, and industry trends to surface the most relevant companies — no manual lists needed.',
+      title: 'Live Hiring Intelligence',
+      desc: 'Stay ahead with real-time funding trends, hot-hiring news, and hiring spotlights — so you always know where the opportunities are.',
     },
     {
-      icon: <ShieldCheck size={28} className="text-white" />,
-      title: 'Privacy & Safety First',
-      desc: 'Your Gmail is protected with OAuth-secured access, built-in sending throttles, and encrypted tokens. Your data is never shared or sold.',
+      icon: <Briefcase size={28} className="text-white" />,
+      title: 'Curated Job Openings',
+      desc: 'Browse roles ranked by an Outmail Priority Score — surfaced based on hiring urgency, company momentum, and recent funding signals.',
+    },
+    {
+      icon: <Users size={28} className="text-white" />,
+      title: 'Mentorship Sessions',
+      desc: 'Connect with experienced professionals and alumni for live guidance on interviews, career paths, and building the right outreach strategy.',
     },
   ];
 
@@ -32,9 +32,9 @@ export default function Features() {
       <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
         {/* Left Side */}
         <div className="text-white">
-          <p className="text-sm font-medium text-indigo-300 uppercase tracking-wider mb-2">Why Outmail Stands Out</p>
+          <p className="text-sm font-medium text-indigo-300 uppercase tracking-wider mb-2">Everything You Need to Land the Job</p>
           <h2 className="text-4xl font-bold mb-10">
-            Smarter Job Outreach, Built for You
+            One Platform. Every Edge You Need.
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
