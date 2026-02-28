@@ -175,7 +175,7 @@ const FundingTrends = ({ selectedPeriod, onPeriodChange }) => {
           <div className="flex-1 min-h-0 mb-2" style={{ minHeight: '180px' }}>
             <ResponsiveContainer width="100%" height="100%">
               {viewType === 'bar' ? (
-                <BarChart data={fundingData} margin={{ top: 4, right: 4, bottom: 30, left: -10 }}>
+                <BarChart data={fundingData} margin={{ top: 4, right: 4, bottom: 30, left: -10 }} barCategoryGap="15%">
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
                   <XAxis
                     dataKey="industry"
@@ -193,7 +193,7 @@ const FundingTrends = ({ selectedPeriod, onPeriodChange }) => {
                     tickLine={false}
                   />
                   <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
-                  <Bar dataKey="amount" radius={[3, 3, 0, 0]} maxBarSize={22}>
+                  <Bar dataKey="amount" radius={[4, 4, 0, 0]} maxBarSize={52}>
                     {fundingData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
@@ -2897,8 +2897,8 @@ const SettingsComponent = () => {
                   },
                   {
                     key: 'dailySummary',
-                    label: 'Daily summary email',
-                    desc: 'Receive a daily digest of all emails sent',
+                    label: 'Weekly outreach summary',
+                    desc: 'Get a weekly digest of your outreach stats delivered to your inbox',
                   },
                   {
                     key: 'pauseOnWeekends',
@@ -2984,9 +2984,6 @@ const SettingsComponent = () => {
               <div className="flex flex-col items-center text-center">
                 <User className="text-gray-400 mb-2" size={40} />
                 <span className="text-lg font-bold text-white">Pro Plan</span>
-                <span className="text-sm text-gray-400 mt-1">
-                  50 emails/day limit
-                </span>
               </div>
               <ul className="mt-6 space-y-3">
                 <li className="flex items-center gap-3 text-gray-300">
@@ -3000,6 +2997,14 @@ const SettingsComponent = () => {
                 <li className="flex items-center gap-3 text-gray-300">
                   <Check className="text-green-500" size={20} />
                   <span>Outmail data-powered sends</span>
+                </li>
+                <li className="flex items-center gap-3 text-gray-300">
+                  <Check className="text-green-500" size={20} />
+                  <span>Mentorship session access</span>
+                </li>
+                <li className="flex items-center gap-3 text-gray-300">
+                  <Check className="text-green-500" size={20} />
+                  <span>Priority job recommendations</span>
                 </li>
               </ul>
             </div>
@@ -3022,7 +3027,7 @@ const SettingsComponent = () => {
               Clear All Templates &amp; Attachments
             </button>
             <button
-              onClick={() => showToast('error', 'Account deletion — please contact support@outmail.io')}
+              onClick={() => showToast('error', 'Account deletion — please contact support@outmail.in')}
               className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-red-500/15 border border-red-500/30 text-red-400 text-sm hover:bg-red-500/25 transition-colors"
             >
               <X size={14} />
@@ -3928,15 +3933,29 @@ export default function Page() {
 
 
     {/* Glassmorphism Card */}
-    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 sm:p-8 shadow-xl border border-white/20  ">
-      <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 sm:p-8 shadow-xl border border-white/20">
+      <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
         Get In Touch
       </h2>
-      
-      <p className="text-white mb-8 leading-relaxed">
-        Facilisis commodo mattis neque nulla ultrices mattis sed. Ullamcorper
-        tempus mattis ac tristique gravida ornare faucibus suspendisse.
+
+      <p className="text-white/70 mb-6 leading-relaxed text-sm">
+        Have a question, found a bug, or want to explore a partnership? We’d love to hear from you. Fill in your message and our team will get back to you promptly.
       </p>
+
+      <div className="flex flex-col gap-3 mb-6">
+        <div className="flex items-start gap-2.5">
+          <Check size={15} className="text-purple-400 mt-0.5 flex-shrink-0" />
+          <p className="text-white/60 text-xs">All support requests are triaged within 2 business hours.</p>
+        </div>
+        <div className="flex items-start gap-2.5">
+          <Check size={15} className="text-purple-400 mt-0.5 flex-shrink-0" />
+          <p className="text-white/60 text-xs">For urgent technical issues, reach us directly at <a href="mailto:support@outmail.in" className="text-purple-400 hover:underline">support@outmail.in</a>.</p>
+        </div>
+        <div className="flex items-start gap-2.5">
+          <Check size={15} className="text-purple-400 mt-0.5 flex-shrink-0" />
+          <p className="text-white/60 text-xs">Partnership and enterprise enquiries are handled by our growth team.</p>
+        </div>
+      </div>
 
       {/* Contact Form */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -4169,7 +4188,7 @@ export default function Page() {
                     bg: 'bg-purple-500/15 border-purple-500/25',
                     title: 'General Enquiries',
                     desc: 'Questions about features, onboarding, or anything else about Outmail.',
-                    email: 'hello@outmail.io',
+                    email: 'hello@outmail.in',
                   },
                   {
                     icon: Settings,
@@ -4177,7 +4196,7 @@ export default function Page() {
                     bg: 'bg-cyan-500/15 border-cyan-500/25',
                     title: 'Technical Support',
                     desc: 'Issues with email sending, templates, attachments, or integrations.',
-                    email: 'support@outmail.io',
+                    email: 'support@outmail.in',
                   },
                   {
                     icon: CreditCard,
@@ -4185,7 +4204,7 @@ export default function Page() {
                     bg: 'bg-amber-500/15 border-amber-500/25',
                     title: 'Billing &amp; Plans',
                     desc: 'Subscription queries, invoices, refunds, or plan upgrades.',
-                    email: 'billing@outmail.io',
+                    email: 'billing@outmail.in',
                   },
                 ].map((cat) => (
                   <div
