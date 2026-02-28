@@ -6,10 +6,10 @@ export default function ZPricing() {
       level: 'Starter Plan',
       title: 'FREE',
       features: [
-        'Send Up to 100 emails',
-        'Store 3 resume + 3 email template',
-        'Access to basic/fixed 100 company outreach',
-        'Campaign status tracking ',
+        'Automated cold email outreach',
+        'Up to 3 email outreach templates',
+        'AI-curated company targeting',
+        'Campaign status tracking',
       ],
       buttonText: 'Start with Starter',
       description: 'A perfect way to try Outmail and kickstart your job outreach journey.'
@@ -18,9 +18,10 @@ export default function ZPricing() {
       level: 'Growth Plan',
       title: '₹129/month  (billed annually)',
       features: [
-        'Send Up to 1,000+ emails/month',
-        'Store 3 resumes + 3 templates',
-        'Smart Company Targeting based on hiring trends',
+        'High-volume automated outreach',
+        'Multiple customizable email templates',
+        'Smart targeting via live hiring signals & funding data',
+        'Job openings intelligence with priority scoring',
         'Campaign analytics & performance reports',
         'Email support',
       ],
@@ -33,10 +34,10 @@ export default function ZPricing() {
       features: [
         'Bulk student accounts under one license',
         'Admin dashboard for placement officers',
-        'Full database access + smart targeting',
+        'Full hiring intelligence — signals, funding, job openings',
+        'Mentorship session access for all students',
         'Campaign analytics & performance reports',
         'Priority support + onboarding assistance',
-        'Shared company database for all students'
       ],
       buttonText: 'Contact Sales',
       description: 'Ideal for power users who want maximum reach and insights.'

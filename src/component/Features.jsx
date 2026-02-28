@@ -11,17 +11,17 @@ export default function Features() {
     {
       icon: <Settings size={28} className="text-white" />,
       title: 'Personalization Made Easy',
-      desc: 'Upload multiple resumes and templates to tailor your outreach for every company and role.',
+      desc: 'Create and manage multiple email templates to craft the perfect message for every company, role, and industry — no guesswork.',
     },
     {
       icon: <BarChart2 size={28} className="text-white" />,
-      title: 'Smart Targeting',
-      desc: 'Reach firms based on industry, recent funding stage, size, or location - or import your own curated list for precision outreach.',
+      title: 'Data-Powered Targeting',
+      desc: 'Outmail tracks live hiring signals, recent funding rounds, and industry trends to surface the most relevant companies — no manual lists needed.',
     },
     {
       icon: <ShieldCheck size={28} className="text-white" />,
       title: 'Privacy & Safety First',
-      desc: 'Your Gmail is protected with built-in sending limits and encrypted tokens. Contacts are deleted after each campaign.',
+      desc: 'Your Gmail is protected with OAuth-secured access, built-in sending throttles, and encrypted tokens. Your data is never shared or sold.',
     },
   ];
 

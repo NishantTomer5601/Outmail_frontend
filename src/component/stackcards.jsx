@@ -14,14 +14,14 @@ const projects = [
   },
   {
     title: 'Personalize Every Email',
-    description: 'Upload multiple resumes and templates to tailor your message for every company.',
+    description: 'Use smart templates and Outmail\'s live hiring intelligence to craft the perfect message for every company and role.',
     src: 'dashboard.jpg',
     link: '/dashboard.jpg',
     color: '#6c00ff',
   },
   {
     title: 'Protect Your Privacy',
-    description: 'Contacts are deleted after each campaign. Your data is never shared or sold.',
+    description: 'Outmail uses OAuth-secured Gmail access with encrypted tokens. Your data is never shared, stored without consent, or sold.',
     src: 'dashboard.jpg',
     link: '/dashboard.jpg',
     color: '#6c00ff',

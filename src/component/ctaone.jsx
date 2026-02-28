@@ -23,9 +23,9 @@ export default function CtaOne() {
           </div>
           <div>
             <h3 className="text-3xl font-bold text-[#ffff]">
-              <CountUp end={50} duration={2.5} suffix="+" enableScrollSpy/>
+              <CountUp end={500} duration={2.5} suffix="+" enableScrollSpy/>
             </h3>
-            <p className="text-white">Emails Sent Daily (Safe Limit)</p>
+            <p className="text-white">Hiring Signals Tracked Daily</p>
           </div>
           <div>
             <h3 className="text-3xl font-bold text-[#ffff]">
