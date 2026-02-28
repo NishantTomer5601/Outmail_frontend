@@ -53,7 +53,7 @@ export default function Features() {
         {/* Right Side - Dashboard image (mockup or actual image) */}
         <div className="w-full flex  justify-end ">
           <img
-            src="/dashboard.jpg" 
+            src="/dashboard_edited.png" 
             alt="Outmail Dashboard Preview"
             className="rounded-4xl shadow-xl  max-w-full transition-transform duration-300 ease-in-out transform hover:scale-105 hover:-translate-y-1 translate-x-12 md:translate-x-24 lg:translate-x-32 "
             width={1000}
