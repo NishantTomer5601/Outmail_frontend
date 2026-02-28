@@ -1,55 +1,29 @@
 import React from 'react';
-import AboutUs from '@/component/aboutuscontent';
-import { HeroScrollDemo } from './heroscroll';
 import StackingCards from './stackcards';
-import { DotBackgroundDemo } from './dot';
 import WrapButton from './ui/wrap-button';
 
 function Hero() {
   return (
-    <div>
-    <div className="bg-gradient-to-l from-black via-[#6c00ff] to-black py-20 lg:py-32">
-      <div className="container mx-auto px-4 text-center">
-        <h2 className="text-2xl sm:text-4xl font-syne font-semibold tracking-wide mt-4 bg-gradient-to-r from-[#6c00ff] to-white bg-clip-text text-transparent drop-shadow-lg">
-          Where Smart Outreach Meets Real Opportunities and Expert Mentorship.
-        </h2>
+    <div className="bg-gradient-to-l from-black via-[#6c00ff] to-black">
+      {/* Hero text block — 52vh leaves ~48vh showing the first card */}
+      <div className="h-[52vh] flex flex-col justify-center pt-16 px-4">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-syne font-semibold tracking-tight leading-snug bg-gradient-to-r from-[#b06cff] via-white to-[#b06cff] bg-clip-text text-transparent">
+            Where Smart Outreach Meets Real Opportunities and Expert Mentorship.
+          </h1>
 
-        <p className="text-lg sm:text-xl font-syne font-medium tracking-wide mt-4 text-white/80 drop-shadow-lg max-w-2xl mx-auto">
-          Automate your recruiter outreach, discover curated job openings, track live hiring signals, and grow with guidance from people who've been there.
-        </p>
-
-        <div className="mt-8">
-          <div className="relative z-10 flex items-center justify-center space-x-4">
-            {/* Get Started / WrapButton */}
-            <button className="h-[50px] px-6 text-black font-extrabold rounded-full transition flex items-center">
-              <WrapButton />
-            </button>
-
-            {/* Watch Demo */}
-            <button className="h-[50px] px-6 bg-transparent border border-white text-white font-bold rounded-full hover:text-[#AD46FF] transition flex items-center">
-              Watch Demo
+          <div className="mt-8 flex items-center justify-center gap-6">
+            <WrapButton />
+            <button className="text-white/80 font-medium text-sm hover:text-[#b06cff] transition-colors duration-200">
+              Watch Demo →
             </button>
           </div>
         </div>
       </div>
+
+      {/* Stacking cards — first card visible on initial load */}
+      <StackingCards />
     </div>
-      {/* <HeroScrollDemo /> */}
-     <div className='  
-   -mt-10   /* small overlap for mobile */
-    sm:-mt-14
-    md:-mt-20
-    lg:-mt-28
-    xl:-mt-36  /* not too aggressive */
-
-
-
-  
-   bg-gradient-to-l from-black via-[#6c00ff] to-black '><StackingCards/></div> 
-     
-    </div>
-
-
-   
   );
 }
 
