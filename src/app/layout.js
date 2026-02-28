@@ -42,6 +42,9 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/Logo_Outmail.png" type="image/png" />
         <link rel="shortcut icon" href="/Logo_Outmail.png" type="image/png" />
         <link rel="apple-touch-icon" href="/Logo_Outmail.png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet" />
         <title>Outmail</title>
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${syne.variable} ${satisfy.variable} antialiased`}>

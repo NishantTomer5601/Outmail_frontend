@@ -14,7 +14,7 @@
 }
 
 .font-satisfy {
-  font-family: var(--font-satisfy);
+  font-family: 'Satisfy', cursive !important;
 }
 @keyframes scroll {
   0% {
