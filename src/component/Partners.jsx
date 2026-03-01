@@ -2,92 +2,88 @@
 
 import {
   BrandGoogle,
-  BrandFacebook,
-  BrandGithub,
-  BrandLinkedin,
-  BrandApple,
   BrandAmazon,
-  BrandYoutube,
-  BrandTwitter,
+  BrandApple,
+  BrandFacebook,
+  BrandLinkedin,
+  BrandAdobe,
+  BrandUber,
+  BrandNetflix,
+  BrandPaypal,
+  BrandStripe,
+  BrandSlack,
+  BrandZoom,
 } from "tabler-icons-react";
-import { InfiniteMovingCards } from "./ui/infinite-moving-cards";
+
+// Each entry is either an icon-based MNC or a text-based Indian startup/company
+const companies = [
+  { type: "icon", component: <BrandGoogle size={40} />,   label: "Google" },
+  { type: "text", name: "Zomato" },
+  { type: "icon", component: <BrandAmazon size={40} />,   label: "Amazon" },
+  { type: "text", name: "PhonePe" },
+  { type: "icon", component: <BrandApple size={40} />,    label: "Apple" },
+  { type: "text", name: "Razorpay" },
+  { type: "icon", component: <BrandFacebook size={40} />, label: "Meta" },
+  { type: "text", name: "Swiggy" },
+  { type: "icon", component: <BrandAdobe size={40} />,    label: "Adobe" },
+  { type: "text", name: "Paytm" },
+  { type: "icon", component: <BrandUber size={40} />,     label: "Uber" },
+  { type: "text", name: "CRED" },
+  { type: "icon", component: <BrandNetflix size={40} />,  label: "Netflix" },
+  { type: "text", name: "Meesho" },
+  { type: "icon", component: <BrandPaypal size={40} />,   label: "PayPal" },
+  { type: "text", name: "Zepto" },
+  { type: "icon", component: <BrandStripe size={40} />,   label: "Stripe" },
+  { type: "text", name: "Groww" },
+  { type: "icon", component: <BrandSlack size={40} />,    label: "Slack" },
+  { type: "icon", component: <BrandLinkedin size={40} />, label: "LinkedIn" },
+  { type: "text", name: "Zerodha" },
+  { type: "icon", component: <BrandZoom size={40} />,     label: "Zoom" },
+];
+
+function CompanyItem({ company }) {
+  if (company.type === "icon") {
+    return (
+      <div className="flex flex-col items-center justify-center gap-2 min-w-[80px] group">
+        <span className="text-white/60 group-hover:text-white transition-colors duration-300">
+          {company.component}
+        </span>
+        <span className="text-[11px] text-white/40 group-hover:text-white/70 tracking-wide transition-colors duration-300">
+          {company.label}
+        </span>
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center justify-center min-w-[80px] group">
+      <span className="text-white/60 group-hover:text-white font-semibold text-base tracking-wide transition-colors duration-300 border border-white/15 group-hover:border-white/40 rounded-lg px-4 py-2">
+        {company.name}
+      </span>
+    </div>
+  );
+}
 
 export default function Partners() {
-  const icons = [
-    <BrandGoogle size={48} />,
-    <BrandFacebook size={48} />,
-    <BrandGithub size={48} />,
-    <BrandLinkedin size={48} />,
-    <BrandApple size={48} />,
-    <BrandAmazon size={48} />,
-    <BrandYoutube size={48} />,
-    <BrandTwitter size={48} />,
-  ];
-
   return (
-    <div className=" w-full overflow-hidden py-10 bg-black bg-gradient-to-l from-black via-[#6c00ff] to-black ">
-      <h2 className="text-2xl font-bold text-white text-center mb-20 mt-10">
+    <div className="w-full overflow-hidden py-10 bg-gradient-to-l from-black via-[#6c00ff] to-black">
+      <h2 className="text-2xl font-bold text-white text-center mb-16 mt-10">
         Trusted by Job Seekers Connecting with Top Companies
       </h2>
 
-
-      <div className="flex animate-scroll whitespace-nowrap gap-12 text-white px-4 ">
-        {icons.map((Icon, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-center hover:text-[#630dff] transition duration-100"
-          >
-            {Icon}
-          </div>
-        ))}
-        {icons.map((Icon, index) => (
-          <div
-            key={`copy-${index}`}
-            className="flex items-center justify-center hover:text-[#AD46FF] transition duration-300"
-          >
-            {Icon}
-          </div>
-        ))}
-        {icons.map((Icon, index) => (
-          <div
-            key={`copy-${index}`}
-            className="flex items-center justify-center hover:text-[#AD46FF] transition duration-300"
-          >
-            {Icon}
-          </div>
-        ))}
-        {icons.map((Icon, index) => (
-          <div
-            key={`copy-${index}`}
-            className="flex items-center justify-center hover:text-[#AD46FF] transition duration-300"
-          >
-            {Icon}
-          </div>
-        ))}
-        {icons.map((Icon, index) => (
-          <div
-            key={`copy-${index}`}
-            className="flex items-center justify-center hover:text-[#AD46FF] transition duration-300"
-          >
-            {Icon}
-          </div>
-        ))}
-        {icons.map((Icon, index) => (
-          <div
-            key={`copy-${index}`}
-            className="flex items-center justify-center hover:text-[#AD46FF] transition duration-300"
-          >
-            {Icon}
-          </div>
-        ))}
-        {icons.map((Icon, index) => (
-          <div
-            key={`copy-${index}`}
-            className="flex items-center justify-center hover:text-[#AD46FF] transition duration-300"
-          >
-            {Icon}
-          </div>
-        ))}
+      {/* Outer mask for fade edges */}
+      <div
+        className="relative w-full overflow-hidden"
+        style={{
+          maskImage: "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
+        }}
+      >
+        {/* Two copies exactly — animation goes from 0 to -50% for seamless loop */}
+        <div className="flex animate-scroll whitespace-nowrap gap-10 px-4">
+          {[...companies, ...companies].map((company, index) => (
+            <CompanyItem key={index} company={company} />
+          ))}
+        </div>
       </div>
     </div>
   );
