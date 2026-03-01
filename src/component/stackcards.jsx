@@ -1,5 +1,4 @@
 'use client';
-import { ReactLenis } from 'lenis/react';
 import { useTransform, motion, useScroll } from 'motion/react';
 import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -56,31 +55,83 @@ export default function StackingCards() {
     target: container,
     offset: ['start start', 'end end'],
   });
-  
+
+  useEffect(() => {
+    let isSnapping = false;
+    const COOLDOWN = 750; // ms cooldown between snaps
+    const DELTA_THRESHOLD = 15; // ignore tiny trackpad micro-movements
+
+    const handleWheel = (e) => {
+      const section = container.current;
+      if (!section) return;
+
+      // Only intercept wheel events while the stacking section spans the viewport midpoint
+      const rect = section.getBoundingClientRect();
+      const inZone =
+        rect.top < window.innerHeight * 0.5 &&
+        rect.bottom > window.innerHeight * 0.5;
+      if (!inZone) return;
+
+      // Ignore tiny trackpad drift
+      if (Math.abs(e.deltaY) < DELTA_THRESHOLD) return;
+
+      // While animating to a snap point, eat the event
+      if (isSnapping) {
+        e.preventDefault();
+        return;
+      }
+
+      // Calculate snap points: each card occupies exactly one viewport height
+      const sectionTop = window.scrollY + rect.top;
+      const snapPoints = projects.map((_, i) => sectionTop + i * window.innerHeight);
+      const currentScrollY = window.scrollY;
+
+      let targetSnap;
+      if (e.deltaY > 0) {
+        // Scrolling down — snap to the next card
+        targetSnap = snapPoints.find((p) => p > currentScrollY + 50);
+        if (targetSnap === undefined) return; // past all cards, let scroll through normally
+      } else {
+        // Scrolling up — snap to the previous card
+        const prevPoints = snapPoints.filter((p) => p < currentScrollY - 50);
+        if (prevPoints.length === 0) return; // before first card, let scroll through normally
+        targetSnap = prevPoints[prevPoints.length - 1];
+      }
+
+      e.preventDefault();
+      isSnapping = true;
+      window.scrollTo({ top: targetSnap, behavior: 'smooth' });
+      setTimeout(() => {
+        isSnapping = false;
+      }, COOLDOWN);
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => window.removeEventListener('wheel', handleWheel);
+  }, []);
+
   return (
-    <ReactLenis root>
-      <main ref={container}>
-        <section className="text-white w-full pt-0 mt-0">
-          {projects.slice(0, 3).map((project, i) => {
-            const targetScale = 1 - (projects.length - i) * 0.05;
-            return (
-              <Card
-                key={`p_${i}`}
-                i={i}
-                url={project?.link}
-                src={project?.src}
-                title={project?.title}
-                color={project?.color}
-                description={project?.description}
-                progress={scrollYProgress}
-                range={[i * 0.25, 1]}
-                targetScale={targetScale}
-              />
-            );
-          })}
-        </section>
-      </main>
-    </ReactLenis>
+    <main ref={container}>
+      <section className="text-white w-full pt-0 mt-0">
+        {projects.slice(0, 3).map((project, i) => {
+          const targetScale = 1 - (projects.length - i) * 0.05;
+          return (
+            <Card
+              key={`p_${i}`}
+              i={i}
+              url={project?.link}
+              src={project?.src}
+              title={project?.title}
+              color={project?.color}
+              description={project?.description}
+              progress={scrollYProgress}
+              range={[i * 0.25, 1]}
+              targetScale={targetScale}
+            />
+          );
+        })}
+      </section>
+    </main>
   );
 }
 
@@ -102,7 +153,7 @@ export const Card = ({
     offset: ['start end', 'start start'],
   });
 
-  const imageScale = useTransform(scrollYProgress, [0, 1], [2, 1]);
+  // const imageScale = useTransform(scrollYProgress, [0, 1], [2, 1]); // zoom-out effect — commented out for now
   const scale = useTransform(progress, range, [1, targetScale]);
 
   // Responsive values based on screen width[1][13]
@@ -180,10 +231,10 @@ export const Card = ({
           width: responsive.cardWidth,
           height: responsive.cardHeight,
         }}
-        className="relative rounded-2xl origin-top z-10 max-w-6xl overflow-hidden border border-white/20 shadow-[0_0_30px_rgba(108,0,255,0.5),0_0_60px_rgba(108,0,255,0.2)]"
+        className="relative rounded-2xl origin-top z-10 max-w-6xl overflow-hidden border border-purple-500/30"
       >
-        {/* Full-bleed screenshot */}
-        <motion.div className="absolute inset-0 w-full h-full" style={{ scale: imageScale }}>
+        {/* Full-bleed screenshot — static for now, zoom-out effect commented out */}
+        <div className="absolute inset-0 w-full h-full">
           <Image
             fill
             src={url}
@@ -191,7 +242,7 @@ export const Card = ({
             className="object-cover object-top"
             sizes="(max-width: 640px) 95vw, (max-width: 768px) 90vw, (max-width: 1024px) 85vw, 70vw"
           />
-        </motion.div>
+        </div>
 
         {/* Dark gradient overlay — strong at bottom for readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/10 z-10" />
