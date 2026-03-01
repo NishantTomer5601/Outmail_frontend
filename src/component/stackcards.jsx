@@ -6,24 +6,24 @@ import Image from 'next/image';
 
 const projects = [
   {
-    title: 'Boost Your Visibility',
-    description: 'Reach 3x more companies with Outmail’s automated, personalized outreach.',
-    src: 'dashboard.jpg',
-    link: '/dashboard.jpg',
+    title: 'Smart Automated Cold Outreach',
+    description: 'Send personalised emails to the right recruiters at scale — powered by live hiring signals, funding data, and smart company targeting.',
+    src: 'dashboard_landingPage.png',
+    link: '/dashboard_landingPage.png',
     color: '#6c00ff',
   },
   {
-    title: 'Personalize Every Email',
-    description: 'Use smart templates and Outmail\'s live hiring intelligence to craft the perfect message for every company and role.',
-    src: 'dashboard.jpg',
-    link: '/dashboard.jpg',
+    title: 'Curated Job Openings',
+    description: 'Browse roles ranked by Outmail Priority Score — surfaced by hiring urgency, funding signals, and company momentum.',
+    src: 'JobOpenings.png',
+    link: '/JobOpenings.png',
     color: '#6c00ff',
   },
   {
-    title: 'Protect Your Privacy',
-    description: 'Outmail uses OAuth-secured Gmail access with encrypted tokens. Your data is never shared, stored without consent, or sold.',
-    src: 'dashboard.jpg',
-    link: '/dashboard.jpg',
+    title: 'Expert Mentorship',
+    description: 'Book live sessions with professionals and alumni — real guidance from people who\'ve navigated the path you\'re on.',
+    src: 'Mentorship.png',
+    link: '/Mentorship.png',
     color: '#6c00ff',
   },
 ];
@@ -171,59 +171,48 @@ export const Card = ({
   return (
     <div
       ref={container}
-      className="relative h-screen flex items-center justify-center sticky top-0 px-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-32"
+      className="relative h-screen flex items-center justify-center sticky top-0 px-4"
     >
-      {/* Gradient background only on 2nd card (i === 1) */}
-      {i === 1 && (
-        <motion.div
-          className="absolute inset-0 z-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 1000 }}
-        />
-      )}
-
       <motion.div
         style={{
-          backgroundColor: color,
           scale,
           top: `calc(-5vh + ${i * parseInt(responsive.topOffset)}px)`,
           width: responsive.cardWidth,
           height: responsive.cardHeight,
         }}
-        className={`flex flex-col relative rounded-2xl p-${responsive.padding} origin-top z-10 max-w-6xl`}
+        className="relative rounded-2xl origin-top z-10 max-w-6xl overflow-hidden border border-white/20 shadow-[0_0_30px_rgba(108,0,255,0.5),0_0_60px_rgba(108,0,255,0.2)]"
       >
-        <h2 className={`${responsive.titleSize} text-center font-semibold mb-4 md:mb-0`}>
-          {title}
-        </h2>
-        
-        <div className={`flex ${responsive.layout} ${responsive.gap} h-full mt-2 md:mt-5`}>
-          <div className={`${responsive.textWidth} ${responsive.layout === 'flex-row' ? 'relative top-[10%]' : ''}`}>
-            <p className={responsive.textSize}>{description}</p>
-            <span className="flex items-center gap-2 pt-2">
-              <a
-                href="#"
-                target="_blank"
-                className="underline cursor-pointer text-xs md:text-sm"
-              >
-                See more
-              </a>
-            </span>
-          </div>
+        {/* Full-bleed screenshot */}
+        <motion.div className="absolute inset-0 w-full h-full" style={{ scale: imageScale }}>
+          <Image
+            fill
+            src={url}
+            alt={title}
+            className="object-cover object-top"
+            sizes="(max-width: 640px) 95vw, (max-width: 768px) 90vw, (max-width: 1024px) 85vw, 70vw"
+          />
+        </motion.div>
 
-          <div className={`relative ${responsive.imageWidth} ${responsive.imageHeight} rounded-lg overflow-hidden`}>
-            <motion.div
-              className="w-full h-full"
-              style={{ scale: imageScale }}
-            >
-              <Image 
-                fill 
-                src={url} 
-                alt="image" 
-                className="object-cover"
-                sizes="(max-width: 640px) 95vw, (max-width: 768px) 90vw, (max-width: 1024px) 85vw, 70vw"
-              />
-            </motion.div>
+        {/* Dark gradient overlay — strong at bottom for readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/10 z-10" />
+
+        {/* Text overlay — bottom of card */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 p-6 md:p-10 flex items-end justify-between gap-6">
+          <div className="flex-1">
+            {/* Badge */}
+            <span className="inline-block text-[10px] uppercase tracking-[3px] bg-[#6c00ff]/60 border border-white/20 text-white/80 px-3 py-1 rounded-full mb-3">
+              {`0${i + 1}`}
+            </span>
+            <h2 className={`${responsive.titleSize} font-bold text-white mb-2 leading-tight`}>
+              {title}
+            </h2>
+            <p className={`${responsive.textSize} text-white/65 leading-relaxed max-w-lg`}>
+              {description}
+            </p>
+          </div>
+          {/* Arrow CTA */}
+          <div className="w-11 h-11 rounded-full border border-white/30 flex items-center justify-center text-white text-lg flex-shrink-0 self-end">
+            →
           </div>
         </div>
       </motion.div>
