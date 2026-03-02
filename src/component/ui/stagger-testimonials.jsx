@@ -8,34 +8,34 @@ const SQRT_5000 = Math.sqrt(5000);
 
 const testimonials = [
   {
-    testimonial: "My favorite solution in the market. We work 5x faster with COMPANY.",
-    by: "Alex, CEO at TechCorp",
-    imgSrc: "https://i.pravatar.cc/150?img=1",
+    testimonial: "I sent over 40 applications on LinkedIn and Naukri — zero replies. A friend suggested Outmail. Within 10 days of running my first cold outreach campaign, I had 4 interview calls. The hiring signal targeting is genuinely insane.",
+    by: "Arjun Mehta, 4th Year CSE, BITS Pilani",
+    imgSrc: "https://i.pravatar.cc/150?img=11",
   },
   {
-    testimonial: "I'm confident my data is safe with COMPANY. I can't say that about other providers.",
-    by: "Dan, CTO at SecureNet",
-    imgSrc: "https://i.pravatar.cc/150?img=2",
+    testimonial: "The job feed on Outmail is nothing like any job board I've used. It tells you which companies are actively hiring based on funding and headcount data — not just whatever they posted publicly. I found my internship through a company that hadn't even posted the role yet.",
+    by: "Priya Nair, 3rd Year, IIT Bombay",
+    imgSrc: "https://i.pravatar.cc/150?img=21",
   },
   {
-    testimonial: "I know it's cliche, but we were lost before we found COMPANY. Can't thank you guys enough!",
-    by: "Stephanie, COO at InnovateCo",
-    imgSrc: "https://i.pravatar.cc/150?img=3",
+    testimonial: "I had a mentorship session with a product manager from a Series B startup through Outmail. In one hour I got more actionable advice than months of reading blogs. She helped me reframe my entire resume and intro email. Got a PPO two months later.",
+    by: "Rohan Sharma, Final Year MBA, IIM Indore",
+    imgSrc: "https://i.pravatar.cc/150?img=33",
   },
   {
-    testimonial: "COMPANY's products make planning for the future seamless. Can't recommend them enough!",
-    by: "Marie, CFO at FuturePlanning",
-    imgSrc: "https://i.pravatar.cc/150?img=4",
+    testimonial: "What I love is that the cold emails don't feel spammy. Outmail personalises each one with context about the company — their recent funding, what role you're targeting. Recruiters actually reply because it feels like you did your homework.",
+    by: "Sneha Iyer, 3rd Year ECE, NIT Trichy",
+    imgSrc: "https://i.pravatar.cc/150?img=47",
   },
   {
-    testimonial: "If I could give 11 stars, I'd give 12.",
-    by: "Andre, Head of Design at CreativeSolutions",
-    imgSrc: "https://i.pravatar.cc/150?img=5",
+    testimonial: "Our placement cell piloted Outmail for our batch and the results were honestly surprising. Students who had zero responses from portals started getting recruiter replies within the first week. The analytics dashboard made it easy to track who was reaching out and how campaigns were performing.",
+    by: "Karan Verma, Placement Coordinator, VIT Vellore",
+    imgSrc: "https://i.pravatar.cc/150?img=57",
   },
   {
-    testimonial: "SO SO SO HAPPY WE FOUND YOU GUYS!!!! I'd bet you've saved me 100 hours so far.",
-    by: "Jeremy, Product Manager at TimeWise",
-    imgSrc: "https://i.pravatar.cc/150?img=6",
+    testimonial: "I used the job intelligence feature to filter companies by growth stage and sector. Instead of blindly applying everywhere, I shortlisted 15 high-momentum companies and ran a focused campaign. Converted 3 of them into interviews. Quality over quantity — finally.",
+    by: "Ananya Kapoor, 4th Year CS, IIIT Hyderabad",
+    imgSrc: "https://i.pravatar.cc/150?img=25",
   },
 ];
 
@@ -46,10 +46,10 @@ const TestimonialCard = ({ position, testimonial, handleMove, cardSize }) => {
     <div
       onClick={() => handleMove(position)}
       className={cn(
-        "absolute left-1/2 top-1/2 cursor-pointer border p-8 transition-all duration-500 ease-in-out",
+        "absolute left-1/2 top-1/2 cursor-pointer border p-8 transition-all duration-500 ease-in-out overflow-hidden",
         isCenter
-          ? "z-10 bg-[#5C1ED9] text-white font-extrabold border-primary"
-          : "z-0 bg-white text-black border-border hover:border-primary/50"
+          ? "z-10 bg-[#5C1ED9] border-purple-400"
+          : "z-0 bg-white border-border hover:border-primary/50"
       )}
       style={{
         width: cardSize,
@@ -62,7 +62,7 @@ const TestimonialCard = ({ position, testimonial, handleMove, cardSize }) => {
           translateY(${isCenter ? -65 : position % 2 ? 15 : -15}px)
           rotate(${isCenter ? 0 : position % 2 ? 2.5 : -2.5}deg)
         `,
-        boxShadow: isCenter ? "0px 8px 0px 4px hsl(var(--border))" : "0px 0px 0px 0px transparent",
+        boxShadow: isCenter ? "0px 8px 0px 4px rgba(108,0,255,0.5)" : "0px 0px 0px 0px transparent",
       }}
     >
       <span
@@ -82,19 +82,19 @@ const TestimonialCard = ({ position, testimonial, handleMove, cardSize }) => {
       />
       <h3
         className={cn(
-          "text-base sm:text-xl font-medium",
-          isCenter ? "text-primary-foreground" : "text-black"
+          "text-sm sm:text-base font-medium leading-relaxed line-clamp-6",
+          isCenter ? "text-white" : "text-gray-800"
         )}
       >
-        "{testimonial.testimonial}"
+        &ldquo;{testimonial.testimonial}&rdquo;
       </h3>
       <p
         className={cn(
-          "absolute bottom-8 left-8 right-8 mt-2 text-sm italic",
-          isCenter ? "text-primary-foreground/80" : "text-muted-foreground"
+          "absolute bottom-8 left-8 right-8 mt-2 text-xs italic",
+          isCenter ? "text-white/70" : "text-gray-500"
         )}
       >
-        - {testimonial.by}
+        — {testimonial.by}
       </p>
     </div>
   );

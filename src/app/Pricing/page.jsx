@@ -18,30 +18,33 @@ function page() {
       
 
       <div className="container mx-auto px-4 text-center">
-        <div className="inline-block  px-4 py-1 border-white/30 rounded-md">
+        <p className="text-xs uppercase tracking-[4px] text-purple-400 font-medium mb-4">
+          Subscription Plans
+        </p>
 
-        </div>
-
-        <h1 className="text-4xl sm:text-5xl font-syne font-bold tracking-wide mt-3">
-          Outmail Subscription Plans
+        <h1 className="text-4xl sm:text-5xl font-syne font-semibold tracking-tight leading-tight mt-3 text-white">
+          Flexible Plans Built
+          <br />
+          <span className="bg-gradient-to-r from-[#b06cff] via-white to-[#b06cff] bg-clip-text text-transparent">
+            Around Your Organisation.
+          </span>
         </h1>
 
-        <p className="text-[#C0C0C0] text-base sm:text-lg mt-6 leading-relaxed">
-          Choose the plan that fits your job search journey. Outmail helps you reach more companies, personalize your outreach, and boost your chances of landing interviews.
+        <p className="text-white/60 text-base sm:text-lg mt-6 leading-relaxed max-w-2xl mx-auto">
+          No fixed price tags — every organisation is different. Pick the plan that fits your goals and we&apos;ll work out the right arrangement on a call.
         </p>
 
         <div className="text-center mt-10">
-            <button
-              onClick={() => {
-                const missionSection = document.getElementById('pricing');
-                missionSection?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="rounded-full border-2 border-white text-white px-5 py-3 hover:bg-white hover:text-black transition duration-300"
-            >
-              ↓
-            </button>
-          </div>
-
+          <button
+            onClick={() => {
+              const missionSection = document.getElementById('pricing');
+              missionSection?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="rounded-full border-2 border-white/30 text-white px-5 py-3 hover:bg-white hover:text-black transition duration-300"
+          >
+            ↓
+          </button>
+        </div>
 
       </div>
       </div>

@@ -25,13 +25,11 @@ export default function Home() {
     <Hero/>
     <Features/>
     <Partners/>
-   
     <CtaOne/>
     <AboutUs/>
     <Pricing/>
     <Testimonials/>
 
-    {/* <Membership/> */}
     <Faq/>
    
     <Footer/>

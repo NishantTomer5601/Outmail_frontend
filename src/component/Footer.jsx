@@ -32,7 +32,7 @@ export default function Footer() {
                   </div>
 
                   <p className="text-white/70 text-sm leading-relaxed max-w-md mb-6">
-                    Boost your job visibility 5x with Outmail. Automate personalized outreach, connect directly with recruiters, and get noticed in today’s crowded job market.
+                    Hiring is harder than ever. Outmail keeps you ahead — reach recruiters directly, spot opportunities early, and get the guidance to convert them.
                   </p>
 
                   <ul className="flex flex-wrap gap-4 text-sm text-white/80">
