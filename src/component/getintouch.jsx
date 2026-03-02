@@ -1,126 +1,205 @@
-// components/ContactUs.jsx
-"use client";
-import React, { useState } from "react";
-import { Phone, Clock, Twitter, Linkedin, Instagram } from "lucide-react";
+'use client';
+import React, { useState } from 'react';
+import { Mail, Clock, Phone, Twitter, Linkedin, Instagram, CalendarDays } from 'lucide-react';
 
-const ContactUs = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+const infoItems = [
+  {
+    icon: Mail,
+    label: 'Email Us',
+    value: 'support@outmail.in',
+    sub: 'For account & campaign questions',
+  },
+  {
+    icon: Phone,
+    label: 'Call Us',
+    value: '+91 98765 43210',
+    sub: 'Mon – Fri, 10 AM to 6 PM IST',
+  },
+  {
+    icon: Clock,
+    label: 'Response Time',
+    value: 'Within 24 hours',
+    sub: 'On all weekday submissions',
+  },
+  {
+    icon: CalendarDays,
+    label: 'For TPOs & Institutions',
+    value: 'Book a Discovery Call',
+    sub: 'Explore campus-wide Outmail plans',
+    isLink: true,
+  },
+];
+
+export default function GetInTouch() {
+  const [form, setForm] = useState({ name: '', email: '', role: '', message: '' });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // In a real application, you would send this data to a backend API.
+    setSubmitted(true);
   };
 
   return (
-    // Main container for the Get In Touch section
-    <div className="bg-gradient-to-l from-black via-[#6c00ff] to-black flex flex-col lg:flex-row items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8 font-inter">
-      {/* Inner container with max width and rounded corners */}
-      <div className="mt-20 max-w-6xl w-full bg-white shadow-lg rounded-xl p-6 sm:p-8 lg:p-12 flex flex-col lg:flex-row gap-8 lg:gap-12">
-        
-        {/* Left Column: Contact Info */}
-        <div className="flex-1 flex flex-col gap-8">
-          {/* Placeholder box */}
-          <div className="bg-purple-200 rounded-xl h-64 w-full flex items-center justify-center text-purple-600 text-lg font-semibold">
-            Placeholder for Image/Map
+    <div className="bg-gradient-to-l from-black via-[#6c00ff] to-black py-24 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+
+          {/* Left — Contact Info */}
+          <div className="flex flex-col gap-6">
+            <div>
+              <p className="text-xs uppercase tracking-[4px] text-purple-400 font-medium mb-3">Reach Out</p>
+              <h2 className="text-3xl lg:text-4xl font-bold text-white leading-tight mb-3">
+                Let&apos;s Talk.
+              </h2>
+              <p className="text-white/55 text-sm leading-relaxed max-w-sm">
+                Questions about your campaigns, recruiter outreach, or bringing Outmail to your campus?
+                Pick the right channel below or just fill out the form.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-4 mt-2">
+              {infoItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div key={item.label} className="flex items-start gap-4 bg-white/5 border border-white/10 rounded-xl px-5 py-4">
+                    <div className="flex-shrink-0 p-2.5 bg-purple-500/20 rounded-lg text-purple-300">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-white/50 text-xs font-medium uppercase tracking-wider mb-0.5">{item.label}</p>
+                      {item.isLink ? (
+                        <a href="#" className="text-white font-semibold text-sm hover:text-purple-300 transition underline underline-offset-2">
+                          {item.value}
+                        </a>
+                      ) : (
+                        <p className="text-white font-semibold text-sm">{item.value}</p>
+                      )}
+                      <p className="text-white/40 text-xs mt-0.5">{item.sub}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex gap-3 mt-2">
+              <a href="#" className="p-3 bg-white/5 border border-white/10 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition">
+                <Twitter className="w-4 h-4" />
+              </a>
+              <a href="#" className="p-3 bg-white/5 border border-white/10 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition">
+                <Linkedin className="w-4 h-4" />
+              </a>
+              <a href="#" className="p-3 bg-white/5 border border-white/10 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition">
+                <Instagram className="w-4 h-4" />
+              </a>
+            </div>
           </div>
 
-          {/* Phone Number */}
-          <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 p-3 bg-purple-100 rounded-full text-purple-600">
-              <Phone className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-gray-900 font-semibold text-lg">Phone Number</p>
-              <p className="text-gray-600">+123 456 789 101</p>
-            </div>
+          {/* Right — Contact Form */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-10">
+            {submitted ? (
+              <div className="flex flex-col items-center justify-center h-full text-center py-16 gap-4">
+                <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center">
+                  <Mail className="w-7 h-7 text-purple-600" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900">Message Sent!</h3>
+                <p className="text-gray-500 text-sm max-w-xs leading-relaxed">
+                  Thanks for reaching out. We&apos;ll get back to you within 24 hours on weekdays.
+                </p>
+                <button
+                  onClick={() => setSubmitted(false)}
+                  className="mt-2 text-purple-600 text-sm font-medium hover:underline"
+                >
+                  Send another message
+                </button>
+              </div>
+            ) : (
+              <>
+                <h3 className="text-2xl font-bold text-gray-900 mb-1">Send Us a Message</h3>
+                <p className="text-gray-500 text-sm mb-8 leading-relaxed">
+                  Fill out the form and we&apos;ll get back to you as soon as possible.
+                </p>
+
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label htmlFor="name" className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">Full Name</label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        required
+                        placeholder="Arjun Mehta"
+                        value={form.name}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="email" className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">Email Address</label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        placeholder="arjun@college.edu"
+                        value={form.email}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="role" className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">I am a...</label>
+                    <select
+                      id="role"
+                      name="role"
+                      required
+                      value={form.role}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                    >
+                      <option value="" disabled>Select your role</option>
+                      <option value="student">Student</option>
+                      <option value="tpo">TPO / Placement Officer</option>
+                      <option value="recruiter">Recruiter</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="message" className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">Your Message</label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows="5"
+                      required
+                      placeholder="Tell us what's on your mind..."
+                      value={form.message}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition resize-none"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3 bg-gradient-to-r from-[#6c00ff] to-[#b06cff] text-white font-semibold rounded-lg hover:opacity-90 transition text-sm tracking-wide"
+                  >
+                    Send Message
+                  </button>
+
+                  <p className="text-center text-xs text-gray-400 mt-1">
+                    We reply within 24 hours on weekdays.
+                  </p>
+                </form>
+              </>
+            )}
           </div>
 
-          {/* Business Hours */}
-          <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 p-3 bg-purple-100 rounded-full text-purple-600">
-              <Clock className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-gray-900 font-semibold text-lg">Business Hours</p>
-              <p className="text-gray-600">Monday - Friday / 8AM to 5PM</p>
-            </div>
-          </div>
-
-          {/* Social Media Icons */}
-          <div className="flex space-x-4">
-            <a href="#" className="p-3 bg-gray-100 rounded-full text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition duration-200">
-              <Twitter className="w-5 h-5" />
-            </a>
-            <a href="#" className="p-3 bg-gray-100 rounded-full text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition duration-200">
-              <Linkedin className="w-5 h-5" />
-            </a>
-            <a href="#" className="p-3 bg-gray-100 rounded-full text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition duration-200">
-              <Instagram className="w-5 h-5" />
-            </a>
-          </div>
-        </div>
-
-        {/* Right Column: Contact Form */}
-        <div className="flex-1">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Contact Outmail Support</h2>
-          <p className="text-gray-600 mb-8 leading-relaxed">
-            Have a question about your job search, campaign, or account? Our team is here to help you get noticed and land more interviews. Fill out the form and we’ll get back to you soon!
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Your Name</label>
-              <input 
-                type="text" 
-                id="name" 
-                name="name" 
-                placeholder="Your Name" 
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200" 
-              />
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Your Email</label>
-              <input 
-                type="email" 
-                id="email" 
-                name="email" 
-                placeholder="Email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200" 
-              />
-            </div>
-
-            <div>
-              <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">Your Message</label>
-              <textarea 
-                id="message" 
-                name="message" 
-                rows="5" 
-                placeholder="Write your message here..." 
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200 resize-y" >
-              </textarea>
-            </div>
-
-            <div className="flex justify-center">
-              <button 
-                type="submit" 
-                className="flex justify-center w-full sm:w-auto px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-200">
-                Send Message
-              </button>
-            </div>
-          </form>
         </div>
       </div>
     </div>
   );
 }
-
-export default ContactUs;
