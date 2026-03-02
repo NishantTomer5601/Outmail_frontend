@@ -16,12 +16,19 @@ function page() {
 
       <div className="bg-gradient-to-l from-black via-[#6c00ff] to-black py-20">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl sm:text-5xl font-syne font-bold tracking-wide mt-6">
+          <p className="text-xs uppercase tracking-[4px] text-purple-400 font-medium mb-4">
             About Outmail
+          </p>
+          <h1 className="text-4xl sm:text-5xl font-syne font-semibold tracking-tight leading-tight mt-3 text-white">
+            We Built the Unfair
+            <br />
+            <span className="bg-gradient-to-r from-[#b06cff] via-white to-[#b06cff] bg-clip-text text-transparent">
+              Advantage You Deserved.
+            </span>
           </h1>
 
-          <p className="text-[#C0C0C0] text-base sm:text-lg mt-6 leading-relaxed">
-            Outmail helps you get noticed in a crowded job market by automating direct, personalized outreach to recruiters. We believe every job seeker deserves to be seen and have a fair shot at landing interviews.
+          <p className="text-white/60 text-base sm:text-lg mt-6 leading-relaxed max-w-2xl mx-auto">
+            The job market doesn&apos;t reward effort — it rewards visibility. Outmail was built to give every student and early-career professional a direct line to the people who actually make hiring decisions.
           </p>
 
           <div className="text-center mt-10">
@@ -30,7 +37,7 @@ function page() {
                 const missionSection = document.getElementById('about-us');
                 missionSection?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="rounded-full border-2 border-white text-white px-5 py-3 hover:bg-white hover:text-black transition duration-300"
+              className="rounded-full border-2 border-white/30 text-white px-5 py-3 hover:bg-white hover:text-black transition duration-300"
             >
               ↓
             </button>
