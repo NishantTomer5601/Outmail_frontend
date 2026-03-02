@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { Mail, Clock, Phone, Twitter, Linkedin, Instagram, CalendarDays } from 'lucide-react';
+import { Mail, Clock, Handshake, CalendarDays } from 'lucide-react';
 
 const infoItems = [
   {
@@ -10,10 +10,10 @@ const infoItems = [
     sub: 'For account & campaign questions',
   },
   {
-    icon: Phone,
-    label: 'Call Us',
-    value: '+91 98765 43210',
-    sub: 'Mon – Fri, 10 AM to 6 PM IST',
+    icon: Handshake,
+    label: 'Partnerships & Collaborations',
+    value: 'team@outmail.in',
+    sub: 'For brand deals, integrations & co-builds',
   },
   {
     icon: Clock,
@@ -83,17 +83,7 @@ export default function GetInTouch() {
               })}
             </div>
 
-            <div className="flex gap-3 mt-2">
-              <a href="#" className="p-3 bg-white/5 border border-white/10 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition">
-                <Twitter className="w-4 h-4" />
-              </a>
-              <a href="#" className="p-3 bg-white/5 border border-white/10 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition">
-                <Linkedin className="w-4 h-4" />
-              </a>
-              <a href="#" className="p-3 bg-white/5 border border-white/10 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition">
-                <Instagram className="w-4 h-4" />
-              </a>
-            </div>
+
           </div>
 
           {/* Right — Contact Form */}
