@@ -1,0 +1,80 @@
+"use client";
+import Link from "next/link";
+import {
+  LayoutDashboard,
+  Users,
+  Mail,
+  BriefcaseBusiness,
+  GraduationCap,
+  BarChart3,
+  BookOpen,
+  Settings,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+
+const navItems = [
+  { label: "Overview", href: "/tpo/dashboard", icon: LayoutDashboard },
+  { label: "Students", href: "/tpo/students", icon: Users },
+  { label: "Cold Outreach", href: "/tpo/outreach", icon: Mail },
+  { label: "Job Intelligence", href: "/tpo/jobs", icon: BriefcaseBusiness },
+  { label: "Mentorship", href: "/tpo/mentorship", icon: GraduationCap },
+  { label: "Analytics", href: "/tpo/analytics", icon: BarChart3 },
+  { label: "Resources", href: "/tpo/resources", icon: BookOpen },
+  { label: "Settings", href: "/tpo/settings", icon: Settings },
+];
+
+export default function TPOSidebar({ isOpen, onToggle }) {
+  return (
+    <aside
+      className={`fixed top-0 left-0 z-40 h-full bg-white border-r border-gray-200 transition-all duration-300 flex flex-col ${
+        isOpen ? "w-64" : "w-20"
+      }`}
+    >
+      {/* Logo */}
+      <div className="flex items-center justify-between px-4 py-5 border-b border-gray-100">
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div className="w-8 h-8 flex-shrink-0 bg-purple-600 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-sm">O</span>
+          </div>
+          {isOpen && (
+            <div className="overflow-hidden">
+              <p className="font-bold text-gray-900 text-sm leading-none">Outmail</p>
+              <p className="text-xs text-purple-600 font-medium mt-0.5">TPO Portal</p>
+            </div>
+          )}
+        </div>
+        <button
+          onClick={onToggle}
+          className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"
+        >
+          {isOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+        </button>
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        {navItems.map(({ label, href, icon: Icon }) => (
+          <Link
+            key={label}
+            href={href}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors group"
+          >
+            <Icon size={18} className="flex-shrink-0" />
+            {isOpen && <span className="text-sm font-medium">{label}</span>}
+          </Link>
+        ))}
+      </nav>
+
+      {/* College Badge */}
+      {isOpen && (
+        <div className="px-4 py-4 border-t border-gray-100">
+          <div className="bg-purple-50 rounded-lg px-3 py-2.5">
+            <p className="text-xs font-semibold text-purple-700">BITS Pilani</p>
+            <p className="text-xs text-purple-500 mt-0.5">Pilani Campus · Batch 2025–26</p>
+          </div>
+        </div>
+      )}
+    </aside>
+  );
+}
