@@ -1128,7 +1128,7 @@ const CombinedDashboard = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-white">
             Welcome back,{' '}
-            <span className="text-purple-400">{user?.display_name || user?.name || 'User'}</span> 👋
+            <span className="text-purple-400">{user?.display_name || user?.name || 'User'}</span> 
           </h2>
           <div className="relative inline-block">
             <select

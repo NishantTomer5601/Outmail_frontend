@@ -18,7 +18,7 @@ function page() {
             Contact &amp; Support
           </p>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
+          <h1 className="text-3xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
             Have a Question?
             <br />
             <span className="bg-gradient-to-r from-[#b06cff] via-white to-[#b06cff] bg-clip-text text-transparent">

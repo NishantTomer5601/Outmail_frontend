@@ -42,7 +42,7 @@ export default function TPODashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Good morning, {tpoUser.name.split(" ")[1]} 👋
+                Welcome back, {tpoUser.name.split(" ")[1]} 
               </h1>
               <p className="text-gray-500 text-sm mt-1">
                 {tpoUser.college} &nbsp;·&nbsp; Batch 2025–26 &nbsp;·&nbsp; Last updated: Today, 9:42 AM
