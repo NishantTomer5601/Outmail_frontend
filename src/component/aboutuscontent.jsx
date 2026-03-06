@@ -60,8 +60,8 @@ export default function AboutUs() {
         <div
           className="flex-1 w-full max-w-lg relative"
           style={{
-            maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)',
-            WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)',
+            maskImage: 'linear-gradient(to right, transparent 0%, black 28%, black 85%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 28%, black 85%, transparent 100%)',
           }}
         >
           <Image

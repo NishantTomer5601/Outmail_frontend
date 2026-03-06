@@ -60,13 +60,20 @@ const MembershipBenefits = () => {
           </div>
         </div>
 
-        {/* Right — Product visual */}
-        <div className="relative rounded-2xl w-full h-96 lg:h-[520px] overflow-hidden border border-purple-500/30 shadow-lg">
+        {/* Right — Product visual dissolved into background */}
+        <div
+          className="w-full"
+          style={{
+            maskImage: 'linear-gradient(to right, transparent 0%, black 28%, black 85%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 28%, black 85%, transparent 100%)',
+          }}
+        >
           <Image
             src="/image.png"
             alt="Outmail platform features"
-            fill
-            className="object-cover object-center"
+            width={640}
+            height={520}
+            className="w-full h-auto object-cover object-center opacity-90"
           />
         </div>
 
