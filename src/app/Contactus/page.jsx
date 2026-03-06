@@ -4,6 +4,7 @@ import Navbar from '@/component/Navbar'
 import React from 'react'
 import Footer from '@/component/Footer'
 import GetInTouch from '@/component/getintouch'
+import Faq from '@/component/faq'
 
 function page() {
   return (
@@ -47,6 +48,9 @@ function page() {
       <div id="contact-us">
         <GetInTouch/>
       </div>
+
+      {/* FAQ */}
+      <Faq />
 
       <Footer/>
     </div>

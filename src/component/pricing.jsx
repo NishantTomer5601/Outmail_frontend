@@ -120,7 +120,7 @@ export default function ZPricing() {
           ))}
         </div>
 
-        <p className="text-white/35 text-xs mt-10">
+        <p className="text-white/60 text-sm mt-10">
           All plans are discussed and scoped on a discovery call. No credit card required to connect.
         </p>
       </div>

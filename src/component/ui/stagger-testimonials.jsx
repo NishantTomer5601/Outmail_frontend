@@ -8,34 +8,34 @@ const SQRT_5000 = Math.sqrt(5000);
 
 const testimonials = [
   {
-    testimonial: "I sent over 40 applications on LinkedIn and Naukri — zero replies. A friend suggested Outmail. Within 10 days of running my first cold outreach campaign, I had 4 interview calls. The hiring signal targeting is genuinely insane.",
+    testimonial: "I've sent 60+ applications this semester and heard back from maybe 3. The moment the team explained what Outmail does, I literally said — why doesn't this exist already? I'd pay for this right now. Please launch fast.",
     by: "Arjun Mehta, 4th Year CSE, BITS Pilani",
-    imgSrc: "https://i.pravatar.cc/150?img=11",
+    imgSrc: "",
   },
   {
-    testimonial: "The job feed on Outmail is nothing like any job board I've used. It tells you which companies are actively hiring based on funding and headcount data — not just whatever they posted publicly. I found my internship through a company that hadn't even posted the role yet.",
+    testimonial: "I asked my placement officer if our college could tie up with Outmail and make it part of our placement prep. She loved the idea and asked for a proposal. We're pushing for it to be an official offering next year.",
     by: "Priya Nair, 3rd Year, IIT Bombay",
-    imgSrc: "https://i.pravatar.cc/150?img=21",
+    imgSrc: "",
   },
   {
-    testimonial: "I had a mentorship session with a product manager from a Series B startup through Outmail. In one hour I got more actionable advice than months of reading blogs. She helped me reframe my entire resume and intro email. Got a PPO two months later.",
+    testimonial: "Cold emailing recruiters is something I always knew I should be doing but had no idea how to start. When I saw the Outmail demo, I went and told my entire study group about it. Five of us signed up for early access the same evening.",
     by: "Rohan Sharma, Final Year MBA, IIM Indore",
-    imgSrc: "https://i.pravatar.cc/150?img=33",
+    imgSrc: "",
   },
   {
-    testimonial: "What I love is that the cold emails don't feel spammy. Outmail personalises each one with context about the company — their recent funding, what role you're targeting. Recruiters actually reply because it feels like you did your homework.",
+    testimonial: "Our placement cell has been looking for something exactly like this — a way to help students reach out to companies that aren't even posting on campus portals. We've already raised this with the TPO and she's asked the Outmail team for a demo.",
     by: "Sneha Iyer, 3rd Year ECE, NIT Trichy",
-    imgSrc: "https://i.pravatar.cc/150?img=47",
+    imgSrc: "",
   },
   {
-    testimonial: "Our placement cell piloted Outmail for our batch and the results were honestly surprising. Students who had zero responses from portals started getting recruiter replies within the first week. The analytics dashboard made it easy to track who was reaching out and how campaigns were performing.",
+    testimonial: "When I showed this to my batchmates, the reaction was unanimous — we need this. Everyone is frustrated with portal applications going nowhere. I'm personally vouching for Outmail within our placement committee.",
     by: "Karan Verma, Placement Coordinator, VIT Vellore",
-    imgSrc: "https://i.pravatar.cc/150?img=57",
+    imgSrc: "",
   },
   {
-    testimonial: "I used the job intelligence feature to filter companies by growth stage and sector. Instead of blindly applying everywhere, I shortlisted 15 high-momentum companies and ran a focused campaign. Converted 3 of them into interviews. Quality over quantity — finally.",
+    testimonial: "The idea of targeting companies based on funding signals and growth stage is so obvious in hindsight. I don't understand why no one built this for students before. I've already referred three friends and we're all waiting for the full launch.",
     by: "Ananya Kapoor, 4th Year CS, IIIT Hyderabad",
-    imgSrc: "https://i.pravatar.cc/150?img=25",
+    imgSrc: "",
   },
 ];
 

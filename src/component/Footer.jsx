@@ -39,7 +39,7 @@ export default function Footer() {
                     <li><a href="/Aboutus" className="hover:underline">About Us</a></li>
                     <li><a href={`${process.env.NEXT_PUBLIC_DOCS_URL || 'https://docs.outmail.in'}/terms-and-conditions`} className="hover:underline">Terms and Conditions</a></li>
                     <li><a href={`${process.env.NEXT_PUBLIC_DOCS_URL || 'https://docs.outmail.in'}/privacy-policy`} className="hover:underline">Privacy Policy</a></li> 
-                    <li><a href="/faq" className="hover:underline">FAQ</a></li>
+                    <li><a href="#faq-section" className="hover:underline">FAQ</a></li>
                     <li><a href="/Contactus" className="hover:underline">Contact Us</a></li>
                   </ul>
                 </div>
