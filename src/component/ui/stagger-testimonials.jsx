@@ -75,10 +75,9 @@ const TestimonialCard = ({ position, testimonial, handleMove, cardSize }) => {
         }}
       />
       <img
-        src={testimonial.imgSrc}
-        alt={testimonial.by.split(",")[0]}
-        className="mb-4 h-14 w-12 bg-muted object-cover object-top"
-        style={{ boxShadow: "3px 3px 0px hsl(var(--background))" }}
+        src="/Logo_Outmail.png"
+        alt="Outmail"
+        className="mb-4 h-12 w-12 object-contain"
       />
       <h3
         className={cn(

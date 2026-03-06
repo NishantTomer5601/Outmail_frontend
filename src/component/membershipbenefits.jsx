@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 const benefits = [
   {
@@ -59,9 +60,14 @@ const MembershipBenefits = () => {
           </div>
         </div>
 
-        {/* Right — Visual placeholder */}
-        <div className="bg-[#6c00ff]/20 border border-purple-500/30 rounded-2xl w-full h-96 lg:h-[520px] shadow-lg flex items-center justify-center">
-          <span className="text-white/20 text-sm tracking-widest uppercase">Visual coming soon</span>
+        {/* Right — Product visual */}
+        <div className="relative rounded-2xl w-full h-96 lg:h-[520px] overflow-hidden border border-purple-500/30 shadow-lg">
+          <Image
+            src="/image.png"
+            alt="Outmail platform features"
+            fill
+            className="object-cover object-center"
+          />
         </div>
 
       </div>

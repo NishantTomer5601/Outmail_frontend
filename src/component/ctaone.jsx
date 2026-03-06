@@ -42,14 +42,17 @@ export default function CtaOne() {
             <p className="mb-6 text-white/80">
               Don’t let your application get lost. Outmail gives you the tools to get noticed, connect directly, and land more interviews.
             </p>
-            <button className="bg-white text-black px-6 py-2 rounded-full font-medium hover:bg-gray-200 transition">
+            <a
+              href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google`}
+              className="inline-block bg-white text-black px-6 py-2 rounded-full font-medium hover:bg-gray-200 transition"
+            >
               Get Started Now
-            </button>
+            </a>
           </div>
           <img
-            src="/header.png"
+            src="/Logo_Outmail.png"
             alt="Outmail Job Visibility"
-            className="w-64 mt-10 md:mt-0 md:ml-8 rounded-xl"
+            className="w-44 h-44 mt-10 md:mt-0 md:ml-8 object-contain"
           />
         </div>
       </div>

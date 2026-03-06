@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import FlipMaskCard from './flipmask';
 import Image from 'next/image';
 
 export default function AboutUs() {
@@ -57,9 +56,21 @@ export default function AboutUs() {
           </div>
         </div>
 
-        {/* RIGHT: CARD OR IMAGE */}
-        <div className="flex-1 w-full max-w-md">
-          <FlipMaskCard />
+        {/* RIGHT: IMAGE — dissolved into background via gradient mask */}
+        <div
+          className="flex-1 w-full max-w-lg relative"
+          style={{
+            maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)',
+          }}
+        >
+          <Image
+            src="/image.png"
+            alt="Outmail dashboard preview"
+            width={560}
+            height={460}
+            className="w-full h-auto object-cover object-center opacity-90"
+          />
         </div>
       </div>
     </section>
