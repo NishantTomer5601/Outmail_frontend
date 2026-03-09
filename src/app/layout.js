@@ -31,7 +31,8 @@ export const metadata = {
   title: 'Outmail',
   description: 'Created by Outmail.in',
   icons: {
-    icon: '/Logo_Outmail.png',
+    icon: '/favicon-32.png',
+    apple: '/apple-touch-icon.png',
   },
 };
 
@@ -39,9 +40,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/Logo_Outmail.png" type="image/png" />
-        <link rel="shortcut icon" href="/Logo_Outmail.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/Logo_Outmail.png" />
+        <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+        <link rel="shortcut icon" href="/favicon-32.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet" />

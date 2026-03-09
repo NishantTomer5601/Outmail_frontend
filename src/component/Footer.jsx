@@ -27,7 +27,7 @@ export default function Footer() {
                 {/* Left Column */}
                 <div>
                   <div className="flex items-center gap-2 text-2xl font-bold mb-4">
-                    <Image src="/Logo_Outmail.png" alt="Outmail Logo" width={40} height={40} />
+                    <Image src="/logo-nav.png" alt="Outmail Logo" width={40} height={40} />
                     <span className="text-white font-satisfy text-2xl">Outmail</span>
                   </div>
 
