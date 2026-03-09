@@ -69,7 +69,7 @@ const MembershipBenefits = () => {
           }}
         >
           <Image
-            src="/image.png"
+            src="/OutmailOfferings.png"
             alt="Outmail platform features"
             width={640}
             height={520}

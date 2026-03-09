@@ -65,7 +65,7 @@ export default function AboutUs() {
           }}
         >
           <Image
-            src="/image.png"
+            src="/OutmailOfferings.png"
             alt="Outmail dashboard preview"
             width={560}
             height={460}

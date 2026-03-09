@@ -21,19 +21,19 @@ const painPoints = [
 
 const solutions = [
   {
-    src: '/dashboard_landingPage.png',
+    src: '/ColdOutreachAI_image.png',
     alt: 'Smart Cold Outreach Dashboard',
     heading: 'Reach recruiters before everyone else does.',
     body: 'Outmail surfaces real recruiter contacts tied to live hiring signals — funding rounds, headcount growth, new job postings. Your personalised email lands in their inbox directly, not lost in a portal queue.',
   },
   {
-    src: '/JobOpenings.png',
+    src: '/JobAggregationAI_image.png',
     alt: 'Curated Job Openings',
     heading: 'See the hidden job market, ranked by urgency.',
     body: 'Our job intelligence feed curates roles by Outmail Priority Score — combining hiring urgency, company momentum, and funding stage. You act on signals, not stale listings.',
   },
   {
-    src: '/Mentorship.png',
+    src: '/MentorshipAI_image.png',
     alt: 'Expert Mentorship',
     heading: "Learn from people who’ve cracked it already.",
     body: 'Book sessions with professionals and alumni across industries. Get your resume reviewed, your outreach strategy sharpened, and your confidence backed by real-world experience.',
