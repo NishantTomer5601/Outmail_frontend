@@ -22,10 +22,10 @@ function Navbar() {
       <nav className="relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
         
         {/* Logo */}
-        <div className="flex items-center space-x-2 text-2xl font-bold">
+        <Link href="/" className="flex items-center space-x-2 text-2xl font-bold">
           <Image src="/logo-nav.png" alt="Logo" width={40} height={40} />
           <span className="text-white font-satisfy text-2xl">Outmail</span>
-        </div>
+        </Link>
 
         {/* Desktop Links */}
         <div className="hidden md:flex space-x-6 text-white text-lg font-medium">

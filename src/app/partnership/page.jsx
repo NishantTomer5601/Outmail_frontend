@@ -1,415 +1,481 @@
 "use client";
 
-import { motion } from "framer-motion";
-import Navbar from "@/component/Navbar";
-import Footer from "@/component/Footer";
+import { useState } from "react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  PhaseCard,
-  NoteBox,
-  ToolsBox,
-  Checklist,
-  Pitfalls,
-  SectionHeading,
-  TimeBox,
-  NavProgress,
-  HeroSection,
-} from "@/component/playbook";
+  Sparkles,
+  Phone,
+  ArrowRight,
+  Mail,
+  Building2,
+  Send,
+  Search,
+  BarChart3,
+  Shield,
+  Headphones,
+  Check,
+  Globe,
+  Users,
+  FileText,
+  Zap,
+  Eye,
+  X,
+} from "lucide-react";
+
+const fadeUp = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.2 },
+  transition: { duration: 0.55 },
+};
+
+const staggerParent = {
+  initial: {},
+  whileInView: {
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+  viewport: { once: true, amount: 0.2 },
+};
+
+const staggerItem = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  transition: { duration: 0.45 },
+};
+
+const featureCards = [
+  {
+    icon: Send,
+    title: "Student Outreach Infrastructure",
+    points: [
+      "Structured recruiter outreach campaigns using student Gmail accounts",
+      "Smart company database for recruiter targeting",
+      "Personalized email templates for cold outreach",
+      "Campaign scheduling and safe sending limits",
+      "Email campaign analytics and tracking",
+    ],
+  },
+  {
+    icon: Search,
+    title: "Opportunity Discovery",
+    points: [
+      "Curated job opportunity discovery for students",
+      "Company hiring signals (funding, hiring trends, growth stage)",
+      "Industry and role-based opportunity filters",
+      "Job bookmarking and tracking",
+    ],
+  },
+  {
+    icon: BarChart3,
+    title: "Placement Visibility for Universities",
+    points: [
+      "Institutional dashboard for placement officers",
+      "Visibility into student outreach activity",
+      "Companies contacted vs untouched insights",
+      "Student engagement analytics",
+      "Interview and offer tracking (self-reported)",
+    ],
+  },
+  {
+    icon: Shield,
+    title: "Governance and Controls",
+    points: [
+      "Outreach enable/disable controls for placement officers",
+      "Sending limits and safe-sending compliance",
+      "Activity monitoring for institutional transparency",
+    ],
+  },
+  {
+    icon: Headphones,
+    title: "Institution Support",
+    points: [
+      "Dedicated onboarding assistance",
+      "Account support for placement teams",
+      "Institutional reporting and insights",
+    ],
+  },
+];
+
+const customOptions = [
+  { icon: Send, label: "Outreach-only deployments" },
+  { icon: Globe, label: "Opportunity discovery integrations" },
+  { icon: Users, label: "Mentorship or placement preparation modules" },
+  { icon: FileText, label: "Institution-specific reporting dashboards" },
+];
+
+const trustCards = [
+  {
+    icon: Eye,
+    title: "Full Visibility",
+    body: "Know what every student is doing — without micromanaging.",
+  },
+  {
+    icon: Shield,
+    title: "Safe & Compliant",
+    body: "Sending limits, controls, and institutional governance built-in.",
+  },
+  {
+    icon: BarChart3,
+    title: "Outcome Focused",
+    body: "Track interviews, offers, and real placement metrics.",
+  },
+];
+
+function GradientWord({ children }) {
+  return (
+    <span className="bg-gradient-to-r from-[#ad46ff] via-[#c387ff] to-[#6c00ff] bg-clip-text text-transparent">
+      {children}
+    </span>
+  );
+}
+
+function BookCallButton({ onClick, className = "", children }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#6c00ff] to-[#ad46ff] text-white px-6 py-3 rounded-xl font-semibold shadow-[0_10px_30px_rgba(108,0,255,0.35)] hover:brightness-110 transition ${className}`}
+    >
+      <Phone size={16} />
+      <span>{children || "Book a Call"}</span>
+      <ArrowRight size={16} />
+    </button>
+  );
+}
 
 export default function PartnershipPage() {
+  const [isBookCallOpen, setIsBookCallOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-black">
-      {/* Scroll progress bar — fixed top */}
-      <NavProgress />
+    <div className="min-h-screen bg-[#0a0b14] text-white">
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0b14]/70 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <a href="/" className="flex items-center gap-2">
+            <Image src="/logo-nav.png" alt="Outmail Logo" width={36} height={36} />
+            <span className="font-satisfy text-3xl leading-none">Outmail</span>
+          </a>
 
-      <Navbar />
+          <div className="hidden md:flex items-center gap-8 text-sm text-white/75">
+            <a href="/partnership" className="hover:text-white transition">Partnership</a>
+            <a href="mailto:contact@outmail.in" className="hover:text-white transition">Contact</a>
+          </div>
 
-      <HeroSection />
+          <BookCallButton onClick={() => setIsBookCallOpen(true)} className="px-4 py-2.5 rounded-full text-sm" />
+        </div>
+      </header>
 
-      <main className="max-w-4xl mx-auto px-6 pb-24 pt-6">
-        <NoteBox>
-          This playbook assumes you are resource-constrained, time-constrained,
-          and trying to build something real — not a demo or side project.
-        </NoteBox>
+      {/* Hero */}
+      <section className="relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 pt-24 pb-20 text-center relative z-10">
+          <motion.div {...fadeUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/15 bg-white/5 text-sm text-white/80">
+            <Sparkles size={14} className="text-[#ad46ff]" />
+            Pricing
+          </motion.div>
 
-        <div className="space-y-16 mt-16">
-          {/* ── Phase 0 ── */}
-          <PhaseCard phase={0} title="Founder & Platform Foundation" id="phase-0">
-            <TimeBox time="2–4 hours (one-time setup)" />
+          <motion.h1 {...fadeUp} className="mt-6 font-syne text-4xl md:text-6xl font-bold leading-tight max-w-5xl mx-auto">
+            Simple Pricing for Universities That Want{" "}
+            <GradientWord>Better Placement Outcomes</GradientWord>
+          </motion.h1>
 
-            <div className="space-y-6">
-              <div>
-                <SectionHeading>Goal</SectionHeading>
-                <p className="text-white/60 mt-2">
-                  Establish absolute ownership, recoverability, and clarity across all tools
-                  before you touch production code.
-                </p>
-              </div>
+          <motion.p {...fadeUp} className="mt-6 text-white/70 max-w-4xl mx-auto text-lg leading-relaxed">
+            Outmail helps universities empower students to run structured recruiter outreach,
+            discover high-quality opportunities, and give placement officers visibility into
+            off-campus hiring activity.
+          </motion.p>
 
-              <div>
-                <SectionHeading>Why This Phase Matters</SectionHeading>
-                <p className="text-white/60 mt-2">
-                  In real startups, people leave, emails get locked, passwords are forgotten,
-                  and access disputes kill momentum. Phase 0 prevents silent failure modes
-                  that don't show up until it's too late.
-                </p>
-              </div>
+          <motion.p {...fadeUp} className="mt-4 text-white/60 max-w-3xl mx-auto text-lg leading-relaxed">
+            Instead of fixed pricing tiers, we offer a simple institutional plan designed
+            specifically for universities.
+          </motion.p>
 
-              <div>
-                <SectionHeading>Email &amp; Identity Strategy</SectionHeading>
-                <p className="text-white/60 mt-2 mb-3">
-                  Use <strong className="text-white">one primary Gmail account</strong> owned by the founder.
-                  Never create separate inboxes for tools.
-                </p>
-                <div className="space-y-1 text-white/60">
-                  <p>• Example: <code className="font-mono text-[#AD46FF] bg-[#6c00ff]/10 px-1.5 py-0.5 rounded text-sm">founder@gmail.com</code></p>
-                  <p>• Aliases: <code className="font-mono text-[#AD46FF] bg-[#6c00ff]/10 px-1.5 py-0.5 rounded text-sm">founder+github@gmail.com</code>, <code className="font-mono text-[#AD46FF] bg-[#6c00ff]/10 px-1.5 py-0.5 rounded text-sm">founder+sentry@gmail.com</code></p>
-                </div>
-              </div>
-
-              <ToolsBox tools={["Gmail (aliases)", "Google Password Manager"]} />
-
-              <div>
-                <SectionHeading>Core Platforms to Create</SectionHeading>
-                <ul className="mt-3 space-y-2 text-white/60">
-                  <li><strong className="text-white">GitHub</strong> — code, repos, CI</li>
-                  <li><strong className="text-white">Notion</strong> — documentation, planning, decisions</li>
-                  <li><strong className="text-white">Figma</strong> — UX flows, not visual polish</li>
-                </ul>
-              </div>
-
-              <div>
-                <SectionHeading>Non-Negotiables</SectionHeading>
-                <ul className="mt-3 space-y-2 text-white/60">
-                  <li>• 2FA enabled everywhere</li>
-                  <li>• Recovery email &amp; phone configured</li>
-                  <li>• No shared passwords</li>
-                </ul>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <Checklist
-                  items={[
-                    "Single Gmail with aliases",
-                    "GitHub / Notion / Figma created",
-                    "2FA + recovery verified",
-                  ]}
-                />
-                <Pitfalls
-                  items={[
-                    "Multiple emails per tool",
-                    "Using employee personal accounts",
-                    "\"We'll fix security later\" thinking",
-                  ]}
-                />
-              </div>
-            </div>
-          </PhaseCard>
-
-          {/* ── Phase 1 ── */}
-          <PhaseCard phase={1} title="Product Definition & MVP Build" id="phase-1">
-            <TimeBox time="2–4 weeks" />
-
-            <div className="space-y-6">
-              <div>
-                <SectionHeading>Goal</SectionHeading>
-                <p className="text-white/60 mt-2">
-                  Deliver a working MVP that completes one meaningful user journey end-to-end.
-                </p>
-              </div>
-
-              <div>
-                <SectionHeading>Real-World SaaS Focus</SectionHeading>
-                <p className="text-white/60 mt-2">
-                  Your MVP exists to learn, not to impress. Every extra abstraction slows learning.
-                </p>
-              </div>
-
-              <ToolsBox
-                title="Backend Stack"
-                tools={["Node.js", "Express / Fastify", "PostgreSQL", "Prisma ORM"]}
-              />
-
-              <p className="text-white/60">
-                Design APIs around real user actions. Avoid generic CRUD-first designs.
-              </p>
-
-              <ToolsBox
-                title="Frontend Stack"
-                tools={["Next.js", "Tailwind CSS", "Vercel (free tier)"]}
-              />
-
-              <div>
-                <SectionHeading>Repository &amp; Branching Strategy</SectionHeading>
-                <p className="text-white/60 mt-2 mb-3">
-                  Use a <strong className="text-white">single repository</strong>.
-                </p>
-                <ul className="space-y-2 text-white/60">
-                  <li>• <code className="font-mono text-[#AD46FF] bg-[#6c00ff]/10 px-1.5 py-0.5 rounded text-sm">main</code> branch → production</li>
-                  <li>• Feature branches → short-lived</li>
-                  <li>• No long-running dev branches</li>
-                </ul>
-              </div>
-
-              <div>
-                <SectionHeading>What NOT To Do</SectionHeading>
-                <ul className="mt-3 space-y-2 text-white/60">
-                  <li>• No microservices</li>
-                  <li>• No Kafka, Redis, queues unless forced</li>
-                  <li>• No "future-proofing"</li>
-                </ul>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <Checklist
-                  items={[
-                    "App deployed publicly",
-                    "One user flow works fully",
-                    "Auth + data persistence confirmed",
-                  ]}
-                />
-                <Pitfalls
-                  items={[
-                    "Overengineering architecture",
-                    "Local-only development",
-                    "Chasing edge cases",
-                  ]}
-                />
-              </div>
-            </div>
-          </PhaseCard>
-
-          {/* ── Phase 2 ── */}
-          <PhaseCard phase={2} title="Validation & Product Quality" id="phase-2">
-            <TimeBox time="1–2 weeks (overlapping with MVP)" />
-
-            <div className="space-y-6">
-              <div>
-                <SectionHeading>Goal</SectionHeading>
-                <p className="text-white/60 mt-2">
-                  Verify that users understand, trust, and extract value from your product.
-                </p>
-              </div>
-
-              <ToolsBox
-                title="UX & Feedback Strategy"
-                tools={["Figma (flows only)", "Google Forms", "Zoom / Meet"]}
-              />
-
-              <p className="text-white/60">
-                Focus on confusion, drop-offs, and hesitation — not compliments.
-              </p>
-
-              <div>
-                <SectionHeading>Documentation</SectionHeading>
-                <ul className="mt-3 space-y-2 text-white/60">
-                  <li>• What problem we solve</li>
-                  <li>• What we deliberately ignore</li>
-                  <li>• Known limitations</li>
-                </ul>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <Checklist
-                  items={[
-                    "User flows documented",
-                    "Feedback collected",
-                    "Top 3 friction points identified",
-                  ]}
-                />
-                <Pitfalls
-                  items={[
-                    "Ignoring negative feedback",
-                    "UI polish before clarity",
-                    "Assuming usage = value",
-                  ]}
-                />
-              </div>
-            </div>
-          </PhaseCard>
-
-          {/* ── Phase 3 ── */}
-          <PhaseCard phase={3} title="Engineering Structure & Scale" id="phase-3">
-            <TimeBox time="2–3 weeks (only after validation)" />
-
-            <div className="space-y-6">
-              <div>
-                <SectionHeading>Goal</SectionHeading>
-                <p className="text-white/60 mt-2">
-                  Make the system safe, maintainable, and team-ready.
-                </p>
-              </div>
-
-              <div>
-                <SectionHeading>Architecture Evolution</SectionHeading>
-                <p className="text-white/60 mt-2 mb-3">
-                  Start with a modular monolith. Extract services only when:
-                </p>
-                <ul className="space-y-2 text-white/60">
-                  <li>• Different scaling needs exist</li>
-                  <li>• Teams block each other</li>
-                  <li>• Operational risk is isolated</li>
-                </ul>
-              </div>
-
-              <ToolsBox
-                title="Multi-Repo Strategy"
-                tools={["GitHub Organizations", "GitHub Actions"]}
-              />
-
-              <div>
-                <SectionHeading>Security &amp; Ops</SectionHeading>
-                <ul className="mt-3 space-y-2 text-white/60">
-                  <li>• Env separation (dev / stage / prod)</li>
-                  <li>• Secrets via platform env vars</li>
-                  <li>• Role-based access</li>
-                </ul>
-              </div>
-
-              <Pitfalls
-                items={[
-                  "Microservices for prestige",
-                  "Manual deployments",
-                  "Hardcoded secrets",
-                ]}
-              />
-            </div>
-          </PhaseCard>
-
-          {/* ── Phase 4 ── */}
-          <PhaseCard phase={4} title="Go-To-Market (Real SaaS)" id="phase-4">
-            <TimeBox time="Ongoing (start early)" />
-
-            <div className="space-y-6">
-              <div>
-                <SectionHeading>Goal</SectionHeading>
-                <p className="text-white/60 mt-2">
-                  Generate trust, conversations, and early revenue signals.
-                </p>
-              </div>
-
-              <ToolsBox
-                title="Marketing Foundations"
-                tools={["Next.js landing page", "Google Docs", "Google Slides", "Loom"]}
-              />
-
-              <div>
-                <SectionHeading>What Your Pitch Must Cover</SectionHeading>
-                <ul className="mt-3 space-y-2 text-white/60">
-                  <li>• Problem (why now)</li>
-                  <li>• Who it is NOT for</li>
-                  <li>• Differentiation vs competitors</li>
-                  <li>• Operational credibility</li>
-                  <li>• Security &amp; reliability posture</li>
-                </ul>
-              </div>
-
-              <div>
-                <SectionHeading>Sales Thinking (Early Stage)</SectionHeading>
-                <p className="text-white/60 mt-2 mb-3">
-                  You are not selling features. You are selling:
-                </p>
-                <ul className="space-y-2 text-white/60">
-                  <li>• Reduced risk</li>
-                  <li>• Time savings</li>
-                  <li>• Operational confidence</li>
-                </ul>
-              </div>
-
-              <div>
-                <SectionHeading>SLA / SLO (Early)</SectionHeading>
-                <ul className="mt-3 space-y-2 text-white/60">
-                  <li>• Response times (human, honest)</li>
-                  <li>• Uptime expectations</li>
-                  <li>• Data handling clarity</li>
-                </ul>
-              </div>
-
-              <Pitfalls
-                items={[
-                  "Feature dumping",
-                  "Over-automation",
-                  "Waiting for \"launch\"",
-                ]}
-              />
-            </div>
-          </PhaseCard>
-
-          {/* ── Phase 5 ── */}
-          <PhaseCard phase={5} title="Operate & Iterate" id="phase-5">
-            <TimeBox time="Ongoing" />
-
-            <div className="space-y-6">
-              <div>
-                <SectionHeading>Goal</SectionHeading>
-                <p className="text-white/60 mt-2">
-                  Operate SaaS as a learning system.
-                </p>
-              </div>
-
-              <ToolsBox
-                title="Monitoring & Analytics"
-                tools={["Sentry (errors)", "PostHog / Plausible (usage)"]}
-              />
-
-              <p className="text-white/60">
-                Track what users actually do — not what you hope they do.
-              </p>
-
-              <div>
-                <SectionHeading>Support &amp; Trust</SectionHeading>
-                <ul className="mt-3 space-y-2 text-white/60">
-                  <li>• Clear support email</li>
-                  <li>• Fast responses early</li>
-                  <li>• Public reliability mindset</li>
-                </ul>
-              </div>
-
-              <Pitfalls
-                items={[
-                  "Vanity metrics",
-                  "Ignoring small failures",
-                  "Shipping without learning",
-                ]}
-              />
-            </div>
-          </PhaseCard>
+          <motion.div {...fadeUp} className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <BookCallButton onClick={() => setIsBookCallOpen(true)} />
+            <a
+              href="mailto:contact@outmail.in"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/20 text-white/85 hover:bg-white/10 transition"
+            >
+              <Mail size={16} />
+              Contact Us
+            </a>
+          </motion.div>
         </div>
 
-        {/* Closing credits */}
+        {/* Floating shapes */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="mt-24 pt-8 border-t border-white/10 text-center space-y-3"
-        >
-          <p className="text-white/40 text-sm font-syne">
-            © SaaS Builder Playbook — Built for founders who want clarity, discipline, and leverage.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-white/40">
-            <a href="/Aboutus" className="hover:text-white/70 transition">About Us</a>
-            <span>·</span>
-            <a href="/Contactus" className="hover:text-white/70 transition">Contact Us</a>
-            <span>·</span>
-            <a
-              href={`${process.env.NEXT_PUBLIC_DOCS_URL || "https://docs.outmail.in"}/privacy-policy`}
-              className="hover:text-white/70 transition"
-            >
-              Privacy Policy
-            </a>
-            <span>·</span>
-            <a
-              href={`${process.env.NEXT_PUBLIC_DOCS_URL || "https://docs.outmail.in"}/terms-and-conditions`}
-              className="hover:text-white/70 transition"
-            >
-              Terms &amp; Conditions
-            </a>
-            <span>·</span>
-            <a href="#faq-section" className="hover:text-white/70 transition">FAQ</a>
+          animate={{ y: [0, -18, 0] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-24 left-[10%] w-36 h-36 rounded-2xl border border-white/10 bg-[#6c00ff]/20 rotate-12 blur-[1px]"
+        />
+        <motion.div
+          animate={{ y: [0, 16, 0] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-32 right-[12%] w-20 h-20 rounded-full border border-white/15 bg-[#ad46ff]/20"
+        />
+        <motion.div
+          animate={{ y: [0, -14, 0] }}
+          transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-8 left-[20%] w-24 h-24 rounded-lg border border-white/10 bg-[#2f1a7a]/40 -rotate-12"
+        />
+      </section>
+
+      {/* Pricing Card */}
+      <section className="px-6 pb-20">
+        <motion.div {...fadeUp} className="max-w-2xl mx-auto rounded-2xl overflow-hidden border border-white/12 bg-white/5 backdrop-blur-xl shadow-[0_0_45px_rgba(108,0,255,0.20)]">
+          <div className="h-1 w-full bg-gradient-to-r from-[#6c00ff] to-[#ad46ff]" />
+          <div className="p-8 md:p-10 text-center">
+            <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-r from-[#6c00ff] to-[#ad46ff] flex items-center justify-center mb-5 shadow-[0_10px_25px_rgba(108,0,255,0.35)]">
+              <Building2 size={24} />
+            </div>
+            <h2 className="font-syne text-2xl md:text-3xl font-bold">Outmail Institutional Platform</h2>
+            <p className="text-white/65 mt-2">A complete placement intelligence and outreach platform for universities.</p>
+
+            <div className="mt-8">
+              <p className="font-syne text-5xl md:text-6xl font-bold leading-none">
+                <GradientWord>₹499</GradientWord>
+              </p>
+              <p className="text-white/70 mt-2 text-lg">/ student / month</p>
+              <p className="text-white/50 mt-2 text-sm">Billed institutionally based on active students.</p>
+            </div>
+
+            <BookCallButton onClick={() => setIsBookCallOpen(true)} className="w-full mt-8" />
+
+            <p className="text-white/45 text-sm mt-4">Custom plans available for larger institutions</p>
           </div>
         </motion.div>
-      </main>
+      </section>
 
-      <Footer />
+      {/* Features */}
+      <section className="px-6 pb-24">
+        <motion.div {...fadeUp} className="max-w-7xl mx-auto text-center">
+          <h3 className="font-syne text-3xl md:text-5xl font-bold">
+            Everything Your <GradientWord>Placement Office</GradientWord> Needs
+          </h3>
+          <p className="text-white/60 mt-3 text-lg">One plan. Full capabilities. Built for universities.</p>
+        </motion.div>
+
+        <motion.div
+          variants={staggerParent}
+          initial="initial"
+          whileInView="whileInView"
+          viewport={{ once: true, amount: 0.15 }}
+          className="max-w-7xl mx-auto mt-12 grid md:grid-cols-2 xl:grid-cols-3 gap-6"
+        >
+          {featureCards.map((card, index) => {
+            const Icon = card.icon;
+            return (
+              <motion.div
+                variants={staggerItem}
+                key={index}
+                className="rounded-2xl border border-white/12 bg-white/5 backdrop-blur-xl p-6 hover:border-[#ad46ff]/40 hover:shadow-[0_0_30px_rgba(108,0,255,0.2)] transition"
+              >
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-r from-[#6c00ff] to-[#ad46ff] flex items-center justify-center mb-4">
+                  <Icon size={20} />
+                </div>
+                <h4 className="font-syne text-xl font-semibold mb-4">{card.title}</h4>
+                <ul className="space-y-2.5 text-sm text-white/70 text-left">
+                  {card.points.map((point, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <Check size={14} className="text-emerald-400 mt-1 flex-shrink-0" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      </section>
+
+      {/* Customization */}
+      <section className="px-6 pb-24">
+        <motion.div
+          {...fadeUp}
+          className="max-w-6xl mx-auto rounded-2xl border border-white/12 bg-white/5 backdrop-blur-xl p-8 md:p-10"
+        >
+          <h3 className="font-syne text-3xl md:text-4xl font-bold leading-tight">
+            Need a <GradientWord>Custom Setup</GradientWord> for Your Institution?
+          </h3>
+          <p className="text-white/65 mt-4 max-w-3xl">
+            Every university has different placement workflows. Outmail can be configured based on your placement structure,
+            student size, and outreach strategy.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-4 mt-8">
+            {customOptions.map((opt, i) => {
+              const Icon = opt.icon;
+              return (
+                <motion.div
+                  key={i}
+                  variants={staggerItem}
+                  initial="initial"
+                  whileInView="whileInView"
+                  viewport={{ once: true }}
+                  className="rounded-xl border border-white/12 bg-[#0f1222] p-4 flex items-start gap-3"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-[#6c00ff]/25 border border-[#ad46ff]/30 flex items-center justify-center">
+                    <Icon size={16} className="text-[#c387ff]" />
+                  </div>
+                  <p className="text-white/80 text-sm leading-relaxed">{opt.label}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <BookCallButton onClick={() => setIsBookCallOpen(true)}>
+              Schedule a Call to Discuss
+            </BookCallButton>
+            <a href="mailto:contact@outmail.in" className="text-white/80 hover:text-white underline underline-offset-4">
+              Or email us at contact@outmail.in
+            </a>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Trust */}
+      <section className="px-6 pb-24">
+        <motion.div {...fadeUp} className="max-w-6xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/15 bg-white/5 text-sm text-white/80">
+            <Zap size={14} className="text-[#ad46ff]" />
+            Why Outmail
+          </div>
+          <h3 className="font-syne text-3xl md:text-5xl font-bold mt-5 leading-tight">
+            Built for the Next Generation of <GradientWord>Placement Infrastructure</GradientWord>
+          </h3>
+          <p className="text-white/65 mt-4 max-w-4xl mx-auto">
+            Outmail is designed to help universities bring structure and visibility to off-campus placements
+            while empowering students to take proactive action.
+          </p>
+        </motion.div>
+
+        <motion.div
+          variants={staggerParent}
+          initial="initial"
+          whileInView="whileInView"
+          viewport={{ once: true }}
+          className="max-w-6xl mx-auto mt-10 grid md:grid-cols-3 gap-6"
+        >
+          {trustCards.map((item, i) => {
+            const Icon = item.icon;
+            return (
+              <motion.div key={i} variants={staggerItem} className="rounded-2xl border border-white/12 bg-white/5 backdrop-blur-xl p-6 text-left">
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-r from-[#6c00ff] to-[#ad46ff] flex items-center justify-center mb-4">
+                  <Icon size={20} />
+                </div>
+                <h4 className="font-syne text-xl font-semibold mb-2">{item.title}</h4>
+                <p className="text-white/65 text-sm leading-relaxed">{item.body}</p>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="px-6 pb-24">
+        <motion.div {...fadeUp} className="max-w-4xl mx-auto text-center rounded-2xl border border-white/12 bg-white/5 backdrop-blur-xl p-8 md:p-12">
+          <h3 className="font-syne text-3xl md:text-5xl font-bold leading-tight">
+            Bring <GradientWord>Structured Outreach</GradientWord> to Your Students
+          </h3>
+
+          <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+            <BookCallButton onClick={() => setIsBookCallOpen(true)} />
+            <a
+              href="mailto:contact@outmail.in"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/20 text-white/85 hover:bg-white/10 transition"
+            >
+              <Mail size={16} />
+              Contact Us
+            </a>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-white/10 bg-[#090b16]">
+        <div className="max-w-7xl mx-auto px-6 py-14 grid md:grid-cols-3 gap-10">
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <Image src="/logo-nav.png" alt="Outmail" width={34} height={34} />
+              <span className="font-satisfy text-3xl">Outmail</span>
+            </div>
+            <p className="text-white/60 text-sm max-w-xs">
+              Helping universities improve off-campus placement outcomes.
+            </p>
+          </div>
+
+          <div>
+            <p className="font-syne text-sm uppercase tracking-[0.2em] text-white/80 mb-3">Links</p>
+            <div className="space-y-2 text-sm text-white/60">
+              <a href="/partnership" className="block hover:text-white transition">Partnership</a>
+              <a href={`${process.env.NEXT_PUBLIC_DOCS_URL || "https://docs.outmail.in"}/terms-and-conditions`} className="block hover:text-white transition">Terms and Conditions</a>
+              <a href={`${process.env.NEXT_PUBLIC_DOCS_URL || "https://docs.outmail.in"}/privacy-policy`} className="block hover:text-white transition">Privacy Policy</a>
+              <a href="/#faq-section" className="block hover:text-white transition">FAQ</a>
+            </div>
+          </div>
+
+          <div>
+            <p className="font-syne text-sm uppercase tracking-[0.2em] text-white/80 mb-3">Contact</p>
+            <a href="mailto:contact@outmail.in" className="inline-flex items-center gap-2 text-white/70 hover:text-white transition">
+              <Mail size={15} />
+              contact@outmail.in
+            </a>
+          </div>
+        </div>
+
+        <div className="border-t border-white/10 py-5 text-center text-sm text-white/45">
+          © 2026 Outmail. All rights reserved.
+        </div>
+      </footer>
+
+      {/* Book a Call modal */}
+      <AnimatePresence>
+        {isBookCallOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm p-4 flex items-center justify-center"
+            onClick={() => setIsBookCallOpen(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ duration: 0.25 }}
+              className="w-full max-w-md rounded-2xl border border-white/15 bg-[#121625] p-7 relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setIsBookCallOpen(false)}
+                className="absolute top-4 right-4 text-white/50 hover:text-white"
+                aria-label="Close modal"
+              >
+                <X size={18} />
+              </button>
+
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-[#6c00ff] to-[#ad46ff] flex items-center justify-center mb-5 shadow-[0_10px_25px_rgba(108,0,255,0.35)]">
+                <Phone size={24} />
+              </div>
+
+              <h4 className="font-syne text-2xl font-bold mb-3">Book a Call</h4>
+              <p className="text-white/70 leading-relaxed mb-6">
+                Please mail us at contact@outmail.in with your preferred timing for a call and we will get in touch with you.
+              </p>
+
+              <a
+                href="mailto:contact@outmail.in"
+                className="inline-flex w-full items-center justify-center gap-2 bg-gradient-to-r from-[#6c00ff] to-[#ad46ff] text-white px-5 py-3 rounded-xl font-semibold hover:brightness-110 transition"
+              >
+                <Mail size={16} />
+                Send Email
+              </a>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
