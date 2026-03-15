@@ -8,34 +8,34 @@ const SQRT_5000 = Math.sqrt(5000);
 
 const testimonials = [
   {
-    testimonial: "My favorite solution in the market. We work 5x faster with COMPANY.",
-    by: "Alex, CEO at TechCorp",
-    imgSrc: "https://i.pravatar.cc/150?img=1",
+    testimonial: "I've sent 60+ applications this semester and heard back from maybe 3. The moment the team explained what Outmail does, I literally said — why doesn't this exist already? I'd pay for this right now. Please launch fast.",
+    by: "Arjun Mehta, 4th Year CSE, BITS Pilani",
+    imgSrc: "",
   },
   {
-    testimonial: "I'm confident my data is safe with COMPANY. I can't say that about other providers.",
-    by: "Dan, CTO at SecureNet",
-    imgSrc: "https://i.pravatar.cc/150?img=2",
+    testimonial: "I asked my placement officer if our college could tie up with Outmail and make it part of our placement prep. She loved the idea and asked for a proposal. We're pushing for it to be an official offering next year.",
+    by: "Priya Nair, 3rd Year, IIT Bombay",
+    imgSrc: "",
   },
   {
-    testimonial: "I know it's cliche, but we were lost before we found COMPANY. Can't thank you guys enough!",
-    by: "Stephanie, COO at InnovateCo",
-    imgSrc: "https://i.pravatar.cc/150?img=3",
+    testimonial: "Cold emailing recruiters is something I always knew I should be doing but had no idea how to start. When I saw the Outmail demo, I went and told my entire study group about it. Five of us signed up for early access the same evening.",
+    by: "Rohan Sharma, Final Year MBA, IIM Indore",
+    imgSrc: "",
   },
   {
-    testimonial: "COMPANY's products make planning for the future seamless. Can't recommend them enough!",
-    by: "Marie, CFO at FuturePlanning",
-    imgSrc: "https://i.pravatar.cc/150?img=4",
+    testimonial: "Our placement cell has been looking for something exactly like this — a way to help students reach out to companies that aren't even posting on campus portals. We've already raised this with the TPO and she's asked the Outmail team for a demo.",
+    by: "Sneha Iyer, 3rd Year ECE, NIT Trichy",
+    imgSrc: "",
   },
   {
-    testimonial: "If I could give 11 stars, I'd give 12.",
-    by: "Andre, Head of Design at CreativeSolutions",
-    imgSrc: "https://i.pravatar.cc/150?img=5",
+    testimonial: "When I showed this to my batchmates, the reaction was unanimous — we need this. Everyone is frustrated with portal applications going nowhere. I'm personally vouching for Outmail within our placement committee.",
+    by: "Karan Verma, Placement Coordinator, VIT Vellore",
+    imgSrc: "",
   },
   {
-    testimonial: "SO SO SO HAPPY WE FOUND YOU GUYS!!!! I'd bet you've saved me 100 hours so far.",
-    by: "Jeremy, Product Manager at TimeWise",
-    imgSrc: "https://i.pravatar.cc/150?img=6",
+    testimonial: "The idea of targeting companies based on funding signals and growth stage is so obvious in hindsight. I don't understand why no one built this for students before. I've already referred three friends and we're all waiting for the full launch.",
+    by: "Ananya Kapoor, 4th Year CS, IIIT Hyderabad",
+    imgSrc: "",
   },
 ];
 
@@ -46,10 +46,10 @@ const TestimonialCard = ({ position, testimonial, handleMove, cardSize }) => {
     <div
       onClick={() => handleMove(position)}
       className={cn(
-        "absolute left-1/2 top-1/2 cursor-pointer border p-8 transition-all duration-500 ease-in-out",
+        "absolute left-1/2 top-1/2 cursor-pointer border p-8 transition-all duration-500 ease-in-out overflow-hidden",
         isCenter
-          ? "z-10 bg-[#5C1ED9] text-white font-extrabold border-primary"
-          : "z-0 bg-white text-black border-border hover:border-primary/50"
+          ? "z-10 bg-[#5C1ED9] border-purple-400"
+          : "z-0 bg-white border-border hover:border-primary/50"
       )}
       style={{
         width: cardSize,
@@ -62,7 +62,7 @@ const TestimonialCard = ({ position, testimonial, handleMove, cardSize }) => {
           translateY(${isCenter ? -65 : position % 2 ? 15 : -15}px)
           rotate(${isCenter ? 0 : position % 2 ? 2.5 : -2.5}deg)
         `,
-        boxShadow: isCenter ? "0px 8px 0px 4px hsl(var(--border))" : "0px 0px 0px 0px transparent",
+        boxShadow: isCenter ? "0px 8px 0px 4px rgba(108,0,255,0.5)" : "0px 0px 0px 0px transparent",
       }}
     >
       <span
@@ -75,26 +75,25 @@ const TestimonialCard = ({ position, testimonial, handleMove, cardSize }) => {
         }}
       />
       <img
-        src={testimonial.imgSrc}
-        alt={testimonial.by.split(",")[0]}
-        className="mb-4 h-14 w-12 bg-muted object-cover object-top"
-        style={{ boxShadow: "3px 3px 0px hsl(var(--background))" }}
+        src="/Logo_Outmail.png"
+        alt="Outmail"
+        className="mb-4 h-12 w-12 object-contain"
       />
       <h3
         className={cn(
-          "text-base sm:text-xl font-medium",
-          isCenter ? "text-primary-foreground" : "text-black"
+          "text-sm sm:text-base font-medium leading-relaxed line-clamp-6",
+          isCenter ? "text-white" : "text-gray-800"
         )}
       >
-        "{testimonial.testimonial}"
+        &ldquo;{testimonial.testimonial}&rdquo;
       </h3>
       <p
         className={cn(
-          "absolute bottom-8 left-8 right-8 mt-2 text-sm italic",
-          isCenter ? "text-primary-foreground/80" : "text-muted-foreground"
+          "absolute bottom-8 left-8 right-8 mt-2 text-xs italic",
+          isCenter ? "text-white/70" : "text-gray-500"
         )}
       >
-        - {testimonial.by}
+        — {testimonial.by}
       </p>
     </div>
   );

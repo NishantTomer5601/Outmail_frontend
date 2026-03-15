@@ -1,0 +1,158 @@
+"use client";
+import TPOPageShell from "@/component/tpo/TPOPageShell";
+import { ResponsiveLine } from "@nivo/line";
+import { ResponsiveBar } from "@nivo/bar";
+import { ResponsivePie } from "@nivo/pie";
+import { Download, TrendingUp } from "lucide-react";
+
+const engagementTrend = [
+  { id:"Active Students", color:"#7C3AED", data:[{x:"Aug",y:120},{x:"Sep",y:148},{x:"Oct",y:178},{x:"Nov",y:210},{x:"Dec",y:198},{x:"Jan",y:234},{x:"Feb",y:262},{x:"Mar",y:280}] },
+  { id:"Interviews",      color:"#10B981", data:[{x:"Aug",y:8  },{x:"Sep",y:14 },{x:"Oct",y:22 },{x:"Nov",y:38 },{x:"Dec",y:44 },{x:"Jan",y:58 },{x:"Feb",y:68 },{x:"Mar",y:76 }] },
+];
+
+const weeklyEmailData = [
+  {week:"W1 Jan",sent:820 },{week:"W2 Jan",sent:940 },{week:"W3 Jan",sent:1020},{week:"W4 Jan",sent:880 },
+  {week:"W1 Feb",sent:1140},{week:"W2 Feb",sent:1260},{week:"W3 Feb",sent:1080},{week:"W4 Feb",sent:1310},
+  {week:"W1 Mar",sent:1420},{week:"W2 Mar",sent:1360},
+];
+
+const branchFunnel = [
+  { id:"CS",       value:134, color:"#7C3AED" },
+  { id:"ECE",      value:62,  color:"#6D28D9" },
+  { id:"Mech",     value:41,  color:"#8B5CF6" },
+  { id:"EEE",      value:38,  color:"#A78BFA" },
+  { id:"BioTech",  value:24,  color:"#C4B5FD" },
+  { id:"Civil",    value:13,  color:"#DDD6FE" },
+];
+
+const leaderboard = [
+  { name:"Karan Verma",  score:97, delta:"+2", emails:134, interviews:4 },
+  { name:"Arjun Mehta",  score:94, delta:"+1", emails:142, interviews:3 },
+  { name:"Vikram Rao",   score:91, delta:"—",  emails:128, interviews:3 },
+  { name:"Dev Patel",    score:85, delta:"+3", emails:109, interviews:2 },
+  { name:"Priya Nair",   score:88, delta:"-1", emails:118, interviews:2 },
+];
+
+export default function AnalyticsPage() {
+  return (
+    <TPOPageShell title="Analytics" subtitle="Deep-dive metrics on student engagement, outreach performance, and placement readiness">
+
+      {/* Action */}
+      <div className="flex justify-end mb-4">
+        <button className="flex items-center gap-2 text-sm text-white bg-purple-600 hover:bg-purple-700 transition px-4 py-2 rounded-lg font-medium">
+          <Download size={14}/> Download Report
+        </button>
+      </div>
+
+      {/* Trend line */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm mb-6">
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="text-sm font-semibold text-gray-900">Student Engagement Trend — Aug 2025 to Mar 2026</h3>
+          <span className="flex items-center gap-1 text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-md">
+            <TrendingUp size={11}/> +133% active students
+          </span>
+        </div>
+        <p className="text-xs text-gray-400 mb-4">Active students on platform vs. total interviews secured</p>
+        <div className="h-64">
+          <ResponsiveLine
+            data={engagementTrend}
+            margin={{top:10,right:20,bottom:50,left:50}}
+            axisBottom={{tickSize:0,tickPadding:10}}
+            axisLeft={{tickSize:0,tickPadding:8,tickValues:5}}
+            colors={d=>d.color}
+            curve="monotoneX"
+            enablePoints
+            pointSize={7}
+            pointBorderWidth={2}
+            pointBorderColor={{from:"serieColor"}}
+            enableGridX={false}
+            theme={{textColor:"#6B7280",fontSize:11,grid:{line:{stroke:"#F3F4F6"}}}}
+            legends={[{anchor:"bottom",direction:"row",translateY:46,itemWidth:140,itemHeight:14,itemTextColor:"#6B7280",symbolSize:8,symbolShape:"circle"}]}
+          />
+        </div>
+      </div>
+
+      {/* Row 2 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Weekly email bar */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-sm font-semibold text-gray-900 mb-1">Weekly Email Volume (Jan – Mar 2026)</h3>
+          <p className="text-xs text-gray-400 mb-4">Total cold emails sent by your cohort per week</p>
+          <div className="h-56">
+            <ResponsiveBar
+              data={weeklyEmailData}
+              keys={["sent"]}
+              indexBy="week"
+              margin={{top:10,right:10,bottom:50,left:45}}
+              padding={0.3}
+              colors="#8B5CF6"
+              borderRadius={4}
+              axisBottom={{tickSize:0,tickPadding:8,tickRotation:-30}}
+              axisLeft={{tickSize:0,tickPadding:8,tickValues:4}}
+              enableGridX={false}
+              enableLabel={false}
+              theme={{textColor:"#6B7280",fontSize:10,grid:{line:{stroke:"#F3F4F6"}}}}
+            />
+          </div>
+        </div>
+
+        {/* Branch distribution pie */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-sm font-semibold text-gray-900 mb-1">Active Students by Branch</h3>
+          <p className="text-xs text-gray-400 mb-2">Which branches are most engaged with off-campus outreach</p>
+          <div className="h-44">
+            <ResponsivePie
+              data={branchFunnel}
+              colors={d=>d.data.color}
+              margin={{top:5,right:5,bottom:5,left:5}}
+              innerRadius={0.5}
+              padAngle={2}
+              cornerRadius={3}
+              enableArcLabels={false}
+              enableArcLinkLabels={false}
+              theme={{textColor:"#6B7280",fontSize:11}}
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-1 mt-2">
+            {branchFunnel.map(b=>(
+              <div key={b.id} className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{background:b.color}}/>
+                <span className="text-xs text-gray-600">{b.id} <span className="font-semibold">{b.value}</span></span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Engagement Score Leaderboard */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+        <div className="px-6 py-5 border-b border-gray-100">
+          <h3 className="text-sm font-semibold text-gray-900">Engagement Score Leaderboard</h3>
+          <p className="text-xs text-gray-400 mt-0.5">Top 5 students ranked by composite Outmail Engagement Score</p>
+        </div>
+        <div className="divide-y divide-gray-50">
+          {leaderboard.map((s,i)=>(
+            <div key={s.name} className="px-6 py-4 flex items-center gap-5">
+              <span className={`text-lg font-black w-6 text-center ${i===0?"text-yellow-400":i===1?"text-gray-400":i===2?"text-orange-400":"text-gray-200"}`}>
+                {i+1}
+              </span>
+              <div className="w-9 h-9 rounded-full bg-purple-100 text-purple-700 text-sm font-bold flex items-center justify-center flex-shrink-0">
+                {s.name.split(" ").map(n=>n[0]).join("")}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-gray-800">{s.name}</p>
+                <p className="text-xs text-gray-400">{s.emails} emails · {s.interviews} interviews</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-black text-purple-700">{s.score}</p>
+                <p className={`text-xs font-medium ${s.delta.startsWith("+")?"text-green-500":s.delta.startsWith("-")?"text-red-400":"text-gray-400"}`}>
+                  {s.delta} this week
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </TPOPageShell>
+  );
+}

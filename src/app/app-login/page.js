@@ -13,9 +13,6 @@ export default function Page() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Full Name:", fullName);
-    console.log("Email:", email);
-    console.log("App Password:", password);
     router.push("/dashboard");
   };
 

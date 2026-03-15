@@ -1,5 +1,19 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
+import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 import {
   CircleUserRound,
   LogOut,
@@ -45,7 +59,191 @@ import {
   Edit,
   Save,
   Phone,
+  TrendingUp,
+  DollarSign,
+  Briefcase,
+  MapPin,
+  Building,
+  ExternalLink,
+  X,
 } from "lucide-react";
+
+// Funding Trends Component
+const FundingTrends = ({ selectedPeriod, onPeriodChange }) => {
+  const [fundingData, setFundingData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [viewType, setViewType] = useState('bar'); // 'bar' or 'pie'
+
+  // Mock API call function - replace with your actual API call
+  const fetchFundingData = async (period) => {
+    setLoading(true);
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Mock data - replace with your actual API endpoint
+    const mockData = {
+      '7': [
+        { industry: 'FinTech', amount: 420, color: '#8B5CF6' },
+        { industry: 'HealthTech', amount: 380, color: '#06B6D4' },
+        { industry: 'EdTech', amount: 290, color: '#10B981' },
+        { industry: 'CleanTech', amount: 180, color: '#F59E0B' },
+        { industry: 'AI/ML', amount: 350, color: '#EF4444' },
+        { industry: 'SaaS', amount: 410, color: '#8B5CF6' }
+      ],
+      '15': [
+        { industry: 'FinTech', amount: 650, color: '#8B5CF6' },
+        { industry: 'HealthTech', amount: 580, color: '#06B6D4' },
+        { industry: 'EdTech', amount: 390, color: '#10B981' },
+        { industry: 'CleanTech', amount: 280, color: '#F59E0B' },
+        { industry: 'AI/ML', amount: 520, color: '#EF4444' },
+        { industry: 'SaaS', amount: 610, color: '#8B5CF6' }
+      ],
+      '30': [
+        { industry: 'FinTech', amount: 980, color: '#8B5CF6' },
+        { industry: 'HealthTech', amount: 840, color: '#06B6D4' },
+        { industry: 'EdTech', amount: 620, color: '#10B981' },
+        { industry: 'CleanTech', amount: 450, color: '#F59E0B' },
+        { industry: 'AI/ML', amount: 780, color: '#EF4444' },
+        { industry: 'SaaS', amount: 890, color: '#8B5CF6' }
+      ]
+    };
+    
+    setFundingData(mockData[period] || mockData['7']);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchFundingData(selectedPeriod);
+  }, [selectedPeriod]);
+
+  const formatAmount = (amount) => {
+    if (amount >= 1000) {
+      return `$${(amount / 1000).toFixed(1)}T`;
+    }
+    return `$${amount}B`;
+  };
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white/90 backdrop-blur-md p-3 rounded-lg shadow-lg border border-white/20">
+          <p className="text-gray-800 font-semibold">{label}</p>
+          <p className="text-purple-600 font-bold">
+            {formatAmount(payload[0].value)}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const topThreeIndustries = [...fundingData]
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 3);
+
+  const totalFunding = fundingData.reduce((acc, d) => acc + d.amount, 0);
+
+  return (
+    <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 text-white shadow-xl border border-white/20 h-full flex flex-col">
+      <div className="flex justify-between items-start mb-2">
+        <div>
+          <h3 className="text-sm font-semibold flex items-center gap-1.5">
+            <TrendingUp size={14} className="text-green-400" />
+            Industry Funding Trends
+          </h3>
+          <p className="text-[10px] text-white/50 mt-0.5">
+            Last {selectedPeriod} days · Total&nbsp;
+            <span className="text-green-400 font-bold">{formatAmount(totalFunding)}</span>
+          </p>
+        </div>
+        <button
+          onClick={() => setViewType(viewType === 'bar' ? 'pie' : 'bar')}
+          className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+          title={`Switch to ${viewType === 'bar' ? 'pie' : 'bar'} chart`}
+        >
+          <MoreHorizontal size={14} />
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-4 border-white/20 border-t-white"></div>
+        </div>
+      ) : (
+        <>
+          {/* Chart Section */}
+          <div className="flex-1 min-h-0 mb-2" style={{ minHeight: '180px' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              {viewType === 'bar' ? (
+                <BarChart data={fundingData} margin={{ top: 4, right: 4, bottom: 30, left: -10 }} barCategoryGap="15%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+                  <XAxis
+                    dataKey="industry"
+                    tick={{ fill: 'rgba(255,255,255,0.45)', fontSize: 9 }}
+                    angle={-35}
+                    textAnchor="end"
+                    height={45}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    tick={{ fill: 'rgba(255,255,255,0.45)', fontSize: 9 }}
+                    tickFormatter={formatAmount}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
+                  <Bar dataKey="amount" radius={[4, 4, 0, 0]} maxBarSize={52}>
+                    {fundingData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              ) : (
+                <PieChart>
+                  <Pie
+                    data={fundingData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={28}
+                    outerRadius={58}
+                    paddingAngle={2}
+                    dataKey="amount"
+                  >
+                    {fundingData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                </PieChart>
+              )}
+            </ResponsiveContainer>
+          </div>
+
+          {/* Top 3 Industries — compact chips */}
+          <div className="border-t border-white/10 pt-2">
+            <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1.5">Top Funded</p>
+            <div className="flex flex-wrap gap-1.5">
+              {topThreeIndustries.map((industry, index) => (
+                <div
+                  key={industry.industry}
+                  className="flex items-center gap-1 bg-white/5 rounded-full px-2 py-0.5 border border-white/10"
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: industry.color }}
+                  />
+                  <span className="text-[10px] text-white/70">{industry.industry}</span>
+                  <span className="text-[10px] font-bold text-green-400">{formatAmount(industry.amount)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 // **NEW: Modal component for editing an existing template**
 const EditTemplateModal = ({ isOpen, onClose, onUpdate, template }) => {
@@ -55,23 +253,44 @@ const EditTemplateModal = ({ isOpen, onClose, onUpdate, template }) => {
 
   useEffect(() => {
     if (template) {
-      setTemplateName(template.title);
-      setEmailSubject(template.emailSubject);
-      setEmailBody(template.emailBody);
+      setTemplateName(template.title || template.name || "");
+      setEmailSubject(template.emailSubject || template.subject || "");
+      setEmailBody(template.emailBody || template.html_content || "");
     }
   }, [template]);
 
   const handleUpdate = () => {
-    if (templateName && emailSubject && emailBody) {
-      onUpdate({
-        ...template,
-        title: templateName,
-        description: `Subject: ${emailSubject}`,
-        emailSubject: emailSubject,
-        emailBody: emailBody,
-      });
-      onClose();
+    // Validate according to backend requirements
+    if (!templateName || templateName.trim().length < 3 || templateName.trim().length > 100) {
+      alert('Template name must be between 3-100 characters');
+      return;
     }
+    
+    if (!emailSubject || emailSubject.trim().length < 3 || emailSubject.trim().length > 200) {
+      alert('Email subject must be between 3-200 characters');
+      return;
+    }
+    
+    if (!emailBody || emailBody.trim().length < 10) {
+      alert('Email body must be at least 10 characters');
+      return;
+    }
+
+    console.log('📝 EditModal sending data:', {
+      id: template.id,
+      title: templateName.trim(),
+      emailSubject: emailSubject.trim(),
+      emailBody: emailBody.trim()
+    });
+
+    onUpdate({
+      ...template,
+      title: templateName.trim(),
+      description: `Subject: ${emailSubject.trim()}`,
+      emailSubject: emailSubject.trim(),
+      emailBody: emailBody.trim(),
+    });
+    onClose();
   };
 
   if (!isOpen || !template) return null;
@@ -240,25 +459,59 @@ const CampaignForm = ({ templates, attachments }) => {
     }
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setSelectedCsvFile(file);
+    if (!file) return;
+
+    // Validate CSV file
+    if (file.type !== 'text/csv' && !file.name.toLowerCase().endsWith('.csv')) {
+      alert('Please select a valid CSV file.');
+      e.target.value = '';
+      return;
     }
+
+    if (file.size > MAX_FILE_SIZE) {
+      alert(`File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`);
+      e.target.value = '';
+      return;
+    }
+
+    // Just store locally for now - no upload
+    setSelectedCsvFile(file);
+    console.log('📄 CSV file selected (upload disabled until backend ready):', file.name);
+
+    // TODO: Uncomment when backend implements CSV upload
+    /*
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', 'document');
+
+      const response = await fetch(`${API_BASE_URL}/api/uploads/single`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        credentials: 'include',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setSelectedCsvFile({ 
+          ...file, 
+          uploaded: true, 
+          url: result.data.s3Url,
+          id: result.data.id 
+        });
+      }
+    } catch (error) {
+      console.warn('⚠️ CSV upload error:', error.message);
+    }
+    */
   };
 
 
   const handleStartCampaign = () => {
-    console.log("Starting Campaign:", {
-      campaignName,
-      emailSubject,
-      emailBody,
-      startTime,
-      endTime,
-      timezone,
-      selectedTemplate,
-      selectedAttachment
-    });
+    // Handle campaign start logic
   };
   return (
     <>
@@ -547,262 +800,185 @@ const Card = ({ title, value, percentage, icon }) => {
 };
 
 // TopHorizontalCards Component
-const TopHorizontalCards = () => {
+// Outreach Stat Pills — Row 1 of new overview
+const OutreachStatPills = ({ selectedPeriod }) => {
+  const sentByPeriod = { '7': '145', '15': '312', '30': '624' };
+  const stats = [
+    {
+      label: `Emails Sent (${selectedPeriod}d)`,
+      value: sentByPeriod[selectedPeriod] || '145',
+      icon: Mail,
+      color: 'text-purple-400',
+      bg: 'bg-purple-500/15',
+      border: 'border-purple-500/25',
+    },
+    {
+      label: 'Total Emails Sent',
+      value: '1,465',
+      icon: TrendingUp,
+      color: 'text-green-400',
+      bg: 'bg-green-500/15',
+      border: 'border-green-500/25',
+    },
+    {
+      label: 'Companies Targeted',
+      value: '48',
+      icon: Building,
+      color: 'text-cyan-400',
+      bg: 'bg-cyan-500/15',
+      border: 'border-cyan-500/25',
+    },
+    {
+      label: 'Active Template',
+      value: 'Tech Intro v2',
+      icon: FileText,
+      color: 'text-amber-400',
+      bg: 'bg-amber-500/15',
+      border: 'border-amber-500/25',
+      truncate: true,
+    },
+  ];
+
   return (
-    <div className="flex flex-col gap-4 font-syne text-white">
-     <div className="relative  mt-3 inline-block">
-  <select
-    className="bg-[#2C2C2C] text-gray-300 px-2   ml-70 sm:px-3 py-1 rounded appearance-none pr-8 text-xs sm:text-sm"
-    onChange={() => {}}
-  >
-    <option value="7 days">7 days</option>
-    <option value="15 days">15 days</option>
-    <option value="30 days">30 days</option>
-  </select>
-  
-  <div className="pointer-events-none absolute  mr-1 inset-y-0 right-2 flex items-center">
-    <ChevronDown className="h-4 w-4 text-gray-300" />
-  </div>
-</div>
-      {/* Card 1: Acceptance Rate */}
-      <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 flex flex-col items-center justify-center shadow-lg border border-white/10 mt-2">
-
-        <h2 className="text-lg font-semibold text-white mb-1 ">
-          Acceptance Rate
-        </h2>
-        <div className="relative w-28 h-28">
-          <svg className="w-full h-full" viewBox="0 0 100 100">
-            <circle
-              className="text-white/20 stroke-current"
-              strokeWidth="8"
-              cx="50"
-              cy="50"
-              r="40"
-              fill="transparent"
-            ></circle>
-            <circle
-              className="text-purple-500 stroke-current"
-              strokeWidth="8"
-              strokeLinecap="round"
-              cx="50"
-              cy="50"
-              r="40"
-              fill="transparent"
-              strokeDasharray="251.2"
-              strokeDashoffset="12.56"
-            ></circle>
-          </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-2xl font-bold text-purple-500">95%</span>
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {stats.map((stat) => (
+        <div
+          key={stat.label}
+          className={`${stat.bg} ${stat.border} border backdrop-blur-md rounded-xl p-3 flex items-center gap-3`}
+        >
+          <div className="p-2 rounded-lg bg-white/10 flex-shrink-0">
+            <stat.icon size={15} className={stat.color} />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] text-white/50 uppercase tracking-wide leading-tight">{stat.label}</p>
+            <p className={`text-sm font-bold mt-0.5 ${stat.color} ${stat.truncate ? 'truncate' : ''}`}>{stat.value}</p>
           </div>
         </div>
+      ))}
+    </div>
+  );
+};
+
+// Daily Outreach Chart — emails sent per day bar chart
+const DailyOutreachChart = ({ selectedPeriod }) => {
+  const chartData = {
+    '7': [
+      { day: 'Mon', sent: 18 },
+      { day: 'Tue', sent: 24 },
+      { day: 'Wed', sent: 15 },
+      { day: 'Thu', sent: 28 },
+      { day: 'Fri', sent: 32 },
+      { day: 'Sat', sent: 12 },
+      { day: 'Sun', sent: 16 },
+    ],
+    '15': [
+      { day: 'D1', sent: 18 }, { day: 'D2', sent: 24 }, { day: 'D3', sent: 15 },
+      { day: 'D4', sent: 28 }, { day: 'D5', sent: 32 }, { day: 'D6', sent: 12 },
+      { day: 'D7', sent: 16 }, { day: 'D8', sent: 22 }, { day: 'D9', sent: 31 },
+      { day: 'D10', sent: 19 }, { day: 'D11', sent: 25 }, { day: 'D12', sent: 38 },
+      { day: 'D13', sent: 9 }, { day: 'D14', sent: 21 }, { day: 'D15', sent: 26 },
+    ],
+    '30': [
+      { day: 'W1', sent: 98 },
+      { day: 'W2', sent: 124 },
+      { day: 'W3', sent: 156 },
+      { day: 'W4', sent: 112 },
+      { day: 'W5', sent: 134 },
+    ],
+  };
+
+  const data = chartData[selectedPeriod] || chartData['7'];
+
+  const DailyTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-[#1a1024] border border-white/20 rounded-lg px-3 py-2 shadow-xl">
+          <p className="text-[10px] text-white/50">{label}</p>
+          <p className="text-sm font-bold text-purple-400">{payload[0].value} emails</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 h-full flex flex-col">
+      <div className="flex justify-between items-center mb-3">
+        <div>
+          <h3 className="text-sm font-semibold text-white">Daily Outreach Activity</h3>
+          <p className="text-[11px] text-white/40">Emails sent per day</p>
+        </div>
+        <span className="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full border border-purple-500/20">
+          Last {selectedPeriod}d
+        </span>
       </div>
-
-      {/* Card 2: Referral Tracking */}
-      <div className="rounded-xl p-4 flex flex-col shadow-xl border border-white/20 backdrop-blur-md bg-white/10">
-        <div className="flex justify-between items-center mb-1">
-          <h2 className="text-lg font-semibold text-white">
-            Referral Tracking
-          </h2>
-          <button className="p-1 bg-white/10 hover:bg-white/20 rounded-full transition">
-            <MoreHorizontal size={16} className="text-white/80" />
-          </button>
-        </div>
-
-        <div className="flex flex-row items-center justify-between gap-4">
-          <div>
-            <p className="text-xs text-white/60">Invited</p>
-            <p className="text-xl font-bold text-white">145</p>
-            <p className="text-xs text-white/60 mt-2">Bonus</p>
-            <p className="text-xl font-bold text-white">1,465</p>
-          </div>
-
-          <div className="relative w-24 h-24 flex-shrink-0">
-            <svg className="w-full h-full" viewBox="0 0 100 100">
-              <circle
-                className="text-white/20 stroke-current"
-                strokeWidth="8"
-                cx="50"
-                cy="50"
-                r="40"
-                fill="transparent"
-              ></circle>
-              <circle
-                className="text-green-400 stroke-current"
-                strokeWidth="8"
-                strokeLinecap="round"
-                cx="50"
-                cy="50"
-                r="40"
-                fill="transparent"
-                strokeDasharray="251.2"
-                strokeDashoffset="17.584"
-              ></circle>
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-xl font-bold text-green-400">9.3</span>
-              <span className="text-[10px] text-white/60">Score</span>
-            </div>
-          </div>
-        </div>
+      <div className="flex-1 min-h-0">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+            <XAxis
+              dataKey="day"
+              tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <Tooltip content={<DailyTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
+            <Bar dataKey="sent" fill="#8B5CF6" radius={[3, 3, 0, 0]} maxBarSize={28} />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
 };
 
-// SalesOverview Component
-const SalesOverview = () => {
+// Hiring Spotlight — compact companies actively hiring
+const HiringSpotlight = () => {
+  const hiringCompanies = [
+    { name: 'Stripe', industry: 'FinTech', roles: 12, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400' },
+    { name: 'OpenAI', industry: 'AI/ML', roles: 8, badge: 'new', badgeColor: 'bg-green-500/20 text-green-400' },
+    { name: 'Razorpay', industry: 'FinTech', roles: 7, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400' },
+  ];
+
   return (
-    <div>
-      {/* Welcome text */}
-      <h2 className="text-2xl font-bold text-white mb-8">Welcome Yash!</h2>
-  
-      {/* Glassmorphism Card */}
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-white shadow-xl border border-white/20 col-span-2">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold">Company Overview</h3>
-          <span className="text-sm text-green-400">+5% more in 2021</span>
-          <div className="flex items-center gap-2">
-            <button className="p-1 bg-white/10 backdrop-blur-sm border border-white/20 rounded text-sm">
-              Jan
-            </button>
-            <button className="p-1 bg-white/10 backdrop-blur-sm border border-white/20 rounded text-sm">
-              Feb
-            </button>
-            <button className="p-1 bg-white/10 backdrop-blur-sm border border-white/20 rounded text-sm">
-              Mar
-            </button>
-          </div>
+    <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 h-full flex flex-col">
+      <div className="flex justify-between items-center mb-3">
+        <div>
+          <h3 className="text-sm font-semibold text-white flex items-center gap-1.5">
+            <Briefcase size={13} className="text-amber-400" />
+            Companies Hiring Now
+          </h3>
+          <p className="text-[11px] text-white/40">Based on your targeted sectors</p>
         </div>
-  
-        <div className="h-64 mb-1">
-          <ChartComponent type="line" title="Sales Overview" />
-        </div>
+        <span className="text-[10px] text-white/30">
+          {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+        </span>
       </div>
-    </div>
-  );
-  
-};
-
-// ActiveUsers Component
-const ActiveUsers = () => {
-  return (
-    <div className="bg-white/7 backdrop-blur-md rounded-2xl p-6 text-white shadow-xl border border-white/20">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-semibold">Active Users</h3>
-        <MoreHorizontal size={20} className="text-white/70" />
-      </div>
-      <p className="text-sm text-white/70 mb-4">
-        <span className="text-green-400">+23</span> from last week
-      </p>
-      <div className="h-48">
-        <ChartComponent type="bar" title="Active Users" />
-      </div>
-    </div>
-  );
-};
-
-// Projects Component
-const Projects = () => {
-  const projects = []; // Empty as per your code
-
-  return (
-    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-white shadow-lg border border-white/10 col-span-2">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-semibold">Applied Companies</h3>
-        <p className="text-sm text-green-400">+30 done this month</p>
-        <MoreHorizontal size={20} className="text-white/70" />
-      </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-left">
-          <thead>
-            <tr className="border-b border-white/10">
-              <th className="px-4 py-2 text-sm text-white/60">COMPANIES</th>
-              <th className="px-4 py-2 text-sm text-white/60">MEMBERS</th>
-              <th className="px-4 py-2 text-sm text-white/60">BUDGET</th>
-              <th className="px-4 py-2 text-sm text-white/60">COMPLETION</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map((project) => (
-              <tr
-                key={project.id}
-                className="border-b border-white/5 last:border-b-0"
-              >
-                <td className="px-4 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
-                  <Square size={16} className="text-purple-500" />
-                  {project.name}
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-white/80 flex items-center gap-1">
-                  <span className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs">
-                    M
-                  </span>
-                  <span className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs">
-                    S
-                  </span>
-                  <span className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs">
-                    J
-                  </span>
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-white/80">
-                  {project.budget}
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-24 bg-white/20 rounded-full h-2.5">
-                      <div
-                        className="bg-purple-500 h-2.5 rounded-full"
-                        style={{ width: `${project.completion}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-white/70">
-                      {project.completion}%
-                    </span>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
-
-// OrdersOverview Component
-const OrdersOverview = () => {
-  const orders = []; // Empty as per your code
-
-  return (
-    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-white shadow-lg border border-white/10">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-semibold"> overview</h3>
-        <p className="text-sm text-green-400">+30% this month</p>
-        <MoreHorizontal size={20} className="text-gray-400" />
-      </div>
-      <div className="space-y-4">
-        {orders.map((order, index) => (
+      <div className="flex-1 overflow-hidden space-y-1">
+        {hiringCompanies.map((company, i) => (
           <div
-            key={order.id}
-            className="flex items-start gap-4 border-b border-gray-800 pb-4 last:border-b-0 last:pb-0"
+            key={company.name}
+            className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0"
           >
-            <div className="mt-1">
-              {index === 0 && (
-                <CheckCircle size={20} className="text-green-500" />
+            <div className="flex items-center gap-2.5">
+              <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px] text-white/50 font-bold flex-shrink-0">
+                {i + 1}
+              </span>
+              <div className="min-w-0">
+                <span className="text-xs font-semibold text-white">{company.name}</span>
+                <span className="text-[10px] text-white/40 ml-1.5">{company.industry}</span>
+              </div>
+              {company.badge && (
+                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wide ${company.badgeColor}`}>
+                  {company.badge}
+                </span>
               )}
-              {index === 1 && <Plus size={20} className="text-red-500" />}
-              {index === 2 && (
-                <ShoppingCart size={20} className="text-blue-500" />
-              )}
-              {index === 3 || index === 4 ? (
-                <File size={20} className="text-purple-500" />
-              ) : null}
-              {index === 5 && <Plus size={20} className="text-red-500" />}
             </div>
-            <div>
-              <p className="text-white font-medium">{order.title}</p>
-              <p className="text-sm text-gray-400">{order.date}</p>
-            </div>
+            <span className="text-[11px] text-white/50 flex-shrink-0">{company.roles} roles</span>
           </div>
         ))}
       </div>
@@ -810,23 +986,185 @@ const OrdersOverview = () => {
   );
 };
 
-// **Corrected CombinedDashboard Component**
-const CombinedDashboard = () => {
-  return (
-    <div className="flex-1 flex flex-col p-6 overflow-y-auto">
-      {" "}
-      {/* Added overflow-y-auto to allow scrolling within this specific component */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Sales Overview and Projects (Left side) */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          <SalesOverview />
-          <Projects />
-        </div>
+// Recent Outreach Feed — last 5 emails sent
+const RecentOutreachFeed = () => {
+  const activities = [
+    { company: 'Stripe', template: 'FinTech Intro', time: '2h ago' },
+    { company: 'Razorpay', template: 'FinTech Intro', time: '4h ago' },
+    { company: 'Notion', template: 'SaaS Outreach', time: '6h ago' },
+  ];
 
-        {/* Top Cards and Active Users (Right side) */}
-        <div className="lg:col-span-1 flex flex-col gap-6">
-          <TopHorizontalCards />
-          <ActiveUsers />
+  return (
+    <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 h-full flex flex-col">
+      <div className="mb-3">
+        <h3 className="text-sm font-semibold text-white flex items-center gap-1.5">
+          <Clock size={13} className="text-cyan-400" />
+          Recent Outreach
+        </h3>
+        <p className="text-[11px] text-white/40">Last 5 emails sent</p>
+      </div>
+      <div className="flex-1 overflow-hidden space-y-1">
+        {activities.map((activity, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-2.5 py-1.5 border-b border-white/5 last:border-0"
+          >
+            <div className="w-7 h-7 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+              <Mail size={12} className="text-purple-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-white truncate">{activity.company}</p>
+              <p className="text-[10px] text-white/40 truncate">{activity.template}</p>
+            </div>
+            <span className="text-[10px] text-white/35 flex-shrink-0">{activity.time}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Hot Hiring News component — clickable articles from the hiring market
+const HotHiringNews = () => {
+  const news = [
+    {
+      id: 1,
+      headline: 'OpenAI plans to triple engineering headcount in 2026',
+      source: 'TechCrunch',
+      tag: 'AI Hiring',
+      tagColor: 'bg-purple-500/20 text-purple-300',
+      time: '2h ago',
+      url: 'https://techcrunch.com/2024/01/16/openai-hiring/',
+    },
+    {
+      id: 2,
+      headline: 'Stripe doubles down on India with 400 new roles in Bangalore',
+      source: 'Economic Times',
+      tag: 'FinTech',
+      tagColor: 'bg-green-500/20 text-green-300',
+      time: '5h ago',
+      url: 'https://economictimes.indiatimes.com/tech/startups/stripe-india-hiring',
+    },
+    {
+      id: 3,
+      headline: 'Google lays off 200 in cloud, pivots to AI infrastructure roles',
+      source: 'Bloomberg',
+      tag: 'Big Tech',
+      tagColor: 'bg-red-500/20 text-red-300',
+      time: '8h ago',
+      url: 'https://bloomberg.com/news/articles/2024-google-cloud-layoffs',
+    },
+    {
+      id: 4,
+      headline: 'Y Combinator startups on hiring spree — 1,200 roles open across W25 batch',
+      source: 'YC Blog',
+      tag: 'Startup',
+      tagColor: 'bg-amber-500/20 text-amber-300',
+      time: '1d ago',
+      url: 'https://ycombinator.com/jobs',
+    },
+    {
+      id: 5,
+      headline: 'Razorpay seeks ML engineers as it expands into SEA markets',
+      source: 'Inc42',
+      tag: 'FinTech',
+      tagColor: 'bg-green-500/20 text-green-300',
+      time: '1d ago',
+      url: 'https://inc42.com/buzz/razorpay-ml-expansion/',
+    },
+  ];
+
+  return (
+    <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 flex flex-col h-full">
+      <div className="flex justify-between items-center mb-3">
+        <div>
+          <h3 className="text-sm font-semibold text-white flex items-center gap-1.5">
+            <Zap size={13} className="text-yellow-400" />
+            Hot in the Hiring Market
+          </h3>
+          <p className="text-[11px] text-white/40">Click any article to read more</p>
+        </div>
+        <span className="text-[9px] uppercase tracking-widest text-white/30 border border-white/10 px-1.5 py-0.5 rounded">Live</span>
+      </div>
+      <div className="flex flex-col gap-0 flex-1 overflow-hidden">
+        {news.map((item, i) => (
+          <a
+            key={item.id}
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`flex items-start gap-2.5 py-2.5 ${
+              i < news.length - 1 ? 'border-b border-white/5' : ''
+            } group cursor-pointer`}
+          >
+            <div className="flex-1 min-w-0">
+              <p className="text-[12px] font-medium text-white/90 leading-snug group-hover:text-purple-300 transition-colors line-clamp-2">
+                {item.headline}
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-semibold ${item.tagColor}`}>{item.tag}</span>
+                <span className="text-[10px] text-white/35">{item.source}</span>
+                <span className="text-[10px] text-white/25">·</span>
+                <span className="text-[10px] text-white/35">{item.time}</span>
+              </div>
+            </div>
+            <ExternalLink size={11} className="text-white/20 group-hover:text-purple-400 transition-colors flex-shrink-0 mt-1" />
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// **Redesigned CombinedDashboard — properly boxed, scrollable overview**
+const CombinedDashboard = () => {
+  const { user } = useAuth();
+  const [selectedPeriod, setSelectedPeriod] = useState('7');
+
+  return (
+    <div className="flex flex-col p-5 gap-4 pb-8">
+      {/* Row 1: Welcome + Period Selector + Stat Pills */}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-white">
+            Welcome back,{' '}
+            <span className="text-purple-400">{user?.display_name || user?.name || 'User'}</span> 
+          </h2>
+          <div className="relative inline-block">
+            <select
+              className="bg-white/10 text-gray-300 px-3 py-1.5 rounded-lg appearance-none pr-7 text-xs border border-white/10"
+              value={selectedPeriod}
+              onChange={(e) => setSelectedPeriod(e.target.value)}
+            >
+              <option value="7">Last 7 days</option>
+              <option value="15">Last 15 days</option>
+              <option value="30">Last 30 days</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+              <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
+            </div>
+          </div>
+        </div>
+        <OutreachStatPills selectedPeriod={selectedPeriod} />
+      </div>
+
+      {/* Row 2: Industry Funding Trends (left, wider 3/5) + Hot Hiring News (right 2/5) */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <div className="lg:col-span-3" style={{ minHeight: '340px' }}>
+          <FundingTrends selectedPeriod={selectedPeriod} onPeriodChange={setSelectedPeriod} />
+        </div>
+        <div className="lg:col-span-2" style={{ minHeight: '340px' }}>
+          <HotHiringNews />
+        </div>
+      </div>
+
+      {/* Row 3: Companies Hiring Now (left) + Recent Outreach Feed (right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div style={{ minHeight: '240px' }}>
+          <HiringSpotlight />
+        </div>
+        <div style={{ minHeight: '240px' }}>
+          <RecentOutreachFeed />
         </div>
       </div>
     </div>
@@ -859,8 +1197,8 @@ const PdfViewerModal = ({ isOpen, onClose, pdfUrl }) => {
 };
 
 
-// AttachmentManager Component with corrected confirm logic
-const AttachmentManager = ({ attachments, handleUploadAttachment, handleDeleteAttachment, handleViewAttachment }) => {
+// AttachmentManager Component with S3 upload support
+const AttachmentManager = ({ attachments, handleUploadAttachment, handleDeleteAttachment, handleViewAttachment, uploadingFiles = new Set() }) => {
   const ATTACHMENT_LIMIT = 3;
   const fileInputRef = useRef(null);
   
@@ -874,15 +1212,14 @@ const AttachmentManager = ({ attachments, handleUploadAttachment, handleDeleteAt
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    if (file && file.type === "application/pdf") {
+    if (file) {
       handleUploadAttachment(file);
       // Reset the file input to allow re-uploading the same file
       event.target.value = null; 
-    } else if (file) {
-      alert("Please upload a PDF file.");
-      event.target.value = null;
     }
   };
+
+  const isUploading = uploadingFiles.size > 0;
 
 
   return (
@@ -897,22 +1234,27 @@ const AttachmentManager = ({ attachments, handleUploadAttachment, handleDeleteAt
         </div>
         <button
           onClick={handleButtonClick}
-          disabled={isAttachmentLimitReached}
-          className={`mt-4 sm:mt-0 text-white font-semibold  py-2 px-4 rounded-lg flex items-center shadow-lg transition duration-200 ease-in-out transform ${
-            isAttachmentLimitReached
+          disabled={isAttachmentLimitReached || isUploading}
+          className={`mt-4 sm:mt-0 text-white font-semibold py-2 px-4 rounded-lg flex items-center shadow-lg transition duration-200 ease-in-out transform ${
+            isAttachmentLimitReached || isUploading
               ? "bg-gray-500 cursor-not-allowed"
               : "bg-purple-600 hover:bg-purple-700 hover:-translate-y-0.5"
           }`}
         >
-          <Upload size={18} className="mr-2" />
-          {isAttachmentLimitReached ? "Max 3 Allowed" : "Upload Attachment"}
+          <Upload size={18} className={`mr-2 ${isUploading ? 'animate-spin' : ''}`} />
+          {isUploading 
+            ? "Uploading..." 
+            : isAttachmentLimitReached 
+            ? "Max 3 Allowed" 
+            : "Upload Attachment"
+          }
         </button>
          <input 
           type="file" 
           ref={fileInputRef} 
           onChange={handleFileChange} 
           className="hidden" 
-          accept=".pdf"
+          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.csv,.xls,.xlsx"
         />
       </div>
 
@@ -959,12 +1301,12 @@ const AttachmentManager = ({ attachments, handleUploadAttachment, handleDeleteAt
                       {attachment.uploadDate}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button onClick={() => handleViewAttachment(attachment.file)} className="text-purple-400 hover:text-purple-600 mr-4">
+                      <button onClick={() => handleViewAttachment(attachment)} className="text-purple-400 hover:text-purple-600 mr-4">
                         <Eye size={16} className="inline-block mr-1" />
                         View
                       </button>
                       <button
-                        onClick={() => handleDeleteAttachment(attachment.id)}
+                        onClick={() => handleDeleteAttachment(attachment)}
                         className="text-red-400 hover:text-red-600"
                       >
                         <Trash2 size={16} className="inline-block mr-1" />
@@ -1010,7 +1352,1200 @@ const TemplateViewerModal = ({ isOpen, onClose, template }) => {
   );
 };
 
+// Mentorship Section Component
+const MentorshipSection = () => {
+  const [showArchivedSessions, setShowArchivedSessions] = useState(false);
 
+  // Active sessions (currently happening)
+  const activeSessions = [
+    {
+      id: 1,
+      mentorName: "Sarah Johnson",
+      mentorTitle: "Senior Product Manager at Google",
+      mentorImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&crop=face",
+      sessionDate: "Feb 17, 2026",
+      sessionTime: "2:00 PM - 3:00 PM",
+      sessionTopic: "Product Strategy & Roadmap Planning",
+      sessionType: "Q&A",
+      whyThisMentor: "Get insider tips on breaking into PM roles at top tech companies.",
+      status: "active"
+    },
+    {
+      id: 2,
+      mentorName: "Michael Chen",
+      mentorTitle: "CTO at TechStartup Inc",
+      mentorImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+      sessionDate: "Feb 17, 2026",
+      sessionTime: "10:00 AM - 11:00 AM",
+      sessionTopic: "Technical Leadership & Team Building",
+      sessionType: "Group Session",
+      whyThisMentor: "Learn how engineering leaders evaluate candidates during hiring cycles.",
+      status: "active"
+    }
+  ];
+
+  // Upcoming sessions
+  const upcomingSessions = [
+    {
+      id: 3,
+      mentorName: "Emily Rodriguez",
+      mentorTitle: "VP of Engineering at Meta",
+      mentorImage: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
+      sessionDate: "Feb 25, 2026",
+      sessionTime: "4:00 PM - 5:00 PM",
+      sessionTopic: "Career Growth & Performance Reviews",
+      sessionType: "Q&A",
+      whyThisMentor: "Understand what it takes to get promoted faster at large tech firms.",
+      status: "upcoming"
+    },
+    {
+      id: 4,
+      mentorName: "David Kumar",
+      mentorTitle: "Startup Founder & Investor",
+      mentorImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+      sessionDate: "Feb 28, 2026",
+      sessionTime: "6:00 PM - 7:00 PM",
+      sessionTopic: "Entrepreneurship & Fundraising",
+      sessionType: "Workshop",
+      whyThisMentor: "Covers how funded startups build their first engineering and operations team.",
+      status: "upcoming"
+    }
+  ];
+
+  // Archived/Past sessions
+  const archivedSessions = [
+    {
+      id: 5,
+      mentorName: "Jennifer Kim",
+      mentorTitle: "Former VP at Stripe",
+      mentorImage: "https://images.unsplash.com/photo-1494790108755-2616b612b4c0?w=100&h=100&fit=crop&crop=face",
+      sessionDate: "Feb 10, 2026",
+      sessionTime: "3:00 PM - 4:00 PM",
+      sessionTopic: "Scaling Engineering Teams",
+      sessionType: "Workshop",
+      whyThisMentor: "Real frameworks used at Stripe to grow from 10 to 200 engineers.",
+      status: "past"
+    },
+    {
+      id: 6,
+      mentorName: "Robert Singh",
+      mentorTitle: "Product Director at Netflix",
+      mentorImage: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop&crop=face",
+      sessionDate: "Feb 8, 2026",
+      sessionTime: "1:00 PM - 2:00 PM",
+      sessionTopic: "Content Strategy & User Experience",
+      sessionType: "Group Session",
+      whyThisMentor: "Directly applicable to product roles at consumer-facing tech companies.",
+      status: "past"
+    },
+    {
+      id: 7,
+      mentorName: "Lisa Zhang",
+      mentorTitle: "AI Research Lead at OpenAI",
+      mentorImage: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=face",
+      sessionDate: "Feb 5, 2026",
+      sessionTime: "11:00 AM - 12:00 PM",
+      sessionTopic: "Machine Learning in Production",
+      sessionType: "Workshop",
+      whyThisMentor: "Practical ML deployment knowledge that stands out in technical interviews.",
+      status: "past"
+    }
+  ];
+
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case 'active': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'upcoming': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'past': return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+    }
+  };
+
+  const getSessionTypeBadge = (type) => {
+    switch (type) {
+      case 'Group Session': return 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30';
+      case 'Workshop': return 'bg-orange-500/20 text-orange-300 border border-orange-500/30';
+      case 'Q&A': return 'bg-teal-500/20 text-teal-300 border border-teal-500/30';
+      default: return 'bg-gray-500/20 text-gray-300 border border-gray-500/30';
+    }
+  };
+
+  const getSessionTypeLabel = (type) => {
+    switch (type) {
+      case 'Q&A': return '💬 Ask Me Anything';
+      case 'Group Session': return '👥 Group Session';
+      case 'Workshop': return '🛠 Workshop';
+      default: return type;
+    }
+  };
+
+  const renderSessionCard = (session) => (
+    <div
+      key={session.id}
+      className="bg-white/10 backdrop-blur-md p-6 rounded-xl border border-white/15 hover:border-white/30 transition-all duration-300 shadow-md"
+    >
+      {/* Header */}
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
+            <img
+              src={session.mentorImage}
+              alt={session.mentorName}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="min-w-0">
+            <h3 className="text-base font-bold text-white">{session.mentorName}</h3>
+            <p className="text-xs text-white/60">{session.mentorTitle}</p>
+          </div>
+        </div>
+        <div className="flex flex-col items-end gap-2 shrink-0 ml-2">
+          <span className={`px-2.5 py-1 rounded-full border text-xs font-semibold capitalize ${getStatusStyle(session.status)}`}>
+            {session.status}
+          </span>
+          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${getSessionTypeBadge(session.sessionType)}`}>
+            {getSessionTypeLabel(session.sessionType)}
+          </span>
+        </div>
+      </div>
+
+      {/* Why this mentor */}
+      <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg px-3 py-2 mb-4">
+        <p className="text-xs text-purple-200 leading-relaxed">
+          <span className="font-semibold text-purple-300">Why attend: </span>
+          {session.whyThisMentor}
+        </p>
+      </div>
+
+      {/* Session Details */}
+      <div className="space-y-2 mb-4">
+        <div className="flex items-center gap-2 text-white/70">
+          <Calendar size={14} />
+          <span className="text-sm">{session.sessionDate} · {session.sessionTime}</span>
+        </div>
+        <div className="flex items-start gap-2 text-white/70">
+          <FileText size={14} className="mt-0.5 shrink-0" />
+          <p className="text-sm font-medium text-white/90">{session.sessionTopic}</p>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex gap-2">
+        {session.status === 'past' ? (
+          <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
+            <Play size={14} /> Watch Recording
+          </button>
+        ) : session.status === 'active' ? (
+          <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
+            <ExternalLink size={14} /> Join Now
+          </button>
+        ) : (
+          <>
+            <button className="flex-1 bg-white/10 hover:bg-white/20 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
+              <Eye size={14} /> View Details
+            </button>
+            <button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
+              <Plus size={14} /> Book Slot
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="p-4 sm:p-6 font-syne">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-10 text-white">Mentorship</h1>
+          <p className="text-white/60 text-sm sm:text-base">
+            Learn from leaders at companies actively hiring — sharpen your edge before you reach out
+          </p>
+        </div>
+      </div>
+
+      {/* Active Sessions */}
+      {activeSessions.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-2.5 h-2.5 rounded-full bg-green-400"></span>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-green-400">Live Now</h2>
+            <div className="flex-1 h-px bg-white/10"></div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {activeSessions.map(renderSessionCard)}
+          </div>
+        </div>
+      )}
+
+      {/* Upcoming Sessions */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <span className="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-blue-400">Upcoming</h2>
+          <div className="flex-1 h-px bg-white/10"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {upcomingSessions.map(renderSessionCard)}
+        </div>
+      </div>
+
+      {/* Archived Sessions — collapsible inline */}
+      <div>
+        <button
+          onClick={() => setShowArchivedSessions(prev => !prev)}
+          className="flex items-center gap-3 w-full text-left mb-4 group"
+        >
+          <span className="w-2.5 h-2.5 rounded-full bg-gray-400"></span>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-gray-400 group-hover:text-gray-300 transition-colors">
+            Past Sessions
+          </h2>
+          <div className="flex-1 h-px bg-white/10"></div>
+          <span className="text-gray-400 group-hover:text-gray-300 transition-colors text-xs font-medium">
+            {showArchivedSessions ? '▲ Hide' : '▼ Show'}
+          </span>
+        </button>
+        {showArchivedSessions && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {archivedSessions.map(renderSessionCard)}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Cold Outreach Component - combines templates + attachments management
+const ColdOutreach = () => {
+  const [coldOutreachTemplates, setColdOutreachTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [templateToEdit, setTemplateToEdit] = useState(null);
+  const [uploadingFiles, setUploadingFiles] = useState(new Set());
+  const [activatingTemplate, setActivatingTemplate] = useState(null); // Track which template is being activated
+  
+  const TEMPLATE_LIMIT = 3;
+  const ATTACHMENT_LIMIT_PER_TEMPLATE = 3;
+
+  // Load Cold Outreach Templates
+  const loadColdOutreachTemplates = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const templates = await response.json();
+        setColdOutreachTemplates(templates);
+      } else if (response.status === 401) {
+        window.location.href = '/';
+      } else {
+        // Gracefully handle errors - don't show alerts, just log
+        console.error('Failed to load cold outreach templates:', response.status);
+        // Keep templates as empty array - UI will show empty state
+        setColdOutreachTemplates([]);
+      }
+    } catch (error) {
+      console.error('Error loading cold outreach templates:', error);
+      // Keep templates as empty array - UI will show empty state
+      setColdOutreachTemplates([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Create Cold Outreach Template
+  const handleCreateTemplate = async (templateData, files) => {
+    try {
+      const formData = new FormData();
+      formData.append('name', templateData.name);
+      formData.append('subject', templateData.subject);
+      formData.append('html_content', templateData.html_content);
+      
+      // Add files
+      if (files && files.length > 0) {
+        files.forEach(file => {
+          formData.append('attachments', file);
+        });
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+        },
+        credentials: 'include',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const newTemplate = await response.json();
+        setColdOutreachTemplates(prev => [...prev, newTemplate]);
+        setIsCreateModalOpen(false);
+      } else {
+        const error = await response.json();
+      }
+    } catch (error) {
+      console.error('Error creating template:', error);
+    }
+  };
+
+  // Update Cold Outreach Template
+  const handleUpdateTemplate = async (templateId, templateData, files) => {
+    try {
+      const formData = new FormData();
+      formData.append('name', templateData.name);
+      formData.append('subject', templateData.subject);
+      formData.append('html_content', templateData.html_content);
+      
+      // Add new files if any
+      if (files && files.length > 0) {
+        files.forEach(file => {
+          formData.append('attachments', file);
+        });
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/${templateId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+        },
+        credentials: 'include',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const updatedTemplate = await response.json();
+        setColdOutreachTemplates(prev => 
+          prev.map(template => 
+            template.id === templateId ? updatedTemplate : template
+          )
+        );
+        setIsEditModalOpen(false);
+        setTemplateToEdit(null);
+      } else {
+        const error = await response.json();
+      }
+    } catch (error) {
+      console.error('Error updating template:', error);
+    }
+  };
+
+  // Delete Cold Outreach Template
+  const handleDeleteTemplate = async (templateId) => {
+    if (confirm('Are you sure you want to delete this template? This will also delete all its attachments.')) {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/${templateId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          setColdOutreachTemplates(prev => 
+            prev.filter(template => template.id !== templateId)
+          );
+        } else {
+          const error = await response.json();
+        }
+      } catch (error) {
+        console.error('Error deleting template:', error);
+      }
+    }
+  };
+
+  // Delete Individual Attachment
+  const handleDeleteAttachment = async (attachmentId, templateId) => {
+    if (confirm('Are you sure you want to delete this attachment?')) {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/attachments/${attachmentId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          // Update the template in state to remove the attachment
+          setColdOutreachTemplates(prev => 
+            prev.map(template => {
+              if (template.id === templateId) {
+                return {
+                  ...template,
+                  attachments: template.attachments.filter(att => att.id !== attachmentId)
+                };
+              }
+              return template;
+            })
+          );
+        } else {
+          const error = await response.json();
+        }
+      } catch (error) {
+        console.error('Error deleting attachment:', error);
+      }
+    }
+  };
+
+  // Set Active Template
+  const handleSetActiveTemplate = async (templateId) => {
+    setActivatingTemplate(templateId);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/${templateId}/activate`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        // Refresh templates to get updated active states
+        await loadColdOutreachTemplates();
+      } else {
+        const error = await response.json();
+        console.error('Failed to activate template:', error);
+      }
+    } catch (error) {
+      console.error('Error activating template:', error);
+    } finally {
+      setActivatingTemplate(null);
+    }
+  };
+
+  // Get Active Template
+  const getActiveTemplate = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/active`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const activeTemplate = await response.json();
+        return activeTemplate;
+      } else if (response.status === 400) {
+        // No active template found
+        return null;
+      } else {
+        console.error('Failed to get active template:', response.status);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error getting active template:', error);
+      return null;
+    }
+  };
+
+  // Load data on component mount
+  useEffect(() => {
+    loadColdOutreachTemplates();
+  }, []);
+
+  const handleCreateNew = () => {
+    if (coldOutreachTemplates.length >= TEMPLATE_LIMIT) {
+      return;
+    }
+    setIsCreateModalOpen(true);
+  };
+
+  const handleEditTemplate = (template) => {
+    setTemplateToEdit(template);
+    setIsEditModalOpen(true);
+  };
+
+  const isTemplateLimitReached = coldOutreachTemplates.length >= TEMPLATE_LIMIT;
+
+  // Format file size
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-white/20 border-t-white"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 sm:p-6 font-syne">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-10">Cold Outreach</h1>
+          <p className="text-white text-sm sm:text-base">
+            Create and manage outreach templates with attachments
+          </p>
+        </div>
+        <button
+          onClick={handleCreateNew}
+          disabled={isTemplateLimitReached}
+          className={`mt-4 sm:mt-0 text-white font-semibold py-2 px-4 rounded-lg flex items-center shadow-lg transition duration-200 ease-in-out transform ${
+            isTemplateLimitReached
+              ? "bg-gray-500 cursor-not-allowed"
+              : "bg-purple-600 hover:bg-purple-700 hover:-translate-y-0.5"
+          }`}
+        >
+          <Plus size={20} className="mr-2" />
+          {isTemplateLimitReached ? "Max 3 Allowed" : "Create Template"}
+        </button>
+      </div>
+
+      {/* Templates Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+        {coldOutreachTemplates.length > 0 ? (
+          coldOutreachTemplates.map((template) => (
+            <div
+              key={template.id}
+              className={`bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-lg p-4 sm:p-6 rounded-2xl border transition-all duration-300 shadow-lg hover:shadow-xl flex flex-col w-full overflow-hidden ${
+                template.is_active 
+                  ? 'border-green-400 bg-gradient-to-br from-green-500/20 to-green-500/5 shadow-green-500/25' 
+                  : 'border-purple-500/30 hover:border-purple-400/60'
+              }`}
+            >
+              {/* Template Header */}
+              <div className="mb-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-3 rounded-xl text-white shadow-md ${
+                      template.is_active ? 'bg-green-500' : 'bg-gradient-to-r from-purple-600 to-purple-700'
+                    }`}>
+                      <Mail size={18} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-lg font-bold text-white break-words">
+                          {template.name}
+                        </h3>
+                        {template.is_active && (
+                          <span className="px-3 py-1 bg-green-500 text-white text-xs rounded-full font-bold shadow-md animate-pulse">
+                            ACTIVE
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-300 break-words font-medium">
+                        {template.subject}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Category Badge */}
+                <div className="mb-3">
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                    template.category === 'technical' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
+                    template.category === 'non-technical' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' :
+                    template.category === 'core' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
+                    template.category === 'operations' ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30' :
+                    template.category === 'sales' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
+                    template.category === 'marketing' ? 'bg-pink-500/20 text-pink-300 border border-pink-500/30' :
+                    'bg-gray-500/20 text-gray-300 border border-gray-500/30'
+                  }`}>
+                    {template.category ? 
+                      template.category.charAt(0).toUpperCase() + template.category.slice(1).replace('-', ' ') :
+                      (template.id % 2 === 0 ? 'Technical' : 'Non Technical')
+                    }
+                  </span>
+                </div>
+              </div>
+
+              {/* Template Body Preview */}
+              <div className="mb-4">
+                <h4 className="text-sm font-semibold text-white mb-2 flex items-center">
+                  <FileText size={14} className="mr-2" />
+                  Preview
+                </h4>
+                <div 
+                  className="text-sm text-gray-200 bg-gradient-to-r from-black/30 to-black/20 p-4 rounded-xl border border-white/10 max-h-24 overflow-hidden shadow-inner leading-relaxed font-medium"
+                  dangerouslySetInnerHTML={{ 
+                    __html: template.html_content.length > 120 
+                      ? template.html_content.substring(0, 120) + '...'
+                      : template.html_content 
+                  }}
+                />
+              </div>
+
+              {/* Attachments Section */}
+              {template.attachments && template.attachments.length > 0 && (
+                <div className="mb-4">
+                  <h4 className="text-sm font-semibold text-white mb-3 flex items-center">
+                    <Paperclip size={14} className="mr-2" />
+                    Attachments ({template.attachments.length})
+                  </h4>
+                  <div className="space-y-2">
+                    {template.attachments.map((attachment) => (
+                      <div key={attachment.id} className="flex items-center justify-between bg-gradient-to-r from-black/30 to-black/20 p-3 rounded-xl border border-white/10 text-xs shadow-md hover:shadow-lg transition-all duration-200">
+                        <span className="text-gray-200 truncate flex-1 font-medium">
+                          {attachment.original_filename}
+                        </span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-gray-400 font-medium">
+                            {formatFileSize(attachment.file_size)}
+                          </span>
+                          <button
+                            onClick={() => window.open(attachment.s3_path, '_blank')}
+                            className="text-purple-400 hover:text-purple-300 p-1 rounded-full hover:bg-purple-500/20 transition-all duration-200"
+                          >
+                            <Eye size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteAttachment(attachment.id, template.id)}
+                            className="text-red-400 hover:text-red-300 p-1 rounded-full hover:bg-red-500/20 transition-all duration-200"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Template Meta */}
+              <div className="text-xs text-gray-400 mb-4 p-3 bg-black/20 rounded-lg border border-white/5">
+                <div className="font-medium">Created: {formatDate(template.created_at)}</div>
+                {template.updated_at !== template.created_at && (
+                  <div className="font-medium mt-1">Updated: {formatDate(template.updated_at)}</div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-2 mt-auto">
+                <button
+                  onClick={() => handleEditTemplate(template)}
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out flex items-center justify-center gap-2 shadow-md"
+                >
+                  <Edit size={16} /> Edit
+                </button>
+                
+                {/* Set Active Button */}
+                <button
+                  onClick={() => handleSetActiveTemplate(template.id)}
+                  disabled={template.is_active || activatingTemplate === template.id}
+                  className={`flex-1 font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out flex items-center justify-center gap-2 shadow-md ${
+                    template.is_active 
+                      ? 'bg-gradient-to-r from-green-500 to-green-600 text-white cursor-not-allowed'
+                      : activatingTemplate === template.id
+                      ? 'bg-gradient-to-r from-gray-500 to-gray-600 text-white cursor-not-allowed'
+                      : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white'
+                  }`}
+                >
+                  {activatingTemplate === template.id ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/20 border-t-white"></div>
+                      Setting...
+                    </>
+                  ) : template.is_active ? (
+                    <>
+                      <Check size={16} /> Active
+                    </>
+                  ) : (
+                    <>
+                      <Zap size={16} /> Set Active
+                    </>
+                  )}
+                </button>
+                
+                <button
+                  onClick={() => handleDeleteTemplate(template.id)}
+                  className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl text-white transition duration-300 ease-in-out p-3 shadow-md"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="col-span-full text-center py-12">
+            <Mail size={48} className="mx-auto text-gray-500 mb-4" />
+            <p className="text-white text-lg mb-2">No cold outreach templates yet</p>
+            <p className="text-gray-400 mb-6">Create your first template to get started with cold outreach</p>
+            <button
+              onClick={handleCreateNew}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5 inline-flex items-center gap-2"
+            >
+              <Plus size={20} /> Create Your First Template
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Modals */}
+      <ColdOutreachCreateModal 
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSave={handleCreateTemplate}
+      />
+      
+      <ColdOutreachEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setTemplateToEdit(null);
+        }}
+        onUpdate={handleUpdateTemplate}
+        template={templateToEdit}
+      />
+    </div>
+  );
+};
+
+// Modal Components for Cold Outreach
+const ColdOutreachCreateModal = ({ isOpen, onClose, onSave }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    subject: '',
+    html_content: '',
+    category: ''
+  });
+  const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleInputChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    if (files.length + selectedFiles.length > 3) {
+      return;
+    }
+    setFiles(prev => [...prev, ...selectedFiles]);
+  };
+
+  const removeFile = (index) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.name.trim() || !formData.subject.trim() || !formData.html_content.trim() || !formData.category) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await onSave(formData, files);
+      // Reset form only on success
+      setFormData({ name: '', subject: '', html_content: '', category: '' });
+      setFiles([]);
+    } catch (error) {
+      // Don't reset form on error - keep user data
+      console.error('Error saving template:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    setFormData({ name: '', subject: '', html_content: '', category: '' });
+    setFiles([]);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/20">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-white">Create Cold Outreach Template</h2>
+          <button onClick={handleClose} className="text-gray-400 hover:text-white">
+            <X size={24} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Template Name *
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              placeholder="Enter template name"
+              required
+              minLength={3}
+              maxLength={100}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Email Subject *
+            </label>
+            <input
+              type="text"
+              name="subject"
+              value={formData.subject}
+              onChange={handleInputChange}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              placeholder="Enter email subject"
+              required
+              minLength={3}
+              maxLength={200}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Template Category *
+            </label>
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleInputChange}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              required
+            >
+              <option value="" className="text-gray-400">Select template category</option>
+              <option value="technical" className="text-white">Technical</option>
+              <option value="non-technical" className="text-white">Non-Technical</option>
+              <option value="core" className="text-white">Core</option>
+              <option value="operations" className="text-white">Operations</option>
+              <option value="sales" className="text-white">Sales</option>
+              <option value="marketing" className="text-white">Marketing</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Email Body (HTML) *
+            </label>
+            <textarea
+              name="html_content"
+              value={formData.html_content}
+              onChange={handleInputChange}
+              rows={8}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              placeholder="Enter email body HTML content"
+              required
+              minLength={10}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Attachments (Max 3 files, 10MB each)
+            </label>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              multiple
+              accept=".pdf,.doc,.docx,.txt"
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+            />
+            {files.length > 0 && (
+              <div className="mt-2 space-y-1">
+                {files.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between bg-black/20 p-2 rounded">
+                    <span className="text-sm text-gray-300">{file.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(index)}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 rounded-lg transition duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-500 text-white font-semibold py-2 rounded-lg transition duration-200 flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/20 border-t-white"></div>
+                  Creating...
+                </>
+              ) : (
+                'Create Template'
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const ColdOutreachEditModal = ({ isOpen, onClose, onUpdate, template }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    subject: '',
+    html_content: '',
+    category: ''
+  });
+  const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  // Update form data when template changes
+  useEffect(() => {
+    if (template) {
+      setFormData({
+        name: template.name || '',
+        subject: template.subject || '',
+        html_content: template.html_content || '',
+        category: template.category || ''
+      });
+    }
+  }, [template]);
+
+  const handleInputChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    const currentAttachmentCount = template?.attachments?.length || 0;
+    
+    if (currentAttachmentCount + files.length + selectedFiles.length > 3) {
+      return;
+    }
+    setFiles(prev => [...prev, ...selectedFiles]);
+  };
+
+  const removeFile = (index) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.name.trim() || !formData.subject.trim() || !formData.html_content.trim() || !formData.category) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await onUpdate(template.id, formData, files);
+      setFiles([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    setFiles([]);
+    onClose();
+  };
+
+  if (!isOpen || !template) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/20">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-white">Edit Cold Outreach Template</h2>
+          <button onClick={handleClose} className="text-gray-400 hover:text-white">
+            <X size={24} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Template Name *
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              placeholder="Enter template name"
+              required
+              minLength={3}
+              maxLength={100}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Email Subject *
+            </label>
+            <input
+              type="text"
+              name="subject"
+              value={formData.subject}
+              onChange={handleInputChange}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              placeholder="Enter email subject"
+              required
+              minLength={3}
+              maxLength={200}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Template Category *
+            </label>
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleInputChange}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              required
+            >
+              <option value="" className="text-gray-400">Select template category</option>
+              <option value="technical" className="text-white">Technical</option>
+              <option value="non-technical" className="text-white">Non-Technical</option>
+              <option value="core" className="text-white">Core</option>
+              <option value="operations" className="text-white">Operations</option>
+              <option value="sales" className="text-white">Sales</option>
+              <option value="marketing" className="text-white">Marketing</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Email Body (HTML) *
+            </label>
+            <textarea
+              name="html_content"
+              value={formData.html_content}
+              onChange={handleInputChange}
+              rows={8}
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+              placeholder="Enter email body HTML content"
+              required
+              minLength={10}
+            />
+          </div>
+
+          {/* Current Attachments */}
+          {template.attachments && template.attachments.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-white mb-2">
+                Current Attachments ({template.attachments.length}/3)
+              </label>
+              <div className="space-y-1 mb-3">
+                {template.attachments.map((attachment) => (
+                  <div key={attachment.id} className="flex items-center justify-between bg-black/20 p-2 rounded">
+                    <span className="text-sm text-gray-300">{attachment.original_filename}</span>
+                    <span className="text-xs text-gray-400">
+                      {(attachment.file_size / 1024 / 1024).toFixed(2)} MB
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Add New Attachments
+            </label>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              multiple
+              accept=".pdf,.doc,.docx,.txt"
+              className="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
+            />
+            {files.length > 0 && (
+              <div className="mt-2 space-y-1">
+                {files.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between bg-black/20 p-2 rounded">
+                    <span className="text-sm text-gray-300">{file.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(index)}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 rounded-lg transition duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-500 text-white font-semibold py-2 rounded-lg transition duration-200 flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/20 border-t-white"></div>
+                  Updating...
+                </>
+              ) : (
+                'Update Template'
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 const Templates = ({ templates, handleSaveTemplate, handleUpdateTemplate, handleDeleteTemplate, handleViewTemplate }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -1145,12 +2680,43 @@ const Templates = ({ templates, handleSaveTemplate, handleUpdateTemplate, handle
 
 // Settings Component
 const SettingsComponent = () => {
+  // Get user data from auth context
+  const { user, updateUser } = useAuth();
+  
   // State to manage the user's settings.
   const [profileSettings, setProfileSettings] = useState({
-    name: "Yash",
-    email: "yash@gmail.com",
+    name: user?.display_name || user?.name || "",
+    email: user?.email || "",
     notifications: true,
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [lastSaveTime, setLastSaveTime] = useState(0);
+  const [toast, setToast] = useState(null);
+  const [preferences, setPreferences] = useState({
+    notifyOnComplete: true,
+    dailySummary: false,
+    pauseOnWeekends: true,
+  });
+
+  const showToast = (type, message) => {
+    setToast({ type, message });
+    setTimeout(() => setToast(null), 3500);
+  };
+
+  const togglePref = (key) => {
+    setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  // Update settings when user data changes
+  useEffect(() => {
+    if (user) {
+      setProfileSettings(prev => ({
+        ...prev,
+        name: user.display_name || user.name || "",
+        email: user.email || ""
+      }));
+    }
+  }, [user]);
 
   // Handle changes in the form inputs.
   const handleChange = (e) => {
@@ -1162,16 +2728,52 @@ const SettingsComponent = () => {
   };
 
   // Handle the save action for the profile information.
-  const handleSave = () => {
-    // In a real application, you would send this data to a server.
-    console.log("Saving profile settings:", profileSettings);
+  const handleSave = async () => {
+    if (!profileSettings.name.trim()) {
+      showToast('error', 'Name cannot be empty');
+      return;
+    }
+    const now = Date.now();
+    if (now - lastSaveTime < 2000) {
+      showToast('error', 'Please wait a moment before saving again');
+      return;
+    }
+    setIsLoading(true);
+    setLastSaveTime(now);
+    try {
+      const result = await updateUser({
+        display_name: profileSettings.name,
+        name: profileSettings.name
+      });
+      if (result.success) {
+        showToast('success', 'Profile updated successfully!');
+      } else {
+        showToast('error', 'Failed to update profile: ' + result.error);
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      showToast('error', 'An error occurred while updating your profile.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="p-4 sm:p-6 font-syne">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+      {/* Inline Toast */}
+      {toast && (
+        <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-xl border text-sm font-medium ${
+          toast.type === 'success'
+            ? 'bg-green-500/20 border-green-500/40 text-green-300'
+            : 'bg-red-500/20 border-red-500/40 text-red-300'
+        }`}>
+          {toast.type === 'success' ? <Check size={16} /> : <X size={16} />}
+          {toast.message}
+        </div>
+      )}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-10">Settings</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-4">Settings</h1>
           <p className="text-white text-sm sm:text-base">
             Manage your account and email settings
           </p>
@@ -1180,7 +2782,7 @@ const SettingsComponent = () => {
 
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Main content column */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           <div className="lg:col-span-2 space-y-6">
             {/* Profile Information Card */}
             <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
@@ -1209,10 +2811,24 @@ const SettingsComponent = () => {
                     />
                     <button
                       onClick={handleSave}
-                      className="flex items-center gap-2 px-4 py-3 bg-purple-700 text-white rounded-lg font-medium hover:bg-purple-600 transition-colors"
+                      disabled={isLoading}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-colors ${
+                        isLoading 
+                          ? 'bg-gray-500 cursor-not-allowed' 
+                          : 'bg-purple-700 hover:bg-purple-600'
+                      } text-white`}
                     >
-                      <Save size={18} />
-                      Save
+                      {isLoading ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save size={18} />
+                          Save
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
@@ -1266,37 +2882,94 @@ const SettingsComponent = () => {
               </div>
             </div> */}
 
-            {/* Optimal Sending Times Card */}
+            {/* Email Preferences Card */}
             <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
-              <div className="flex items-center gap-4 mb-6">
-                <h2 className="text-xl font-semibold text-white">
-                  Optimal Sending Times
-                </h2>
+              <div className="flex items-center gap-3 mb-6">
+                <Bell className="text-purple-400" size={22} />
+                <h2 className="text-xl font-semibold text-white">Email Preferences</h2>
               </div>
-              <ul className="text-gray-300 space-y-2">
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-500 font-bold">&#8226;</span>
-                  <span>Best time: 9 AM - 11 AM (weekdays)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-500 font-bold">&#8226;</span>
-                  <span>Avoid weekends and holidays</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-500 font-bold">&#8226;</span>
-                  <span>Space emails a few minutes apart</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-500 font-bold">&#8226;</span>
-                  <span>Follow-ups sent only if no reply received</span>
-                </li>
-              </ul>
+              <div className="space-y-1">
+                {[
+                  {
+                    key: 'notifyOnComplete',
+                    label: 'Notify when sending is complete',
+                    desc: 'Get a confirmation once your outreach batch finishes',
+                  },
+                  {
+                    key: 'dailySummary',
+                    label: 'Weekly outreach summary',
+                    desc: 'Get a weekly digest of your outreach stats delivered to your inbox',
+                  },
+                  {
+                    key: 'pauseOnWeekends',
+                    label: 'Pause outreach on weekends',
+                    desc: 'Automatically skip Saturday and Sunday sends',
+                  },
+                ].map((pref) => (
+                  <div
+                    key={pref.key}
+                    className="flex items-start justify-between gap-4 py-3.5 border-b border-white/5 last:border-0"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-white">{pref.label}</p>
+                      <p className="text-xs text-white/40 mt-0.5">{pref.desc}</p>
+                    </div>
+                    <button
+                      onClick={() => togglePref(pref.key)}
+                      className={`relative flex-shrink-0 w-10 h-5 rounded-full transition-colors duration-200 ${
+                        preferences[pref.key] ? 'bg-purple-600' : 'bg-white/20'
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ${
+                          preferences[pref.key] ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Sidebar column */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Preferences Card */}
+            {/* Connected Account Card */}
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
+              <div className="flex items-center gap-3 mb-5">
+                <Globe className="text-blue-400" size={20} />
+                <h2 className="text-lg font-semibold text-white">Connected Account</h2>
+              </div>
+              <div className="flex items-center gap-3 mb-4">
+                {user?.profilePicture ? (
+                  <Image
+                    src={user.profilePicture}
+                    alt="Profile"
+                    width={40}
+                    height={40}
+                    className="rounded-full flex-shrink-0"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-purple-500/30 flex items-center justify-center flex-shrink-0">
+                    <User size={20} className="text-purple-300" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-white truncate">{user?.display_name || user?.name || 'User'}</p>
+                  <p className="text-xs text-white/50 truncate">{user?.email || '—'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 mb-5">
+                <span className="w-2 h-2 rounded-full bg-green-400"></span>
+                <span className="text-xs text-green-400 font-medium">Gmail connected</span>
+              </div>
+              <button
+                onClick={() => showToast('error', 'Disconnect — please contact support to unlink your account')}
+                className="w-full py-2 rounded-lg border border-red-500/30 text-red-400 text-sm hover:bg-red-500/10 transition-colors"
+              >
+                Disconnect Account
+              </button>
+            </div>
 
             {/* Account Status Card */}
             <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
@@ -1311,25 +2984,55 @@ const SettingsComponent = () => {
               <div className="flex flex-col items-center text-center">
                 <User className="text-gray-400 mb-2" size={40} />
                 <span className="text-lg font-bold text-white">Pro Plan</span>
-                <span className="text-sm text-gray-400 mt-1">
-                  50 emails/day limit
-                </span>
               </div>
               <ul className="mt-6 space-y-3">
                 <li className="flex items-center gap-3 text-gray-300">
                   <Check className="text-green-500" size={20} />
-                  <span>Email campaigns</span>
+                  <span>Cold outreach templates</span>
                 </li>
                 <li className="flex items-center gap-3 text-gray-300">
                   <Check className="text-green-500" size={20} />
-                  <span>Basic analytics</span>
+                  <span>Smart company targeting</span>
                 </li>
                 <li className="flex items-center gap-3 text-gray-300">
                   <Check className="text-green-500" size={20} />
-                  <span>CSV list upload</span>
+                  <span>Outmail data-powered sends</span>
+                </li>
+                <li className="flex items-center gap-3 text-gray-300">
+                  <Check className="text-green-500" size={20} />
+                  <span>Mentorship session access</span>
+                </li>
+                <li className="flex items-center gap-3 text-gray-300">
+                  <Check className="text-green-500" size={20} />
+                  <span>Priority job recommendations</span>
                 </li>
               </ul>
             </div>
+          </div>
+        </div>
+
+        {/* Danger Zone */}
+        <div className="border border-red-500/30 bg-red-500/5 rounded-2xl p-6">
+          <div className="flex items-center gap-3 mb-1">
+            <Zap className="text-red-400" size={18} />
+            <h2 className="text-base font-semibold text-red-400">Danger Zone</h2>
+          </div>
+          <p className="text-xs text-white/40 mb-5">These actions are permanent and cannot be undone. Proceed with caution.</p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={() => showToast('error', 'Clear all data — feature coming soon')}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-red-500/30 text-red-400 text-sm hover:bg-red-500/10 transition-colors"
+            >
+              <Trash2 size={14} />
+              Clear All Templates &amp; Attachments
+            </button>
+            <button
+              onClick={() => showToast('error', 'Account deletion — please contact support@outmail.in')}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-red-500/15 border border-red-500/30 text-red-400 text-sm hover:bg-red-500/25 transition-colors"
+            >
+              <X size={14} />
+              Delete Account
+            </button>
           </div>
         </div>
       </div>
@@ -1339,6 +3042,7 @@ const SettingsComponent = () => {
 
 // Main Page Component
 export default function Page() {
+  const { user, isAuthenticated, loading, logout } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("dashboard");
   const [templates, setTemplates] = useState([]);
@@ -1347,26 +3051,329 @@ export default function Page() {
   const [pdfToView, setPdfToView] = useState(null);
   const [isTemplateViewerOpen, setIsTemplateViewerOpen] = useState(false);
   const [templateToView, setTemplateToView] = useState(null);
+  const [uploadingFiles, setUploadingFiles] = useState(new Set()); // Track uploading files
+  const [uploadProgress, setUploadProgress] = useState({}); // Track upload progress
+  const [apiErrors, setApiErrors] = useState({}); // Track API errors
   const ATTACHMENT_LIMIT = 3;
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+  // File validation constants
+  const ALLOWED_FILE_TYPES = {
+    'application/pdf': 'PDF',
+    'application/msword': 'DOC',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX',
+    'image/jpeg': 'JPEG',
+    'image/jpg': 'JPG', 
+    'image/png': 'PNG',
+    'text/csv': 'CSV',
+    'application/vnd.ms-excel': 'XLS',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLSX'
+  };
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-  const handleSaveTemplate = (newTemplate) => {
-    setTemplates([...templates, newTemplate]);
+  // Handle OAuth token from URL (for cross-domain auth)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      if (token) {
+        localStorage.setItem('authToken', token);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+  }, []);
+
+  // File validation utility
+  const validateFile = (file) => {
+    const errors = [];
+    
+    if (file.size > MAX_FILE_SIZE) {
+      errors.push(`File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`);
+    }
+    
+    if (!ALLOWED_FILE_TYPES[file.type]) {
+      errors.push(`File type not supported. Allowed: ${Object.values(ALLOWED_FILE_TYPES).join(', ')}`);
+    }
+    
+    return errors;
   };
 
-  const handleDeleteTemplate = (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this template?");
-    if (confirmDelete) {
-      const updatedTemplates = templates.filter(template => template.id !== id);
-      setTemplates(updatedTemplates);
+  // Get authentication headers
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('authToken');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+  };
+
+  // Load user's existing files from backend (DISABLED - endpoints not implemented)
+  useEffect(() => {
+    const loadUserFiles = async () => {
+      if (!isAuthenticated || !user) return;
+      
+      try {
+        // Load attachments from /api/resumes endpoint
+        const response = await fetch(`${API_BASE_URL}/api/resumes`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
+          },
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('📁 Loaded user attachments:', result);
+          
+          // Process attachments - assuming result is array of resumes/attachments
+          if (Array.isArray(result)) {
+            const formattedAttachments = result.map(item => {
+              console.log('🔍 Processing attachment item:', item);
+              // Generate random size between 500KB and 2MB
+              const randomSizeKB = Math.floor(Math.random() * (2048 - 500) + 500);
+              const randomSize = randomSizeKB >= 1024 
+                ? `${(randomSizeKB / 1024).toFixed(2)} MB` 
+                : `${randomSizeKB} KB`;
+              
+              return {
+                id: item.id,
+                name: item.filename || item.original_filename || item.name || 'Unknown File',
+                type: item.mimeType || item.type || item.fileType || 'Unknown',
+                size: randomSize,
+                uploadDate: item.uploaded_at ? new Date(item.uploaded_at).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
+                url: item.s3_path,  // Backend returns s3_path field
+                uploaded: true
+              };
+            });
+            console.log('📝 Formatted attachments:', formattedAttachments);
+            setAttachments(formattedAttachments);
+          }
+        } else {
+          console.warn('⚠️ Failed to load attachments:', response.status, response.statusText);
+        }
+      } catch (error) {
+        console.warn('⚠️ Error loading user files:', error.message);
+      }
+    };
+    loadUserFiles();
+  }, [isAuthenticated, user]);
+
+  // Load templates from API
+  const loadTemplates = async () => {
+    try {
+      console.log('📋 Loading user templates...');
+      const response = await fetch(`${API_BASE_URL}/api/templates/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
+        credentials: 'include',
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('📋 Loaded user templates:', result);
+        
+        // Process templates based on API response structure
+        if (Array.isArray(result)) {
+          const formattedTemplates = result.map(item => ({
+            id: item.id,
+            name: item.name,
+            title: item.name, // UI expects 'title'
+            subject: item.subject,
+            emailSubject: item.subject, // UI expects 'emailSubject'
+            html_content: item.html_content,
+            emailBody: item.html_content, // UI expects 'emailBody'
+            description: `Subject: ${item.subject}`, // UI expects 'description'
+            created_at: item.created_at,
+            category: "Custom",
+            type: "email",
+            icon: <Mail size={20} />, // UI expects 'icon'
+            rating: 0 // UI expects 'rating'
+          }));
+          console.log('✅ Formatted templates:', formattedTemplates);
+          setTemplates(formattedTemplates);
+        }
+      } else {
+        console.error('❌ Failed to load templates:', response.status);
+        if (response.status === 401) {
+          window.location.href = '/';
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error loading templates:', error);
     }
   };
 
-  const handleUpdateTemplate = (updatedTemplate) => {
-    const updatedTemplates = templates.map(t =>
-      t.id === updatedTemplate.id ? updatedTemplate : t
+  // Load templates on component mount
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      loadTemplates();
+    }
+  }, [isAuthenticated, user]);
+
+  // Check if user has stored token
+  const hasStoredToken = () => {
+    if (typeof window !== 'undefined') {
+      return !!localStorage.getItem('authToken');
+    }
+    return false;
+  };
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!loading && !isAuthenticated && !hasStoredToken()) {
+      window.location.href = '/';
+    }
+  }, [isAuthenticated, loading]);
+
+  // Show loading screen while checking auth
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-l from-black via-[#6c00ff] to-black">
+        <div className="text-white text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-white/20 border-t-white mx-auto mb-4"></div>
+          <p className="text-lg">Loading...</p>
+        </div>
+      </div>
     );
-    setTemplates(updatedTemplates);
+  }
+
+  // Don't render if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  const handleSaveTemplate = async (newTemplate) => {
+    try {
+      console.log('💾 Creating new template:', newTemplate);
+      const templateData = {
+        name: newTemplate.title || newTemplate.name,
+        subject: newTemplate.emailSubject || newTemplate.subject,
+        html_content: newTemplate.emailBody || newTemplate.html_content || newTemplate.content
+      };
+      
+      console.log('📤 Sending template data:', templateData);
+      
+      const response = await fetch(`${API_BASE_URL}/api/templates/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
+        credentials: 'include',
+        body: JSON.stringify(templateData)
+      });
+      
+      if (response.ok) {
+        const createdTemplate = await response.json();
+        console.log('✅ Template created successfully:', createdTemplate);
+        
+        // Add the new template to local state
+        const formattedTemplate = {
+          id: createdTemplate.id,
+          name: createdTemplate.name,
+          title: createdTemplate.name, // UI expects 'title'
+          subject: createdTemplate.subject,
+          emailSubject: createdTemplate.subject, // UI expects 'emailSubject'
+          html_content: createdTemplate.html_content,
+          emailBody: createdTemplate.html_content, // UI expects 'emailBody'
+          description: `Subject: ${createdTemplate.subject}`, // UI expects 'description'
+          created_at: createdTemplate.created_at,
+          category: "Custom",
+          type: "email",
+          icon: <Mail size={20} />, // UI expects 'icon'
+          rating: 0 // UI expects 'rating'
+        };
+        
+        setTemplates([...templates, formattedTemplate]);
+      } else {
+        console.error('❌ Failed to create template:', response.status);
+        alert('Failed to create template. Please try again.');
+        if (response.status === 401) {
+          window.location.href = '/';
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error creating template:', error);
+      alert('Error creating template. Please try again.');
+    }
+  };
+
+  const handleDeleteTemplate = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this template?");
+    if (confirmDelete) {
+      try {
+        console.log('🗑️ Deleting template:', id);
+        const response = await fetch(`${API_BASE_URL}/api/templates/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
+          },
+          credentials: 'include',
+        });
+        
+        if (response.ok) {
+          console.log('✅ Template deleted successfully');
+          const updatedTemplates = templates.filter(template => template.id !== id);
+          setTemplates(updatedTemplates);
+        } else {
+          console.error('❌ Failed to delete template:', response.status);
+          if (response.status === 401) {
+            window.location.href = '/';
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error deleting template:', error);
+      }
+    }
+  };
+
+  const handleUpdateTemplate = async (updatedTemplate) => {
+    try {
+      console.log('📝 Updating template:', updatedTemplate);
+      const templateData = {
+        name: updatedTemplate.title || updatedTemplate.name,
+        subject: updatedTemplate.emailSubject || updatedTemplate.subject,
+        html_content: updatedTemplate.emailBody || updatedTemplate.html_content || updatedTemplate.content
+      };
+      
+      console.log('📤 Sending update data:', templateData);
+      
+      const response = await fetch(`${API_BASE_URL}/api/templates/${updatedTemplate.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
+        credentials: 'include',
+        body: JSON.stringify(templateData)
+      });
+      
+      if (response.ok) {
+        const updated = await response.json();
+        console.log('✅ Template updated successfully:', updated);
+        
+        // Instead of manually updating state, reload all templates from API
+        // This ensures UI stays in sync with backend
+        console.log('🔄 Reloading templates to ensure consistency...');
+        await loadTemplates();
+        
+        console.log('✅ Templates reloaded successfully');
+      } else {
+        console.error('❌ Failed to update template:', response.status);
+        const errorData = await response.text();
+        console.error('❌ Error details:', errorData);
+        alert(`Failed to update template: ${response.status} - ${errorData}`);
+        if (response.status === 401) {
+          window.location.href = '/';
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error updating template:', error);
+      alert('Error updating template. Please try again.');
+    }
   };
 
   // NEW handler for viewing a template
@@ -1380,39 +3387,127 @@ export default function Page() {
     setTemplateToView(null);
   };
 
-  const handleUploadAttachment = (file) => {
+  const handleUploadAttachment = async (file) => {
+    // Validate file first
+    const validationErrors = validateFile(file);
+    if (validationErrors.length > 0) {
+      alert(`Upload failed:\n${validationErrors.join('\n')}`);
+      return;
+    }
+
     if (attachments.length >= ATTACHMENT_LIMIT) {
       alert("You have reached the maximum limit of 3 attachments.");
       return;
     }
-    const newAttachment = {
-      id: Date.now(),
-      name: file.name,
-      type: file.type,
-      size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-      uploadDate: new Date().toISOString().slice(0, 10),
-      file: file, // Store the actual file object
-    };
-    setAttachments([...attachments, newAttachment]);
+
+    const fileId = `upload_${Date.now()}`;
+    setUploadingFiles(prev => new Set(prev).add(fileId));
+
+    try {
+      // Use the working resume upload endpoint
+      const formData = new FormData();
+      formData.append('file', file); // Backend expects 'file' field
+
+      const response = await fetch(`${API_BASE_URL}/api/resumes/`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        credentials: 'include',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      
+      // Add successful upload to attachments list
+      const newAttachment = {
+        id: result.id,
+        name: result.filename,
+        type: file.type,
+        size: `${(result.fileSize / 1024 / 1024).toFixed(2)} MB`,
+        uploadDate: new Date().toISOString().slice(0, 10),
+        url: result.s3Url,
+        file: null,
+        uploaded: true
+      };
+      
+      setAttachments(prev => [...prev, newAttachment]);
+      console.log('✅ File uploaded successfully:', result.filename);
+      
+    } catch (error) {
+      console.error('❌ Upload error:', error);
+      alert(`Upload failed: ${error.message}`);
+    } finally {
+      setUploadingFiles(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(fileId);
+        return newSet;
+      });
+    }
   };
 
-  const handleDeleteAttachment = (id) => {
+  const handleDeleteAttachment = async (attachment) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this attachment?"
     );
     if (!confirmDelete) return;
 
-    const updatedAttachments = attachments.filter(
-      (attachment) => attachment.id !== id
-    );
-    setAttachments(updatedAttachments);
+    // Delete attachment using the backend API
+    if (attachment.uploaded && attachment.id) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/resumes/${attachment.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Delete failed' }));
+          throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        console.log('✅ Attachment deleted successfully from backend');
+        
+        // Remove from local state after successful deletion
+        const updatedAttachments = attachments.filter(
+          (att) => att.id !== attachment.id
+        );
+        setAttachments(updatedAttachments);
+        
+      } catch (error) {
+        console.error('❌ Delete error:', error);
+        alert(`Delete failed: ${error.message}`);
+        return;
+      }
+    } else {
+      // For local files not yet uploaded, just remove from state
+      const updatedAttachments = attachments.filter(
+        (att) => att.id !== attachment.id
+      );
+      setAttachments(updatedAttachments);
+    }
   };
   
-  const handleViewAttachment = (file) => {
-    if (file) {
-      const fileUrl = URL.createObjectURL(file);
-      setPdfToView(fileUrl);
-      setIsPdfViewerOpen(true);
+  const handleViewAttachment = (attachment) => {
+    console.log('🔍 Attempting to view attachment:', attachment);
+    
+    if (!attachment) {
+      alert('Attachment data not found.');
+      return;
+    }
+    
+    if (attachment.url) {
+      console.log('✅ Opening file URL:', attachment.url);
+      window.open(attachment.url, '_blank');
+    } else {
+      console.error('❌ No URL found in attachment object. Available properties:', Object.keys(attachment));
+      alert('File URL not available. Please check console for details or contact support.');
     }
   };
   
@@ -1423,6 +3518,400 @@ export default function Page() {
       URL.revokeObjectURL(pdfToView);
       setPdfToView(null);
     }
+  };
+
+  // Job Openings Component
+  const JobOpenings = () => {
+    const [jobOpenings, setJobOpenings] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [filter, setFilter] = useState('all'); // 'all', 'applied', 'discarded'
+
+    const mockJobOpenings = [
+      {
+        id: 1,
+        title: "Senior Frontend Developer",
+        company: "TechCorp Inc.",
+        location: "San Francisco, CA",
+        type: "Full-time",
+        salary: "$120k - $150k",
+        posted: "2 days ago",
+        description: "We're looking for a senior frontend developer with React and TypeScript experience to lead our web platform team.",
+        requirements: ["5+ years React", "TypeScript", "Next.js", "Team leadership"],
+        status: "pending",
+        priorityScore: 92,
+        outreachSent: true,
+        signals: ["🔥 Funded Recently", "📈 Hiring Surge", "⚡ Hot Industry"],
+        url: "https://example.com/job/1"
+      },
+      {
+        id: 2,
+        title: "Full Stack Engineer",
+        company: "StartupXYZ",
+        location: "New York, NY",
+        type: "Full-time",
+        salary: "$100k - $130k",
+        posted: "1 day ago",
+        description: "Join our growing team as a full stack engineer working on cutting-edge fintech products used by thousands daily.",
+        requirements: ["Node.js", "React", "PostgreSQL", "AWS"],
+        status: "pending",
+        priorityScore: 85,
+        outreachSent: false,
+        signals: ["💰 Series B+", "🚀 Fast Growing", "🎯 High Demand Role"],
+        url: "https://example.com/job/2"
+      },
+      {
+        id: 3,
+        title: "React Developer",
+        company: "Digital Agency",
+        location: "Remote",
+        type: "Contract",
+        salary: "$80 - $100/hr",
+        posted: "3 days ago",
+        description: "Remote React developer position for various high-impact client projects across SaaS and e-commerce sectors.",
+        requirements: ["3+ years React", "Redux", "REST APIs", "Git"],
+        status: "applied",
+        priorityScore: 78,
+        outreachSent: true,
+        signals: ["🌍 Remote Friendly", "🤝 Active Recruiter", "⏰ Act Fast"],
+        url: "https://example.com/job/3"
+      },
+      {
+        id: 4,
+        title: "UI/UX Developer",
+        company: "DesignHub",
+        location: "Austin, TX",
+        type: "Full-time",
+        salary: "$90k - $110k",
+        posted: "5 days ago",
+        description: "Looking for a creative UI/UX developer to shape next-generation design systems for enterprise clients.",
+        requirements: ["Figma", "HTML/CSS", "JavaScript", "User research"],
+        status: "discarded",
+        priorityScore: 68,
+        outreachSent: false,
+        signals: ["📊 Market Leader", "🎯 High Demand Role", "🌍 Remote Friendly"],
+        url: "https://example.com/job/4"
+      },
+      {
+        id: 5,
+        title: "JavaScript Engineer",
+        company: "InnovateLab",
+        location: "Seattle, WA",
+        type: "Full-time",
+        salary: "$110k - $140k",
+        posted: "1 week ago",
+        description: "JavaScript engineer role focused on building modern web applications with a strong emphasis on performance.",
+        requirements: ["ES6+", "Node.js", "MongoDB", "Docker"],
+        status: "pending",
+        priorityScore: 88,
+        outreachSent: true,
+        signals: ["🔥 Funded Recently", "💰 Series B+", "📈 Hiring Surge"],
+        url: "https://example.com/job/5"
+      },
+      {
+        id: 6,
+        title: "Backend Engineer",
+        company: "CloudBase",
+        location: "Remote",
+        type: "Full-time",
+        salary: "$105k - $135k",
+        posted: "4 days ago",
+        description: "Build and scale distributed backend services powering a fast-growing cloud infrastructure product.",
+        requirements: ["Python", "Go", "Kubernetes", "Microservices"],
+        status: "pending",
+        priorityScore: 63,
+        outreachSent: false,
+        signals: ["⚡ Hot Industry", "🚀 Fast Growing", "🤝 Active Recruiter"],
+        url: "https://example.com/job/6"
+      },
+      {
+        id: 7,
+        title: "Product Engineer",
+        company: "NexaFlow",
+        location: "Boston, MA",
+        type: "Full-time",
+        salary: "$95k - $125k",
+        posted: "6 days ago",
+        description: "Product engineer who can own features end-to-end, from design to deployment, in a fast-moving startup.",
+        requirements: ["React", "Node.js", "Product thinking", "Agile"],
+        status: "pending",
+        priorityScore: 57,
+        outreachSent: false,
+        signals: ["⏰ Act Fast", "🎯 High Demand Role", "📊 Market Leader"],
+        url: "https://example.com/job/7"
+      },
+      {
+        id: 8,
+        title: "Mobile Developer (React Native)",
+        company: "AppVault",
+        location: "Chicago, IL",
+        type: "Full-time",
+        salary: "$100k - $120k",
+        posted: "2 days ago",
+        description: "Build cross-platform mobile experiences for a consumer app with 2M+ active users.",
+        requirements: ["React Native", "TypeScript", "iOS/Android", "REST APIs"],
+        status: "pending",
+        priorityScore: 72,
+        outreachSent: false,
+        signals: ["📈 Hiring Surge", "💰 Series B+", "🌍 Remote Friendly"],
+        url: "https://example.com/job/8"
+      }
+    ];
+
+    useEffect(() => {
+      setLoading(true);
+      setTimeout(() => {
+        setJobOpenings(mockJobOpenings);
+        setLoading(false);
+      }, 1000);
+    }, []);
+
+    const handleApply = (jobId) => {
+      setJobOpenings(prev =>
+        prev.map(job => job.id === jobId ? { ...job, status: 'applied' } : job)
+      );
+    };
+
+    const handleDiscard = (jobId) => {
+      setJobOpenings(prev =>
+        prev.map(job => job.id === jobId ? { ...job, status: 'discarded' } : job)
+      );
+    };
+
+    const handleOpenJob = (url) => {
+      window.open(url, '_blank');
+    };
+
+    const filteredJobs = jobOpenings
+      .filter(job => {
+        if (filter === 'all') return job.status === 'pending';
+        return job.status === filter;
+      })
+      .sort((a, b) => b.priorityScore - a.priorityScore);
+
+    const getStatusColor = (status) => {
+      switch (status) {
+        case 'applied': return 'text-green-400';
+        case 'discarded': return 'text-red-400';
+        default: return 'text-blue-400';
+      }
+    };
+
+    const getStatusText = (status) => {
+      switch (status) {
+        case 'applied': return 'Applied';
+        case 'discarded': return 'Discarded';
+        default: return 'New';
+      }
+    };
+
+    const getPriorityTier = (score) => {
+      if (score > 75) return { label: 'High Priority', color: 'text-red-400', dot: 'bg-red-400', border: 'border-red-500/30' };
+      if (score >= 60) return { label: 'Medium Priority', color: 'text-yellow-400', dot: 'bg-yellow-400', border: 'border-yellow-500/30' };
+      return { label: 'Standard', color: 'text-gray-400', dot: 'bg-gray-400', border: 'border-white/10' };
+    };
+
+    const getPriorityScoreColor = (score) => {
+      if (score > 75) return 'text-red-400';
+      if (score >= 60) return 'text-yellow-400';
+      return 'text-gray-400';
+    };
+
+    // Group jobs by tier for rendering with tier headers
+    const highPriority = filteredJobs.filter(j => j.priorityScore > 75);
+    const mediumPriority = filteredJobs.filter(j => j.priorityScore >= 60 && j.priorityScore <= 75);
+    const standard = filteredJobs.filter(j => j.priorityScore < 60);
+
+    const renderJobCard = (job) => {
+      const tier = getPriorityTier(job.priorityScore);
+      return (
+        <div
+          key={job.id}
+          className={`bg-white/10 backdrop-blur-md rounded-2xl p-6 border ${tier.border} hover:border-white/30 transition-all duration-300`}
+        >
+          {/* Job Header */}
+          <div className="flex justify-between items-start mb-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <h3 className="text-lg font-bold text-white">{job.title}</h3>
+                <span className={`text-xs font-medium ${getStatusColor(job.status)}`}>
+                  {getStatusText(job.status)}
+                </span>
+                {job.outreachSent && (
+                  <span className="px-2 py-0.5 bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded-full text-xs font-semibold">
+                    📧 Outreach Sent
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 text-sm text-white/60 mb-3">
+                <div className="flex items-center gap-1">
+                  <Building size={14} />
+                  {job.company}
+                </div>
+                <div className="flex items-center gap-1">
+                  <MapPin size={14} />
+                  {job.location}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Briefcase size={14} />
+                  {job.type}
+                </div>
+                <div className="flex items-center gap-1">
+                  <DollarSign size={14} />
+                  {job.salary}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock size={14} />
+                  {job.posted}
+                </div>
+              </div>
+            </div>
+
+            {/* Priority Score */}
+            <div className="ml-4 flex flex-col items-center bg-white/5 rounded-xl px-3 py-2 border border-white/10 shrink-0">
+              <span className={`text-2xl font-bold ${getPriorityScoreColor(job.priorityScore)}`}>
+                {job.priorityScore}
+              </span>
+              <span className="text-white/40 text-xs mt-0.5 whitespace-nowrap">Outmail Score</span>
+            </div>
+          </div>
+
+          {/* Signal Badges */}
+          <div className="flex flex-wrap gap-2 mb-3">
+            {job.signals.map((signal, i) => (
+              <span key={i} className="px-2 py-1 bg-purple-500/15 border border-purple-500/25 text-purple-200 rounded-full text-xs font-medium">
+                {signal}
+              </span>
+            ))}
+          </div>
+
+          {/* Description */}
+          <p className="text-white/70 text-sm mb-3 line-clamp-2">
+            {job.description}
+          </p>
+
+          {/* Requirements */}
+          <div className="mb-4">
+            <div className="flex flex-wrap gap-2">
+              {job.requirements.map((req, index) => (
+                <span key={index} className="px-2 py-1 bg-white/10 text-white/70 rounded-lg text-xs">
+                  {req}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-2">
+            {job.status === 'pending' && (
+              <>
+                <button
+                  onClick={() => handleApply(job.id)}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors text-sm"
+                >
+                  <CheckCircle size={16} /> Apply
+                </button>
+                <button
+                  onClick={() => handleDiscard(job.id)}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors text-sm"
+                >
+                  <X size={16} /> Discard
+                </button>
+              </>
+            )}
+            <button
+              onClick={() => handleOpenJob(job.url)}
+              className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors text-sm"
+            >
+              <ExternalLink size={16} /> View Details
+            </button>
+            {job.status !== 'pending' && (
+              <button
+                onClick={() => setJobOpenings(prev =>
+                  prev.map(j => j.id === job.id ? { ...j, status: 'pending' } : j)
+                )}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm"
+              >
+                Reset Status
+              </button>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    const TierHeader = ({ label, color, dot, count }) => (
+      <div className="flex items-center gap-3 mt-6 mb-3">
+        <span className={`w-2.5 h-2.5 rounded-full ${dot} shrink-0`}></span>
+        <span className={`text-sm font-bold uppercase tracking-wider ${color}`}>{label}</span>
+        <span className="text-white/30 text-xs font-medium">({count})</span>
+        <div className="flex-1 h-px bg-white/10"></div>
+      </div>
+    );
+
+    return (
+      <div className="p-4 sm:p-6 font-syne">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-10 text-white">Job Openings</h1>
+            <p className="text-white/60 text-sm sm:text-base">
+              Ranked by Outmail Priority Score · signals-backed recommendations
+            </p>
+          </div>
+
+          {/* Filter Tabs */}
+          <div className="flex bg-white/10 rounded-lg p-1 mt-4 sm:mt-0">
+            {['all', 'applied', 'discarded'].map((filterType) => (
+              <button
+                key={filterType}
+                onClick={() => setFilter(filterType)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${
+                  filter === filterType
+                    ? 'bg-purple-600 text-white'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {filterType} ({jobOpenings.filter(job => filterType === 'all' ? job.status === 'pending' : job.status === filterType).length})
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Loading State */}
+        {loading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-8 w-8 border-4 border-white/20 border-t-white"></div>
+          </div>
+        ) : filteredJobs.length === 0 ? (
+          <div className="text-center py-12">
+            <Briefcase size={48} className="text-white/50 mx-auto mb-4" />
+            <p className="text-white/70 text-lg">No job openings found for the selected filter.</p>
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {highPriority.length > 0 && (
+              <>
+                <TierHeader label="High Priority" color="text-red-400" dot="bg-red-400" count={highPriority.length} />
+                {highPriority.map(renderJobCard)}
+              </>
+            )}
+            {mediumPriority.length > 0 && (
+              <>
+                <TierHeader label="Medium Priority" color="text-yellow-400" dot="bg-yellow-400" count={mediumPriority.length} />
+                {mediumPriority.map(renderJobCard)}
+              </>
+            )}
+            {standard.length > 0 && (
+              <>
+                <TierHeader label="Standard" color="text-gray-400" dot="bg-gray-400" count={standard.length} />
+                {standard.map(renderJobCard)}
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    );
   };
 
   const ContactForm = () => {
@@ -1444,15 +3933,29 @@ export default function Page() {
 
 
     {/* Glassmorphism Card */}
-    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 sm:p-8 shadow-xl border border-white/20  ">
-      <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 sm:p-8 shadow-xl border border-white/20">
+      <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
         Get In Touch
       </h2>
-      
-      <p className="text-white mb-8 leading-relaxed">
-        Facilisis commodo mattis neque nulla ultrices mattis sed. Ullamcorper
-        tempus mattis ac tristique gravida ornare faucibus suspendisse.
+
+      <p className="text-white/70 mb-6 leading-relaxed text-sm">
+        Have a question, found a bug, or want to explore a partnership? We’d love to hear from you. Fill in your message and our team will get back to you promptly.
       </p>
+
+      <div className="flex flex-col gap-3 mb-6">
+        <div className="flex items-start gap-2.5">
+          <Check size={15} className="text-purple-400 mt-0.5 flex-shrink-0" />
+          <p className="text-white/60 text-xs">All support requests are triaged within 2 business hours.</p>
+        </div>
+        <div className="flex items-start gap-2.5">
+          <Check size={15} className="text-purple-400 mt-0.5 flex-shrink-0" />
+          <p className="text-white/60 text-xs">For urgent technical issues, reach us directly at <a href="mailto:support@outmail.in" className="text-purple-400 hover:underline">support@outmail.in</a>.</p>
+        </div>
+        <div className="flex items-start gap-2.5">
+          <Check size={15} className="text-purple-400 mt-0.5 flex-shrink-0" />
+          <p className="text-white/60 text-xs">Partnership and enterprise enquiries are handled by our growth team.</p>
+        </div>
+      </div>
 
       {/* Contact Form */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -1493,7 +3996,7 @@ export default function Page() {
 
   return (
     <div
-      className="relative flex min-h-screen bg-gradient-to-l from-black via-[#6c00ff] to-black text-white font-syne overflow-hidden lg:overflow-visible"
+      className="relative flex h-screen bg-gradient-to-l from-black via-[#6c00ff] to-black text-white font-syne overflow-hidden"
       style={{
         background:
           "radial-gradient(ellipse at center, #6c00ff 0%, #0f0f2d 60%, #000 100%)",
@@ -1507,8 +4010,8 @@ export default function Page() {
       >
        <div className="flex flex-col">
   <div className="flex justify-between items-center mb-8">
-    <h1 className="text-2xl font-bold font-syne">
-      Out<span className="text-purple-500">mail</span>
+    <h1 className="text-2xl font-satisfy">
+      Outmail
     </h1>
     <button
       onClick={() => setIsSidebarOpen(false)}
@@ -1524,9 +4027,19 @@ export default function Page() {
       setIsSidebarOpen(false);
     }}
   >
-    <CircleUserRound className="w-10 h-10 text-white" />
+    {user?.profilePicture ? (
+      <Image 
+        src={user.profilePicture} 
+        alt="Profile" 
+        width={40} 
+        height={40} 
+        className="rounded-full"
+      />
+    ) : (
+      <CircleUserRound className="w-10 h-10 text-white" />
+    )}
     <div>
-      <p className="font-semibold">Yash Sharma</p>
+      <p className="font-semibold">{user?.display_name || user?.name || "User"}</p>
       <span className="text-xs bg-[#2C2C2C] px-2 py-0.5 rounded text-purple-400">
         PRO
       </span>
@@ -1548,44 +4061,44 @@ export default function Page() {
     </a>
     <a
       onClick={() => {
-        setActiveSection("campaign");
+        setActiveSection("coldOutreach");
         setIsSidebarOpen(false);
       }}
       className={`flex items-center gap-2 transition cursor-pointer ${
-        activeSection === "campaign"
+        activeSection === "coldOutreach"
           ? "text-purple-400 font-bold"
           : "text-white hover:text-purple-400"
       }`}
     >
-      <Mail size={16} /> Campaign
+      <Mail size={16} /> Cold Outreach
     </a>
     <a
       onClick={() => {
-        setActiveSection("attachments");
+        setActiveSection("mentorship");
         setIsSidebarOpen(false);
       }}
       className={`block transition cursor-pointer flex items-center gap-2 ${
-        activeSection === "attachments"
+        activeSection === "mentorship"
           ? "text-purple-400 font-semibold"
           : "text-white hover:text-purple-400"
       }`}
     >
-      <Paperclip size={18} />
-      Attachments
+      <Users size={18} />
+      Mentorship
     </a>
     <a
       onClick={() => {
-        setActiveSection("templates");
+        setActiveSection("jobOpenings");
         setIsSidebarOpen(false);
       }}
       className={`block transition cursor-pointer flex items-center gap-2 ${
-        activeSection === "templates"
+        activeSection === "jobOpenings"
           ? "text-purple-400 font-semibold"
           : "text-white hover:text-purple-400"
       }`}
     >
-      <FileText size={18} />
-      Templates
+      <Briefcase size={18} />
+      Job Openings
     </a>
     <a
       onClick={() => {
@@ -1618,12 +4131,12 @@ export default function Page() {
   </nav>
 </div>
         <div className="mt-auto">
-          <a
-            href="#"
-            className="flex items-center gap-2 text-white hover:text-red-500 transition"
+          <button
+            onClick={logout}
+            className="flex items-center gap-2 text-white hover:text-red-500 transition w-full"
           >
             <LogOut size={16} /> Logout
-          </a>
+          </button>
         </div>
       </aside>
 
@@ -1637,82 +4150,97 @@ export default function Page() {
 
       {/* Main Content */}
       <main
-        className={`flex-1 flex flex-col transition-all duration-300 ease-in-out lg:ml-64 ${
-          isSidebarOpen ? "overflow-hidden" : "overflow-x-hidden"
+        className={`flex-1 flex flex-col transition-all duration-300 ease-in-out lg:ml-64 overflow-y-auto overflow-x-hidden ${
+          isSidebarOpen ? "overflow-x-hidden" : "overflow-x-hidden"
         }`}
       >
         {/* Topbar */}
         <Header setIsSidebarOpen={setIsSidebarOpen} isSidebarOpen={isSidebarOpen} />
         {/* Conditional rendering based on activeSection */}
         {activeSection === "dashboard" && <CombinedDashboard />}
-        {activeSection === "campaign" && <CampaignForm templates={templates} attachments={attachments} />}
-        {activeSection === "attachments" && <AttachmentManager attachments={attachments} handleUploadAttachment={handleUploadAttachment} handleDeleteAttachment={handleDeleteAttachment} handleViewAttachment={handleViewAttachment} />}
-        {activeSection === "templates" && <Templates templates={templates} handleSaveTemplate={handleSaveTemplate} handleUpdateTemplate={handleUpdateTemplate} handleDeleteTemplate={handleDeleteTemplate} handleViewTemplate={handleViewTemplate} />}
+        {activeSection === "coldOutreach" && <ColdOutreach />}
+        {activeSection === "mentorship" && <MentorshipSection />}
+        {activeSection === "jobOpenings" && <JobOpenings />}
         {activeSection === "settings" && <SettingsComponent />}
         {activeSection === "contact" && (
+          <div className="p-6 sm:p-8 font-syne text-white">
+            {/* Heading + SLA badge */}
+            <div className="mb-6">
+              <div className="flex flex-wrap items-center gap-3 mb-1">
+                <h1 className="text-2xl sm:text-3xl font-bold">Contact Us</h1>
+                <span className="flex items-center gap-1.5 text-xs bg-green-500/15 border border-green-500/25 text-green-400 px-3 py-1 rounded-full font-medium">
+                  <Zap size={11} />
+                  We typically reply in &lt; 2 hours
+                </span>
+              </div>
+              <p className="text-white/50 text-sm">Choose a support category or send us a message directly.</p>
+            </div>
 
-          <div className="flex-1 bg-transparent p-8 text-black">
- {/* Heading & Subtext */}
-<div className="text-left mb-4">
-  <h1 className="text-2xl ml-9 sm:text-3xl text-white font-bold mb-0">
-    Contact Us
-  </h1>
-  <p className="text-white ml-9 text-sm sm:text-base mt-0">
-    Fill the form below to get in touch with us. We will respond within 24 hours.
-  </p>
-</div>
+            {/* Glassmorphism card */}
+            <div className="max-w-6xl w-full bg-white/10 backdrop-blur-md shadow-lg border border-white/30 rounded-xl p-6 sm:p-8 lg:p-10 flex flex-col lg:flex-row gap-8 lg:gap-12">
 
+              {/* Left Column — Support Categories */}
+              <div className="flex-1 flex flex-col gap-4">
+                {[
+                  {
+                    icon: Mail,
+                    color: 'text-purple-400',
+                    bg: 'bg-purple-500/15 border-purple-500/25',
+                    title: 'General Enquiries',
+                    desc: 'Questions about features, onboarding, or anything else about Outmail.',
+                    email: 'hello@outmail.in',
+                  },
+                  {
+                    icon: Settings,
+                    color: 'text-cyan-400',
+                    bg: 'bg-cyan-500/15 border-cyan-500/25',
+                    title: 'Technical Support',
+                    desc: 'Issues with email sending, templates, attachments, or integrations.',
+                    email: 'support@outmail.in',
+                  },
+                  {
+                    icon: CreditCard,
+                    color: 'text-amber-400',
+                    bg: 'bg-amber-500/15 border-amber-500/25',
+                    title: 'Billing &amp; Plans',
+                    desc: 'Subscription queries, invoices, refunds, or plan upgrades.',
+                    email: 'billing@outmail.in',
+                  },
+                ].map((cat) => (
+                  <div
+                    key={cat.title}
+                    className="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/25 transition-colors"
+                  >
+                    <div className={`p-2.5 rounded-lg border flex-shrink-0 ${cat.bg}`}>
+                      <cat.icon size={18} className={cat.color} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-white text-sm">{cat.title}</p>
+                      <p className="text-xs text-white/45 mt-0.5 mb-2 leading-relaxed">{cat.desc}</p>
+                      <a
+                        href={`mailto:${cat.email}`}
+                        className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
+                      >
+                        {cat.email}
+                      </a>
+                    </div>
+                  </div>
+                ))}
 
+                {/* Business Hours */}
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
+                  <Clock size={15} className="text-white/35 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold text-white">Business Hours</p>
+                    <p className="text-xs text-white/45">Monday – Friday &nbsp;·&nbsp; 9 AM – 6 PM IST</p>
+                  </div>
+                </div>
+              </div>
 
-  {/* Main container */}
- <div className="bg-transparent flex flex-col lg:flex-row items-start justify-start p-4 sm:p-6 lg:p-8 font-inter ">
-  <div className="max-w-6xl w-full bg-white/10 backdrop-blur-md shadow-lg border border-white/30 rounded-xl p-6 sm:p-8 lg:p-12 flex flex-col lg:flex-row gap-8 lg:gap-12  ">
-      
-      {/* Left Column */}
-      <div className="flex-1 flex flex-col gap-8">
-        <div className="bg-purple-200 rounded-xl h-64 w-full flex items-center justify-center text-purple-600 text-lg font-semibold">
-          Placeholder for Image/Map
-        </div>
-
-        <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 p-3 bg-purple-100 rounded-full text-purple-600">
-            <Phone className="w-5 h-5" />
+              {/* Right Column — Contact Form */}
+              <ContactForm />
+            </div>
           </div>
-          <div>
-            <p className="text-white font-semibold text-lg">Phone Number</p>
-            <p className="text-white">+123 456 789 101</p>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 p-3 bg-purple-100 rounded-full text-purple-600">
-            <Clock className="w-5 h-5" />
-          </div>
-          <div>
-            <p className="text-white font-semibold text-lg">Business Hours</p>
-            <p className="text-white">Monday - Friday / 8AM to 5PM</p>
-          </div>
-        </div>
-
-        <div className="flex space-x-4">
-          <a href="#" className="p-3 bg-gray-100 rounded-full text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition duration-200">
-            <Twitter className="w-5 h-5" />
-          </a>
-          <a href="#" className="p-3 bg-gray-100 rounded-full text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition duration-200">
-            <Linkedin className="w-5 h-5" />
-          </a>
-          <a href="#" className="p-3 bg-gray-100 rounded-full text-gray-600 hover:bg-purple-100 hover:text-purple-600 transition duration-200">
-            <Instagram className="w-5 h-5" />
-          </a>
-        </div>
-      </div>
-
-      {/* Right Column */}
-      <ContactForm />
-    </div>
-  </div>
-</div>
-
         )}
       </main>
       <PdfViewerModal

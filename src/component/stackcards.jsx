@@ -1,29 +1,28 @@
 'use client';
-import { ReactLenis } from 'lenis/react';
 import { useTransform, motion, useScroll } from 'motion/react';
 import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 
 const projects = [
   {
-    title: 'Boost Your Visibility',
-    description: 'Reach 3x more companies with Outmail’s automated, personalized outreach.',
-    src: 'dashboard.jpg',
-    link: '/dashboard.jpg',
+    title: 'Smart Automated Cold Outreach',
+    description: 'Send personalised emails to the right recruiters at scale — powered by live hiring signals, funding data, and smart company targeting.',
+    src: 'dashboard_landingPage.png',
+    link: '/dashboard_landingPage.png',
     color: '#6c00ff',
   },
   {
-    title: 'Personalize Every Email',
-    description: 'Upload multiple resumes and templates to tailor your message for every company.',
-    src: 'dashboard.jpg',
-    link: '/dashboard.jpg',
+    title: 'Curated Job Openings',
+    description: 'Browse roles ranked by Outmail Priority Score — surfaced by hiring urgency, funding signals, and company momentum.',
+    src: 'JobOpenings.png',
+    link: '/JobOpenings.png',
     color: '#6c00ff',
   },
   {
-    title: 'Protect Your Privacy',
-    description: 'Contacts are deleted after each campaign. Your data is never shared or sold.',
-    src: 'dashboard.jpg',
-    link: '/dashboard.jpg',
+    title: 'Expert Mentorship',
+    description: 'Book live sessions with professionals and alumni — real guidance from people who\'ve navigated the path you\'re on.',
+    src: 'Mentorship.png',
+    link: '/Mentorship.png',
     color: '#6c00ff',
   },
 ];
@@ -56,31 +55,83 @@ export default function StackingCards() {
     target: container,
     offset: ['start start', 'end end'],
   });
-  
+
+  useEffect(() => {
+    let isSnapping = false;
+    const COOLDOWN = 750; // ms cooldown between snaps
+    const DELTA_THRESHOLD = 15; // ignore tiny trackpad micro-movements
+
+    const handleWheel = (e) => {
+      const section = container.current;
+      if (!section) return;
+
+      // Only intercept wheel events while the stacking section spans the viewport midpoint
+      const rect = section.getBoundingClientRect();
+      const inZone =
+        rect.top < window.innerHeight * 0.5 &&
+        rect.bottom > window.innerHeight * 0.5;
+      if (!inZone) return;
+
+      // Ignore tiny trackpad drift
+      if (Math.abs(e.deltaY) < DELTA_THRESHOLD) return;
+
+      // While animating to a snap point, eat the event
+      if (isSnapping) {
+        e.preventDefault();
+        return;
+      }
+
+      // Calculate snap points: each card occupies exactly one viewport height
+      const sectionTop = window.scrollY + rect.top;
+      const snapPoints = projects.map((_, i) => sectionTop + i * window.innerHeight);
+      const currentScrollY = window.scrollY;
+
+      let targetSnap;
+      if (e.deltaY > 0) {
+        // Scrolling down — snap to the next card
+        targetSnap = snapPoints.find((p) => p > currentScrollY + 50);
+        if (targetSnap === undefined) return; // past all cards, let scroll through normally
+      } else {
+        // Scrolling up — snap to the previous card
+        const prevPoints = snapPoints.filter((p) => p < currentScrollY - 50);
+        if (prevPoints.length === 0) return; // before first card, let scroll through normally
+        targetSnap = prevPoints[prevPoints.length - 1];
+      }
+
+      e.preventDefault();
+      isSnapping = true;
+      window.scrollTo({ top: targetSnap, behavior: 'smooth' });
+      setTimeout(() => {
+        isSnapping = false;
+      }, COOLDOWN);
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => window.removeEventListener('wheel', handleWheel);
+  }, []);
+
   return (
-    <ReactLenis root>
-      <main ref={container}>
-        <section className="text-white w-full pt-0 mt-0">
-          {projects.slice(0, 3).map((project, i) => {
-            const targetScale = 1 - (projects.length - i) * 0.05;
-            return (
-              <Card
-                key={`p_${i}`}
-                i={i}
-                url={project?.link}
-                src={project?.src}
-                title={project?.title}
-                color={project?.color}
-                description={project?.description}
-                progress={scrollYProgress}
-                range={[i * 0.25, 1]}
-                targetScale={targetScale}
-              />
-            );
-          })}
-        </section>
-      </main>
-    </ReactLenis>
+    <main ref={container}>
+      <section className="text-white w-full pt-0 mt-0">
+        {projects.slice(0, 3).map((project, i) => {
+          const targetScale = 1 - (projects.length - i) * 0.05;
+          return (
+            <Card
+              key={`p_${i}`}
+              i={i}
+              url={project?.link}
+              src={project?.src}
+              title={project?.title}
+              color={project?.color}
+              description={project?.description}
+              progress={scrollYProgress}
+              range={[i * 0.25, 1]}
+              targetScale={targetScale}
+            />
+          );
+        })}
+      </section>
+    </main>
   );
 }
 
@@ -102,7 +153,7 @@ export const Card = ({
     offset: ['start end', 'start start'],
   });
 
-  const imageScale = useTransform(scrollYProgress, [0, 1], [2, 1]);
+  // const imageScale = useTransform(scrollYProgress, [0, 1], [2, 1]); // zoom-out effect — commented out for now
   const scale = useTransform(progress, range, [1, targetScale]);
 
   // Responsive values based on screen width[1][13]
@@ -171,59 +222,48 @@ export const Card = ({
   return (
     <div
       ref={container}
-      className="relative h-screen flex items-center justify-center sticky top-0 px-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-32"
+      className="relative h-screen flex items-center justify-center sticky top-0 px-4"
     >
-      {/* Gradient background only on 2nd card (i === 1) */}
-      {i === 1 && (
-        <motion.div
-          className="absolute inset-0 z-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 1000 }}
-        />
-      )}
-
       <motion.div
         style={{
-          backgroundColor: color,
           scale,
           top: `calc(-5vh + ${i * parseInt(responsive.topOffset)}px)`,
           width: responsive.cardWidth,
           height: responsive.cardHeight,
         }}
-        className={`flex flex-col relative rounded-2xl p-${responsive.padding} origin-top z-10 max-w-6xl`}
+        className="relative rounded-2xl origin-top z-10 max-w-6xl overflow-hidden border border-purple-500/30"
       >
-        <h2 className={`${responsive.titleSize} text-center font-semibold mb-4 md:mb-0`}>
-          {title}
-        </h2>
-        
-        <div className={`flex ${responsive.layout} ${responsive.gap} h-full mt-2 md:mt-5`}>
-          <div className={`${responsive.textWidth} ${responsive.layout === 'flex-row' ? 'relative top-[10%]' : ''}`}>
-            <p className={responsive.textSize}>{description}</p>
-            <span className="flex items-center gap-2 pt-2">
-              <a
-                href="#"
-                target="_blank"
-                className="underline cursor-pointer text-xs md:text-sm"
-              >
-                See more
-              </a>
-            </span>
-          </div>
+        {/* Full-bleed screenshot — static for now, zoom-out effect commented out */}
+        <div className="absolute inset-0 w-full h-full">
+          <Image
+            fill
+            src={url}
+            alt={title}
+            className="object-cover object-top"
+            sizes="(max-width: 640px) 95vw, (max-width: 768px) 90vw, (max-width: 1024px) 85vw, 70vw"
+          />
+        </div>
 
-          <div className={`relative ${responsive.imageWidth} ${responsive.imageHeight} rounded-lg overflow-hidden`}>
-            <motion.div
-              className="w-full h-full"
-              style={{ scale: imageScale }}
-            >
-              <Image 
-                fill 
-                src={url} 
-                alt="image" 
-                className="object-cover"
-                sizes="(max-width: 640px) 95vw, (max-width: 768px) 90vw, (max-width: 1024px) 85vw, 70vw"
-              />
-            </motion.div>
+        {/* Dark gradient overlay — strong at bottom for readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/10 z-10" />
+
+        {/* Text overlay — bottom of card */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 p-6 md:p-10 flex items-end justify-between gap-6">
+          <div className="flex-1">
+            {/* Badge */}
+            <span className="inline-block text-[10px] uppercase tracking-[3px] bg-[#6c00ff]/60 border border-white/20 text-white/80 px-3 py-1 rounded-full mb-3">
+              {`0${i + 1}`}
+            </span>
+            <h2 className={`${responsive.titleSize} font-bold text-white mb-2 leading-tight`}>
+              {title}
+            </h2>
+            <p className={`${responsive.textSize} text-white/65 leading-relaxed max-w-lg`}>
+              {description}
+            </p>
+          </div>
+          {/* Arrow CTA */}
+          <div className="w-11 h-11 rounded-full border border-white/30 flex items-center justify-center text-white text-lg flex-shrink-0 self-end">
+            →
           </div>
         </div>
       </motion.div>

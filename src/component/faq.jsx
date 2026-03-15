@@ -17,14 +17,14 @@ const faqItems = [
     id: '2',
     question: 'How does Outmail work?',
     answer:
-      'Connect your Gmail, upload your resumes and templates, choose your target companies, and launch a campaign. Outmail sends personalized emails on your behalf, safely and efficiently.',
+      'Connect your Gmail, choose from smart email templates, and launch a campaign. Outmail uses its own company intelligence — funding data, hiring signals, and industry trends — to target the right recruiters and send personalized emails on your behalf, safely and efficiently.',
     category: 'general',
   },
   {
     id: '3',
     question: 'Can I personalize my emails?',
     answer:
-      'Yes! You can upload multiple resumes and templates, and Outmail lets you tailor each campaign for different companies and roles.',
+      'Yes! You can create and manage multiple email templates, and Outmail lets you tailor each campaign for different companies, roles, and industries.',
     category: 'technical',
   },
   {
@@ -36,16 +36,16 @@ const faqItems = [
   },
   {
     id: '5',
-    question: 'What happens to my contact lists?',
+    question: 'How does Outmail find the right companies for me?',
     answer:
-      'Your uploaded CSV contacts are deleted automatically after each campaign for your privacy and security.',
-    category: 'privacy',
+      'Outmail uses its own live company intelligence — tracking funding rounds, hiring signals, job openings, and industry trends — to surface the most relevant companies for your outreach. You never need to upload or manage contact lists yourself.',
+    category: 'general',
   },
   {
     id: '6',
     question: 'How many emails can I send?',
     answer:
-      'Depending on your plan, you can send up to 500, 2,000, or 5,000 emails per month. Outmail enforces hourly and daily limits to keep your Gmail safe.',
+      'Sending limits depend on your plan. Outmail automatically throttles sends to keep your Gmail account safe and compliant with Gmail guidelines — so you get maximum reach without risking your account.',
     category: 'pricing',
   },
   {
@@ -61,6 +61,20 @@ const faqItems = [
     answer:
       'Yes, you can track the status of your campaigns and see which emails have been sent from your dashboard.',
     category: 'support',
+  },
+  {
+    id: '9',
+    question: 'What are Mentorship Sessions?',
+    answer:
+      'Outmail connects you with experienced professionals and alumni for live mentorship sessions. Growth and Campus plan users can book sessions, explore session types, and revisit past sessions — all within the dashboard.',
+    category: 'general',
+  },
+  {
+    id: '10',
+    question: 'Does Outmail show real job openings?',
+    answer:
+      'Yes. The Job Openings section in your dashboard surfaces active roles with priority scoring based on hiring urgency, company momentum, and signals like recent funding. This helps you focus your outreach on the most promising opportunities.',
+    category: 'general',
   },
 ];
 
@@ -86,7 +100,7 @@ export default function Faq2() {
   };
 
   return (
-    <section className="min-h-screen bg-white text-black font-syne py-16 pb-24 bg-gradient-to-l from-black via-[#6c00ff] to-black">
+    <section id="faq-section" className="min-h-screen bg-white text-black font-syne py-16 pb-24 bg-gradient-to-l from-black via-[#6c00ff] to-black">
       <div className="container mx-auto max-w-6xl px-4 md:px-6">
         <div className="mb-12 flex flex-col items-center">
           <Badge
@@ -100,9 +114,6 @@ export default function Faq2() {
             Frequently Asked Questions
           </h2>
 
-          <p className="max-w-2xl text-center text-white">
-            Learn how Outmail helps you get noticed, connect directly with recruiters, and boost your job search success.
-          </p>
         </div>
 
         {/* Category Tabs */}
