@@ -26,11 +26,34 @@ const satisfy = Satisfy({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://outmail.in"),
   title: "Outmail",
-  description: "Created by Outmail.in",
+  description: "Personalized Cold Outreach at Scale. Created by Outmail.in",
   icons: {
     icon: "/favicon-32.png",
     apple: "/apple-touch-icon.png",
+  },
+  openGraph: {
+    title: "Outmail",
+    description: "Personalized Cold Outreach at Scale",
+    url: "https://outmail.in",
+    siteName: "Outmail",
+    images: [
+      {
+        url: "/image.png",
+        width: 1200,
+        height: 630,
+        alt: "Outmail - Personalized Cold Outreach at Scale",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Outmail",
+    description: "Personalized Cold Outreach at Scale",
+    images: ["/image.png"],
   },
 };
 
@@ -56,7 +79,6 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap"
           rel="stylesheet"
         />
-        <title>Outmail</title>
         {/* Google Analytics */}
         {process.env.NODE_ENV === "production" && (
           <>
