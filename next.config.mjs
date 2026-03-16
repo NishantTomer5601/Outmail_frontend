@@ -1,5 +1,35 @@
 /** @type {import('next').NextConfig} */
+const cspHeader = `
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    img-src 'self' blob: data: https://images.unsplash.com https://lh3.googleusercontent.com https://res.cloudinary.com https://outmail.in.s3.ap-south-1.amazonaws.com;
+    font-src 'self' https://fonts.gstatic.com;
+    connect-src 'self' ${process.env.NEXT_PUBLIC_API_BASE_URL || ""} https://www.google-analytics.com;
+    frame-src 'self';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    upgrade-insecure-requests;
+`
+  .replace(/\s{2,}/g, " ")
+  .trim();
+
 const nextConfig = {
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: cspHeader,
+          },
+        ],
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
@@ -17,7 +47,7 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "outmail.in.s3.ap-south-1.amazonaws.com",
-      }
+      },
     ],
   },
 };
