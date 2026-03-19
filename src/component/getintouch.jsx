@@ -1,6 +1,8 @@
 'use client';
 import React, { useState } from 'react';
 import { Mail, Clock, Handshake, CalendarDays } from 'lucide-react';
+import { toast, Toaster } from 'sonner';
+import axios from 'axios';
 
 const infoItems = [
   {
@@ -33,16 +35,28 @@ const infoItems = [
 export default function GetInTouch() {
   const [form, setForm] = useState({ name: '', email: '', role: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+    
+    try {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/contact`, form)
+      toast.success('Message sent successfully!');
+      setSubmitted(true);
+    } catch (error) {
+      toast.error(error.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="bg-gradient-to-l from-black via-[#6c00ff] to-black py-24 px-4 sm:px-6 lg:px-8">
+      <Toaster position="bottom-right" richColors />
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
 
@@ -175,9 +189,10 @@ export default function GetInTouch() {
 
                   <button
                     type="submit"
-                    className="w-full py-3 bg-gradient-to-r from-[#6c00ff] to-[#b06cff] text-white font-semibold rounded-lg hover:opacity-90 transition text-sm tracking-wide"
+                    disabled={isSubmitting}
+                    className="w-full py-3 bg-gradient-to-r from-[#6c00ff] to-[#b06cff] text-white font-semibold rounded-lg hover:opacity-90 transition text-sm tracking-wide disabled:opacity-70"
                   >
-                    Send Message
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
                   </button>
 
                   <p className="text-center text-xs text-gray-400 mt-1">
