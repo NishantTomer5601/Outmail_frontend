@@ -33,6 +33,7 @@ function Navbar() {
           <a href="/Aboutus" className="hover:text-[#AD46FF] transition">About Us</a>
           <a href="/Pricing" className="hover:text-[#AD46FF] transition">Pricing</a>
           <a href="/Contactus" className="hover:text-[#AD46FF] transition">Contact Us</a>
+          <Link href="/partnership" className="hover:text-[#AD46FF] transition">Partnership</Link>
         </div>
 
         {/* User Section - Desktop */}
@@ -151,6 +152,13 @@ function Navbar() {
               <a href="/Aboutus" className="hover:text-[#AD46FF] transition text-center">About Us</a>
               <a href="/Pricing" className="hover:text-[#AD46FF] transition text-center">Pricing</a>
               <a href="/Contactus" className="hover:text-[#AD46FF] transition text-center">Contact Us</a>
+              <Link
+                href="/partnership"
+                className="hover:text-[#AD46FF] transition text-center"
+                onClick={() => setIsOpen(false)}
+              >
+                Partnership
+              </Link>
               
               {/* Mobile Auth Section */}
               {loading ? (
