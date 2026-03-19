@@ -6,10 +6,11 @@ import { z } from "zod";
 import axios from "axios";
 import { toast } from "sonner";
 
-export default function Footer() {
+export default function Footer({ variant = "gradient" }) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const isDark = variant === "dark";
   const emailSchema = z.email();
 
   const handleSubmit = async (e) => {
@@ -44,7 +45,13 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gradient-to-l from-black via-[#6c00ff] to-black text-white px-6 pt-20 pb-10 relative">
+    <footer
+      className={`text-white px-6 pt-20 pb-10 relative ${
+        isDark
+          ? "border-t border-white/10 bg-[#090b16]"
+          : "bg-gradient-to-l from-black via-[#6c00ff] to-black"
+      }`}
+    >
       <div className="max-w-7xl mx-auto grid gap-12 md:grid-cols-2">
         {/* Left Column */}
         <div>
@@ -142,7 +149,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom Line */}
-      <div className="border-t border-white/20 mt-12 pt-6 text-center text-sm text-white/50">
+      <div className={`mt-12 pt-6 text-center text-sm text-white/50 ${isDark ? "border-t border-white/10" : "border-t border-white/20"}`}>
         <p>© {new Date().getFullYear()} Outmail. All rights reserved.</p>
       </div>
     </footer>

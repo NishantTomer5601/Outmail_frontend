@@ -4,7 +4,10 @@ import CountUp, { useCountUp } from 'react-countup';
 
 export default function CtaOne() {
   return (
-    <div className= " bg-white text-black py-20 px-4 bg-gradient-to-l from-black via-[#6c00ff] to-black">
+    <div className="relative overflow-hidden bg-[#0a0b14] text-white py-20 px-4">
+      <div className="absolute top-10 left-[10%] w-16 h-16 rounded-full border border-white/10 bg-[#6c00ff]/12" />
+      <div className="absolute bottom-16 right-[8%] w-20 h-20 rounded-xl border border-white/10 bg-[#ad46ff]/10 -rotate-12" />
+
       {/* Insights Section */}
       <div className="max-w-6xl mx-auto text-center mt-30">
         <p className="text-sm font-medium text-indigo-300 uppercase tracking-wider mb-2">Why Visibility Matters</p>
@@ -36,7 +39,7 @@ export default function CtaOne() {
         </div>
 
         {/* CTA Box */}
-        <div className="bg-gradient-to-l from-black via-[#6c00ff] to-black rounded-2xl p-20 flex border border-white flex-col md:flex-row justify-between items-center shadow-xl">
+        <div className="rounded-2xl p-20 flex border border-white/12 bg-white/5 backdrop-blur-xl flex-col md:flex-row justify-between items-center shadow-[0_0_45px_rgba(108,0,255,0.20)]">
           <div className="text-white max-w-md">
             <h3 className="text-2xl font-semibold mb-4">Start Your Outmail Journey Today</h3>
             <p className="mb-6 text-white/80">
@@ -44,7 +47,7 @@ export default function CtaOne() {
             </p>
             <a
               href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google`}
-              className="inline-block bg-white text-black px-6 py-2 rounded-full font-medium hover:bg-gray-200 transition"
+              className="inline-block bg-gradient-to-r from-[#6c00ff] to-[#ad46ff] text-white px-6 py-2 rounded-full font-medium hover:brightness-110 transition"
             >
               Get Started Now
             </a>

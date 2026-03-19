@@ -42,7 +42,7 @@ const solutions = [
 
 export default function AboutUsScroller() {
   return (
-    <main className="bg-gradient-to-l from-black via-[#6c00ff] to-black">
+    <main className="bg-[#0a0b14]">
 
       {/* SECTION 1: Pain Points — sticky left text, images scroll right */}
       <section className="w-full">

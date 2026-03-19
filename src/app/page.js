@@ -20,8 +20,8 @@ import FlipMaskCard from "@/component/flipmask";
 
 export default function Home() {
   return (
-    <div >
-    <Navbar/>
+    <div className="min-h-screen bg-[#0a0b14] text-white">
+    <Navbar variant="dark"/>
     <Hero/>
     <Features/>
     <Partners/>
@@ -32,7 +32,7 @@ export default function Home() {
 
     <Faq/>
    
-    <Footer/>
+    <Footer variant="dark"/>
    
     
    

@@ -55,7 +55,7 @@ export default function GetInTouch() {
   };
 
   return (
-    <div className="bg-gradient-to-l from-black via-[#6c00ff] to-black py-24 px-4 sm:px-6 lg:px-8">
+    <div className="bg-[#0a0b14] py-24 px-4 sm:px-6 lg:px-8">
       <Toaster position="bottom-right" richColors />
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
@@ -77,7 +77,7 @@ export default function GetInTouch() {
               {infoItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.label} className="flex items-start gap-4 bg-white/5 border border-white/10 rounded-xl px-5 py-4">
+                  <div key={item.label} className="flex items-start gap-4 bg-white/5 border border-white/10 rounded-xl px-5 py-4 backdrop-blur-xl">
                     <div className="flex-shrink-0 p-2.5 bg-purple-500/20 rounded-lg text-purple-300">
                       <Icon className="w-5 h-5" />
                     </div>
@@ -101,34 +101,34 @@ export default function GetInTouch() {
           </div>
 
           {/* Right — Contact Form */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-10">
+          <div className="rounded-2xl border border-white/12 bg-white/5 backdrop-blur-xl shadow-[0_0_45px_rgba(108,0,255,0.20)] p-8 lg:p-10">
             {submitted ? (
               <div className="flex flex-col items-center justify-center h-full text-center py-16 gap-4">
                 <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center">
                   <Mail className="w-7 h-7 text-purple-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900">Message Sent!</h3>
-                <p className="text-gray-500 text-sm max-w-xs leading-relaxed">
+                <h3 className="text-2xl font-bold text-white">Message Sent!</h3>
+                <p className="text-white/65 text-sm max-w-xs leading-relaxed">
                   Thanks for reaching out. We&apos;ll get back to you within 24 hours on weekdays.
                 </p>
                 <button
                   onClick={() => setSubmitted(false)}
-                  className="mt-2 text-purple-600 text-sm font-medium hover:underline"
+                  className="mt-2 text-purple-300 text-sm font-medium hover:underline"
                 >
                   Send another message
                 </button>
               </div>
             ) : (
               <>
-                <h3 className="text-2xl font-bold text-gray-900 mb-1">Send Us a Message</h3>
-                <p className="text-gray-500 text-sm mb-8 leading-relaxed">
+                <h3 className="text-2xl font-bold text-white mb-1">Send Us a Message</h3>
+                <p className="text-white/65 text-sm mb-8 leading-relaxed">
                   Fill out the form and we&apos;ll get back to you as soon as possible.
                 </p>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label htmlFor="name" className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">Full Name</label>
+                      <label htmlFor="name" className="block text-xs font-medium text-white/55 uppercase tracking-wider mb-1.5">Full Name</label>
                       <input
                         type="text"
                         id="name"
@@ -137,11 +137,11 @@ export default function GetInTouch() {
                         placeholder="Arjun Mehta"
                         value={form.name}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                        className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/15 text-white text-sm placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">Email Address</label>
+                      <label htmlFor="email" className="block text-xs font-medium text-white/55 uppercase tracking-wider mb-1.5">Email Address</label>
                       <input
                         type="email"
                         id="email"
@@ -150,20 +150,20 @@ export default function GetInTouch() {
                         placeholder="arjun@college.edu"
                         value={form.email}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                        className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/15 text-white text-sm placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="role" className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">I am a...</label>
+                    <label htmlFor="role" className="block text-xs font-medium text-white/55 uppercase tracking-wider mb-1.5">I am a...</label>
                     <select
                       id="role"
                       name="role"
                       required
                       value={form.role}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/15 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                     >
                       <option value="" disabled>Select your role</option>
                       <option value="student">Student</option>
@@ -174,7 +174,7 @@ export default function GetInTouch() {
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">Your Message</label>
+                    <label htmlFor="message" className="block text-xs font-medium text-white/55 uppercase tracking-wider mb-1.5">Your Message</label>
                     <textarea
                       id="message"
                       name="message"
@@ -183,7 +183,7 @@ export default function GetInTouch() {
                       placeholder="Tell us what's on your mind..."
                       value={form.message}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition resize-none"
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/15 text-white text-sm placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition resize-none"
                     />
                   </div>
 
@@ -195,7 +195,7 @@ export default function GetInTouch() {
                     {isSubmitting ? 'Sending...' : 'Send Message'}
                   </button>
 
-                  <p className="text-center text-xs text-gray-400 mt-1">
+                  <p className="text-center text-xs text-white/45 mt-1">
                     We reply within 24 hours on weekdays.
                   </p>
                 </form>

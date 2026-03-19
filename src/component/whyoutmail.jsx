@@ -27,7 +27,7 @@ const problems = [
 
 export default function WhyOutmail() {
   return (
-    <section className="bg-gradient-to-l from-black via-[#6c00ff] to-black py-24 px-4">
+    <section className="bg-[#0a0b14] py-24 px-4">
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
