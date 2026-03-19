@@ -65,7 +65,7 @@ function CompanyItem({ company }) {
 
 export default function Partners() {
   return (
-    <div className="w-full overflow-hidden py-10 bg-gradient-to-l from-black via-[#6c00ff] to-black">
+    <div className="w-full overflow-hidden py-12 bg-[#0a0b14]">
       <h2 className="text-2xl font-bold text-white text-center mb-16 mt-10">
         Trusted by Job Seekers Connecting with Top Companies
       </h2>
@@ -79,7 +79,7 @@ export default function Partners() {
         }}
       >
         {/* Two copies exactly — animation goes from 0 to -50% for seamless loop */}
-        <div className="flex animate-scroll whitespace-nowrap gap-10 px-4">
+        <div className="flex animate-scroll whitespace-nowrap gap-10 px-4 py-4 border-y border-white/10 bg-white/[0.03]">
           {[...companies, ...companies].map((company, index) => (
             <CompanyItem key={index} company={company} />
           ))}

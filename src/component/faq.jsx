@@ -100,7 +100,7 @@ export default function Faq2() {
   };
 
   return (
-    <section id="faq-section" className="min-h-screen bg-white text-black font-syne py-16 pb-24 bg-gradient-to-l from-black via-[#6c00ff] to-black">
+    <section id="faq-section" className="min-h-screen bg-[#0a0b14] text-white font-syne py-16 pb-24">
       <div className="container mx-auto max-w-6xl px-4 md:px-6">
         <div className="mb-12 flex flex-col items-center">
           <Badge
@@ -127,7 +127,7 @@ export default function Faq2() {
                 'rounded-full px-4 py-2 text-sm font-medium transition-colors',
                 activeCategory === category.id
                   ? 'bg-purple-600 text-white'
-                  : 'bg-gray-200 text-black hover:bg-gray-300'
+                  : 'bg-white/5 text-white/75 border border-white/12 hover:bg-white/10'
               )}
             >
               {category.label}
@@ -141,7 +141,7 @@ export default function Faq2() {
             <div
               key={faq.id}
               className={cn(
-                'border border-gray-200 bg-white shadow-md h-fit overflow-hidden rounded-xl',
+                'border border-white/12 bg-white/5 backdrop-blur-xl shadow-[0_0_18px_rgba(108,0,255,0.10)] h-fit overflow-hidden rounded-xl',
                 expandedId === faq.id ? 'shadow-lg' : ''
               )}
               style={{ minHeight: '88px' }}
@@ -150,7 +150,7 @@ export default function Faq2() {
                 onClick={() => toggleExpand(faq.id)}
                 className="flex w-full items-center justify-between p-6 text-left"
               >
-                <h3 className="text-lg font-medium">{faq.question}</h3>
+                <h3 className="text-lg font-medium text-white">{faq.question}</h3>
                 <div className="ml-4 flex-shrink-0">
                   {expandedId === faq.id ? (
                     <MinusIcon className="text-primary h-5 w-5" />
@@ -161,8 +161,8 @@ export default function Faq2() {
               </button>
 
               {expandedId === faq.id && (
-                <div className="border-t border-gray-200 px-6 pt-2 pb-6">
-                  <p className="text-gray-600">{faq.answer}</p>
+                <div className="border-t border-white/12 px-6 pt-2 pb-6">
+                  <p className="text-white/70">{faq.answer}</p>
                 </div>
               )}
             </div>
@@ -174,7 +174,7 @@ export default function Faq2() {
           <p className="mb-4 text-white">Can’t find what you’re looking for?</p>
           <a
             href="/Contactus"
-            className="px-4 py-3 bg-white text-black font-extrabold rounded-xl hover:bg-[#dbddd2] border-amber-100 transition"
+            className="px-4 py-3 bg-gradient-to-r from-[#6c00ff] to-[#ad46ff] text-white font-extrabold rounded-xl hover:brightness-110 transition"
           >
             Contact Support
           </a>

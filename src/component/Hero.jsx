@@ -11,9 +11,9 @@ function Hero() {
   const [demoOpen, setDemoOpen] = useState(false);
 
   return (
-    <div className="bg-gradient-to-l from-black via-[#6c00ff] to-black">
-      {/* Hero text block — 52vh leaves ~48vh showing the first card */}
-      <div className="h-[52vh] flex flex-col justify-center pt-16 px-4">
+    <div className="relative overflow-hidden bg-[#0a0b14]">
+      {/* Hero text block — reduced height so first stacked card is more visible */}
+      <div className="h-[46vh] flex flex-col justify-center pt-16 px-4">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-syne font-semibold tracking-tight leading-snug bg-gradient-to-r from-[#b06cff] via-white to-[#b06cff] bg-clip-text text-transparent">
             Where Smart Outreach Meets Real Opportunities and Expert Mentorship.
@@ -31,8 +31,26 @@ function Hero() {
         </div>
       </div>
 
+      <motion.div
+        animate={{ y: [0, -18, 0] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-24 left-[8%] w-32 h-32 rounded-2xl border border-white/10 bg-[#6c00ff]/20 rotate-12 blur-[1px]"
+      />
+      <motion.div
+        animate={{ y: [0, 16, 0] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-28 right-[10%] w-20 h-20 rounded-full border border-white/15 bg-[#ad46ff]/20"
+      />
+      <motion.div
+        animate={{ y: [0, -14, 0] }}
+        transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-[28%] left-[6%] w-16 h-16 rounded-lg border border-white/10 bg-[#6c00ff]/10 -rotate-12"
+      />
+
       {/* Stacking cards — first card visible on initial load */}
-      <StackingCards />
+      <div className="-mt-12 sm:-mt-16">
+        <StackingCards />
+      </div>
 
       {/* Demo coming-soon modal */}
       <AnimatePresence>

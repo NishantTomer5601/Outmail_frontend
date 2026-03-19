@@ -56,7 +56,7 @@ const plans = [
 
 export default function ZPricing() {
   return (
-    <div className="text-white py-20 px-4 bg-gradient-to-l from-black via-[#6c00ff] to-black">
+    <div className="text-white py-20 px-4 bg-[#0a0b14]">
       <div className="max-w-7xl mx-auto text-center">
         <p className="text-sm font-medium text-indigo-300 uppercase tracking-[4px] mb-3">
           Subscription Plans
@@ -74,8 +74,8 @@ export default function ZPricing() {
               key={idx}
               className={`relative rounded-2xl p-8 text-left flex flex-col justify-between transition-all duration-300 hover:-translate-y-1
                 ${plan.highlight
-                  ? 'bg-[#0d0d0d] border-2 border-purple-500 shadow-[0_0_32px_rgba(108,0,255,0.25)]'
-                  : 'bg-[#0d0d0d] border border-white/15 hover:border-purple-500/40'
+                  ? 'bg-white/6 border-2 border-purple-500 shadow-[0_0_32px_rgba(108,0,255,0.25)] backdrop-blur-xl'
+                  : 'bg-white/5 border border-white/12 hover:border-purple-500/40 backdrop-blur-xl'
                 }`}
             >
               {plan.highlight && (

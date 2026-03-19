@@ -7,10 +7,12 @@ import { Menu, X, User, LogOut } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 
-function Navbar() {
+function Navbar({ variant = "gradient" }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { user, isAuthenticated, loading, logout, userRole, isAdmin, isStudent } = useAuth();
+
+  const isDark = variant === "dark";
 
   const handleLogout = () => {
     logout();
@@ -18,7 +20,13 @@ function Navbar() {
   };
 
   return (
-    <header className="w-full bg-gradient-to-l from-black via-[#6c00ff] to-black">
+    <header
+      className={`w-full ${
+        isDark
+          ? "sticky top-0 z-50 border-b border-white/10 bg-[#0a0b14]/70 backdrop-blur-xl"
+          : "bg-gradient-to-l from-black via-[#6c00ff] to-black"
+      }`}
+    >
       <nav className="relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
         
         {/* Logo */}
@@ -33,6 +41,7 @@ function Navbar() {
           <a href="/Aboutus" className="hover:text-[#AD46FF] transition">About Us</a>
           <a href="/Pricing" className="hover:text-[#AD46FF] transition">Pricing</a>
           <a href="/Contactus" className="hover:text-[#AD46FF] transition">Contact Us</a>
+          <a href="/partnership" className="hover:text-[#AD46FF] transition">Partnership</a>
         </div>
 
         {/* User Section - Desktop */}
@@ -151,6 +160,7 @@ function Navbar() {
               <a href="/Aboutus" className="hover:text-[#AD46FF] transition text-center">About Us</a>
               <a href="/Pricing" className="hover:text-[#AD46FF] transition text-center">Pricing</a>
               <a href="/Contactus" className="hover:text-[#AD46FF] transition text-center">Contact Us</a>
+              <a href="/partnership" className="hover:text-[#AD46FF] transition text-center">Partnership</a>
               
               {/* Mobile Auth Section */}
               {loading ? (
