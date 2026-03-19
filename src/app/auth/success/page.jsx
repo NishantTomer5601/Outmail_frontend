@@ -1,11 +1,12 @@
 "use client";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
 export default function AuthSuccess() {
-  const { login, navigateByRole, isAuthenticated, userRole } = useAuth();
+  const { login, isAuthenticated, userRole, loading } = useAuth();
   const router = useRouter();
+  const [loginAttempted, setLoginAttempted] = useState(false);
 
   useEffect(() => {
     const handleAuthSuccess = async () => {
@@ -13,21 +14,27 @@ export default function AuthSuccess() {
       // Now we need to fetch user data and redirect based on role
       try {
         await login(); // This will call checkAuth and set user + role
-        
-        // Small delay to ensure state is updated
-        setTimeout(() => {
-          const rolePath = navigateByRole();
-          router.push(rolePath);
-        }, 100);
-        
+        setLoginAttempted(true);
       } catch (error) {
         console.error('Login failed:', error);
-        router.push('/?error=login_failed');
+        router.replace('/?error=login_failed');
       }
     };
 
     handleAuthSuccess();
-  }, [login, router, navigateByRole]);
+  }, [login, router]);
+
+  useEffect(() => {
+    if (!loginAttempted || loading) return;
+
+    if (!isAuthenticated) {
+      router.replace('/?error=login_failed');
+      return;
+    }
+
+    const rolePath = userRole === 'TPO_ADMIN' ? '/admin/dashboard' : '/student/dashboard';
+    router.replace(rolePath);
+  }, [loginAttempted, loading, isAuthenticated, userRole, router]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-l from-black via-[#6c00ff] to-black">

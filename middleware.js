@@ -3,6 +3,17 @@ import { NextResponse } from 'next/server';
 export function middleware(request) {
   // Get the pathname of the request (e.g. /, /dashboard, /about, etc.)
   const path = request.nextUrl.pathname;
+  const tokenFromQuery = request.nextUrl.searchParams.get('token');
+
+  // Legacy dashboard should always route through auth success,
+  // so role-based redirect logic can run on the client.
+  if (path === '/dashboard') {
+    const redirectUrl = new URL('/auth/success', request.url);
+    if (tokenFromQuery) {
+      redirectUrl.searchParams.set('token', tokenFromQuery);
+    }
+    return NextResponse.redirect(redirectUrl);
+  }
 
   // Define paths that should be protected
   const protectedPaths = [
@@ -28,11 +39,6 @@ export function middleware(request) {
     // If no auth cookie, redirect to home
     if (!authCookie) {
       return NextResponse.redirect(new URL('/', request.url));
-    }
-
-    // Legacy dashboard redirect - let the frontend handle role-based routing
-    if (path === '/dashboard') {
-      return NextResponse.redirect(new URL('/auth/success', request.url));
     }
   }
 
