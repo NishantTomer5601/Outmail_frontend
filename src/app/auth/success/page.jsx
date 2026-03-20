@@ -18,7 +18,7 @@ export default function AuthSuccess() {
       } catch (error) {
         console.error('Login failed:', error);
         router.replace('/?error=login_failed');
-      }
+      } 
     };
 
     handleAuthSuccess();
@@ -32,8 +32,7 @@ export default function AuthSuccess() {
       return;
     }
 
-    const rolePath = userRole === 'TPO_ADMIN' ? '/admin/dashboard' : '/student/dashboard';
-    router.replace(rolePath);
+    router.replace('/dashboard');
   }, [loginAttempted, loading, isAuthenticated, userRole, router]);
 
   return (

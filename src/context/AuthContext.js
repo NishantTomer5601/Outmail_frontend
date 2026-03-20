@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null);
+  const [userRole, setUserRole] = useState(null); // kept only for compatibility with backend payload
 
   // *PRODUCTION MODE - BACKEND IS READY*
   // Backend HTTP-only cookie authentication is now working
@@ -105,7 +105,8 @@ export const AuthProvider = ({ children }) => {
         const userData = await response.json();
         console.log('✅ User authenticated:', userData);
         setUser(userData);
-        setUserRole(userData.role || 'STUDENT'); // Default to STUDENT role
+        // we no longer use role for routing; store it as-is if present
+        setUserRole(userData.role || null);
         setIsAuthenticated(true);
       } else if (response.status === 401) {
         console.log('🔒 Authentication failed - clearing stored token');
@@ -261,30 +262,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Role-based navigation helper
-  const navigateByRole = () => {
-    if (!isAuthenticated || !userRole) return '/';
-    
-    switch (userRole) {
-      case 'TPO_ADMIN':
-        return '/admin/dashboard';
-      case 'STUDENT':
-      default:
-        return '/student/dashboard';
-    }
-  };
-
-  // Check if user has specific role
-  const hasRole = (requiredRole) => {
-    return userRole === requiredRole;
-  };
-
-  // Check if user is admin
-  const isAdmin = () => hasRole('TPO_ADMIN');
-
-  // Check if user is student  
-  const isStudent = () => hasRole('STUDENT');
-
   // Check auth on mount and when focus returns to window
   useEffect(() => {
     checkAuth();
@@ -309,10 +286,6 @@ export const AuthProvider = ({ children }) => {
     logout,
     checkAuth,
     updateUser,
-    navigateByRole,
-    hasRole,
-    isAdmin,
-    isStudent,
   };
 
   return (

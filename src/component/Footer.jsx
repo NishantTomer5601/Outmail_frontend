@@ -73,8 +73,8 @@ export default function Footer({ variant = "gradient" }) {
 
           <ul className="flex flex-wrap gap-4 text-sm text-white/80">
             <li>
-              <a href="/Aboutus" className="hover:underline">
-                About Us
+              <a href="/Features" className="hover:underline">
+                Features
               </a>
             </li>
             <li>
