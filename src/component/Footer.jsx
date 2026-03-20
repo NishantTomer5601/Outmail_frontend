@@ -34,7 +34,7 @@ export default function Footer({ variant = "gradient" }) {
 
   const subscribeNewsletter = async (email) => {
     const response = await axios.post(
-      `${BASE_URL}/api/newsletter/subscribe`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/newsletter/subscribe`,
       email,
     );
 
