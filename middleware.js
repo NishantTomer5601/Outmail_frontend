@@ -3,17 +3,6 @@ import { NextResponse } from 'next/server';
 export function middleware(request) {
   // Get the pathname of the request (e.g. /, /dashboard, /about, etc.)
   const path = request.nextUrl.pathname;
-  const tokenFromQuery = request.nextUrl.searchParams.get('token');
-
-  // Legacy dashboard should always route through auth success,
-  // so role-based redirect logic can run on the client.
-  if (path === '/dashboard') {
-    const redirectUrl = new URL('/auth/success', request.url);
-    if (tokenFromQuery) {
-      redirectUrl.searchParams.set('token', tokenFromQuery);
-    }
-    return NextResponse.redirect(redirectUrl);
-  }
 
   // NOTE:
   // Do not enforce cookie-only auth for /student or /admin here.
