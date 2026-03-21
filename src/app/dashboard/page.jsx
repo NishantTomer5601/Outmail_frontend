@@ -3071,17 +3071,6 @@ export default function Page() {
   };
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-  // Handle OAuth token from URL (for cross-domain auth)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get('token');
-      if (token) {
-        localStorage.setItem('authToken', token);
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-    }
-  }, []);
 
   // File validation utility
   const validateFile = (file) => {
