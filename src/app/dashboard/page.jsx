@@ -3552,6 +3552,17 @@ export default function Page() {
 
   // Job Openings Component
   const JobOpenings = () => {
+        // Company logos for job cards (moved outside renderJobCard)
+        const companyLogos = {
+          Swiggy: "https://upload.wikimedia.org/wikipedia/commons/1/12/Swiggy_logo.png",
+          Paytm: "https://upload.wikimedia.org/wikipedia/commons/5/55/Paytm_logo.png",
+          Meesho: "https://upload.wikimedia.org/wikipedia/commons/6/60/Meesho_Logo.png",
+          CRED: "https://upload.wikimedia.org/wikipedia/commons/6/6a/CRED-logo.png",
+          Razorpay: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Razorpay_logo.svg",
+          Flipkart: "https://upload.wikimedia.org/wikipedia/commons/0/05/Flipkart_logo.png",
+          Zepto: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Zepto_logo.png",
+          Zomato: "https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.png"
+        };
     const [jobOpenings, setJobOpenings] = useState([]);
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState('all'); // 'all', 'applied', 'discarded'
@@ -3758,22 +3769,6 @@ export default function Page() {
           key={job.id}
           className={`bg-white/10 backdrop-blur-md rounded-2xl p-6 border ${tier.border} hover:border-white/30 transition-all duration-300`}
         >
-          // Company logos for job cards
-          const companyLogos = {
-            Swiggy: "https://upload.wikimedia.org/wikipedia/commons/1/12/Swiggy_logo.png",
-            Paytm: "https://upload.wikimedia.org/wikipedia/commons/5/55/Paytm_logo.png",
-            Meesho: "https://upload.wikimedia.org/wikipedia/commons/6/60/Meesho_Logo.png",
-            CRED: "https://upload.wikimedia.org/wikipedia/commons/6/6a/CRED-logo.png",
-            Razorpay: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Razorpay_logo.svg",
-            Flipkart: "https://upload.wikimedia.org/wikipedia/commons/0/05/Flipkart_logo.png",
-            Zepto: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Zepto_logo.png",
-            Zomato: "https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.png"
-          };
-          return (
-            <div
-              key={job.id}
-              className={`bg-white/10 backdrop-blur-md rounded-2xl p-6 border ${tier.border} hover:border-white/30 transition-all duration-300`}
-            >
               {/* Job Header */}
               <div className="flex justify-between items-start mb-3">
                 <div className="flex-1 min-w-0">
@@ -4204,40 +4199,8 @@ export default function Page() {
         {activeSection === "dashboard" && (
           <>
             <CombinedDashboard />
-            {/* Mentorship Sessions Section */}
-            <div className="p-6 sm:p-8 font-syne">
-              <div className="bg-[#283647]/90 backdrop-blur-xl rounded-xl shadow-2xl mt-12" style={{boxShadow:'0px 24px 48px rgba(0,0,0,0.4)'}}>
-                <div className="p-8 border-b border-[#4D4354]/20">
-                  <h2 className="text-[1.5rem] font-bold text-[#D5E4FA] tracking-tight">Mentorship Sessions</h2>
-                </div>
-                <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {[
-                    { name: 'Ankit Sharma', role: 'SDE 1', company: 'Swiggy' },
-                    { name: 'Priya Iyer', role: 'SDE 2', company: 'Paytm' },
-                    { name: 'Rahul Verma', role: 'Senior Engineer', company: 'PhonePe' },
-                    { name: 'Sneha Agarwal', role: 'SDE 1', company: 'Meesho' },
-                    { name: 'Vikram Singh', role: 'SDE 2', company: 'Razorpay' },
-                    { name: 'Aishwarya Nair', role: 'Principal Engineer', company: 'Zepto' },
-                    { name: 'Rohan Gupta', role: 'Software Engineer', company: 'Flipkart' },
-                    { name: 'Mehul Shah', role: 'Backend Engineer', company: 'Zomato' },
-                    { name: 'Divya Menon', role: 'Frontend Engineer', company: 'CRED' },
-                    { name: 'Karthik Reddy', role: 'Data Engineer', company: 'Freshworks' },
-                    { name: 'Pooja Sinha', role: 'QA Engineer', company: 'Tata Consultancy Services' },
-                    { name: 'Amitabh Joshi', role: 'DevOps Engineer', company: 'Infosys' },
-                  ].map((mentor, idx) => (
-                    <div key={idx} className="bg-[#0E1C2D]/80 rounded-lg p-6 flex flex-col items-center shadow-lg">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#9333EA] to-[#A855F7] flex items-center justify-center text-2xl font-bold text-white mb-3">
-                        {mentor.name.split(' ').map(n => n[0]).join('')}
-                      </div>
-                      <div className="text-lg font-semibold text-[#D5E4FA]">{mentor.name}</div>
-                      <div className="text-sm text-[#CFC2D7] mt-1">{mentor.role} @ {mentor.company}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Job Openings Section removed as per requirements */}
+            {/* Use MentorshipSection component for correct logo rendering */}
+            <MentorshipSection />
           </>
         )}
         {activeSection === "coldOutreach" && <ColdOutreach />}
