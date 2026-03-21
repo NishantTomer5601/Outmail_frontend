@@ -28,6 +28,8 @@ const captureTokenFromURL = () => {
     if (token) {
       console.log('🎯 Token captured from URL');
       setAuthToken(token);
+      // Set JWT as cookie for server-side auth (expires in 7 days)
+      document.cookie = `outmail_auth=${token}; path=/; max-age=${7 * 24 * 60 * 60}; secure; samesite=strict`;
       // Clean URL without reloading
       window.history.replaceState({}, document.title, window.location.pathname);
       return token;
