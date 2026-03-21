@@ -433,321 +433,6 @@ const CreateTemplateModal = ({ isOpen, onClose, onSave }) => {
   );
 };
 
-
-// The campaign creation form, extracted and renamed for clarity
-const CampaignForm = ({ templates, attachments }) => {
-  const [campaignName, setCampaignName] = useState("");
-  const [emailSubject, setEmailSubject] = useState("");
-  const [emailBody, setEmailBody] = useState("");
-  const [emailsManual, setEmailsManual] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [selectedCsvFile, setSelectedCsvFile] = useState(null); // Add state for the selected CSV file
-  const [endTime, setEndTime] = useState("");
-  const [timezone, setTimezone] = useState(
-    "(GMT+5:50) Chennai, Kolkata, Mumbai, New Delhi"
-  );
-  const [selectedTemplate, setSelectedTemplate] = useState("");
-  const [selectedAttachment, setSelectedAttachment] = useState("");
-
-  const handleTemplateChange = (e) => {
-    const templateTitle = e.target.value;
-    setSelectedTemplate(templateTitle);
-    const selected = templates.find(t => t.title === templateTitle);
-    if (selected) {
-      setEmailSubject(selected.emailSubject || selected.title);
-      setEmailBody(selected.emailBody || selected.description);
-    }
-  };
-
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Validate CSV file
-    if (file.type !== 'text/csv' && !file.name.toLowerCase().endsWith('.csv')) {
-      alert('Please select a valid CSV file.');
-      e.target.value = '';
-      return;
-    }
-
-    if (file.size > MAX_FILE_SIZE) {
-      alert(`File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`);
-      e.target.value = '';
-      return;
-    }
-
-    // Just store locally for now - no upload
-    setSelectedCsvFile(file);
-    console.log('📄 CSV file selected (upload disabled until backend ready):', file.name);
-
-    // TODO: Uncomment when backend implements CSV upload
-    /*
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('category', 'document');
-
-      const response = await fetch(`${API_BASE_URL}/api/uploads/single`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        credentials: 'include',
-        body: formData,
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        setSelectedCsvFile({ 
-          ...file, 
-          uploaded: true, 
-          url: result.data.s3Url,
-          id: result.data.id 
-        });
-      }
-    } catch (error) {
-      console.warn('⚠️ CSV upload error:', error.message);
-    }
-    */
-  };
-
-
-  const handleStartCampaign = () => {
-    // Handle campaign start logic
-  };
-  return (
-    <>
-      {/* Attachments Heading */}
-      <div>
-          <h1 className="text-2xl sm:text-3xl font-bold mt-8 mb-1">Campaign</h1>
-          <p className="text-white text-sm sm:text-base">
-           Create and Manage your Campaigns
-          </p>
-        </div>
-  
-      {/* Create Campaign Card */}
-      <div className="mt-15 w-full max-w-7xl bg-white/10 rounded-2xl p-6 text-white border border-white/20 backdrop-blur-lg shadow-md sm:p-8 lg:p-10">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6 flex items-center gap-2">
-          Create Campaign
-        </h1>
-  
-        {/* Campaign Name Input */}
-        <div className="mb-6">
-          <label className="block text-white font-medium mb-2">
-            Campaign Name
-          </label>
-          <input
-            type="text"
-            value={campaignName}
-            onChange={(e) => setCampaignName(e.target.value)}
-            placeholder=""
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
-          />
-        </div>
-  
-        {/* Upload CSV or Enter Emails Section */}
-        <div className="mb-6">
-          <label className="block text-white font-medium mb-2">
-            Upload CSV File or Enter Emails <br />
-            <span className="text-sm text-red-500 font-bold font-normal">
-              Important: Your file must have a column named "email". If not, email
-              addresses will not be fetched and mails will not be sent.
-            </span>
-          </label>
-          <div className="flex flex-col sm:flex-row gap-4">
-            {/* File Upload Input */}
-            <div className="flex-1">
-            <label className="w-full flex items-center justify-center p-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-              <Upload size={20} className="text-white mr-2" />
-              <span className="text-gray-500">
-                {selectedCsvFile ? selectedCsvFile.name : "Choose file"}
-              </span>
-              <input
-                type="file"
-                className="hidden"
-                onChange={handleFileChange}
-                accept=".csv"
-              />
-            </label>
-            </div>
-  
-            {/* Manual Email Input */}
-            <div className="flex-1">
-              <input
-                type="text"
-                value={emailsManual}
-                onChange={(e) => setEmailsManual(e.target.value)}
-                placeholder=""
-                className="w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
-              />
-            </div>
-          </div>
-          <p className="text-sm text-white mt-2">
-            CSV should contain name, email, and company columns. Or manually enter
-            emails above.
-          </p>
-        </div>
-  
-        {/* Template and Attachments Dropdowns */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6 ">
-          <div className="flex-1 relative">
-            <label className="block text-white font-medium mb-2">
-              Choose Email Template
-            </label>
-            <select
-              value={selectedTemplate}
-              onChange={handleTemplateChange}
-              className="w-full p-3 bg-white/20 text-white rounded-lg border border-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none pr-10"
-            >
-              <option value="" disabled>
-                Select a template
-              </option>
-              {templates.map((t) => (
-                <option key={t.id} value={t.title}>
-                  {t.title}
-                </option>
-              ))}
-            </select>
-            <ChevronDown
-              size={20}
-              className="absolute right-3 top-1/2 mt-2 -translate-y-1/2 text-gray-500 pointer-events-none"
-            />
-          </div>
-          <div className="flex-1 relative">
-            <label className="block text-white font-medium mb-2">
-              Attach File
-            </label>
-            <select
-              value={selectedAttachment}
-              onChange={(e) => setSelectedAttachment(e.target.value)}
-              className="w-full p-3 bg-white/20 text-white rounded-lg border border-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none pr-10"
-            >
-              <option value="" disabled>
-                Select a file
-              </option>
-              {attachments.map((a) => (
-                <option key={a.id} value={a.name}>
-                  {a.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDown
-              size={20}
-              className="absolute right-3 top-1/2 mt-2 -translate-y-1/2 text-gray-500 pointer-events-none"
-            />
-          </div>
-        </div>
-  
-        {/* Attached file display */}
-        {selectedAttachment && (
-          <div className="flex items-center gap-2 mb-6 p-2 bg-white/10 rounded-lg">
-            <File size={20} className="text-white" />
-            <p className="text-sm text-white">{selectedAttachment}</p>
-          </div>
-        )}
-  
-        {/* Email Subject Input */}
-        <div className="mb-6">
-          <label className="block text-white font-medium mb-2">
-            Email Subject*
-          </label>
-          <input
-            type="text"
-            value={emailSubject}
-            onChange={(e) => setEmailSubject(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
-          />
-        </div>
-  
-        {/* Email Body Text Area */}
-        <div className="mb-6">
-          <label className="block text-white font-medium mb-2">
-            Email Body*
-          </label>
-          <textarea
-            value={emailBody}
-            onChange={(e) => setEmailBody(e.target.value)}
-            rows="6"
-            placeholder="Hi there,"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y transition-shadow"
-          ></textarea>
-          <p className="text-sm text-white mt-2">
-            Use personalization variables for better engagement
-          </p>
-        </div>
-  
-        {/* Time and Timezone Section */}
-        <div className="flex flex-col md:flex-row gap-6 mb-6">
-          {/* Start Time */}
-          <div className="flex-1">
-            <label className="block text-white font-medium mb-2">
-              Start Time*
-            </label>
-            <div className="flex items-center gap-2">
-              <input
-                type="date"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
-              />
-            </div>
-          </div>
-          {/* End Time */}
-          <div className="flex-1">
-            <label className="block text-white font-medium mb-2"></label>
-          </div>
-        </div>
-  
-        {/* Timezone Dropdown */}
-        <div className="mb-6">
-          <label className="block text-white font-medium mb-2">Timezone*</label>
-          <div className="relative">
-            <select
-              value={timezone}
-              onChange={(e) => setTimezone(e.target.value)}
-              className="appearance-none w-full p-3 border border-gray-300 rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
-            >
-              <option>(GMT+5:50) Chennai, Kolkata, Mumbai, New Delhi</option>
-            </select>
-            <Globe
-              size={20}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-            />
-          </div>
-        </div>
-  
-        {/* Campaign Details Section */}
-        <div className="mb-8">
-          <h2 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-            <Settings size={20} className="text-white" />
-            Campaign Details
-          </h2>
-          <ul className="list-disc list-inside text-white space-y-1">
-            <li>Delay between each email</li>
-            <li>Emails personalized with name, email, and company</li>
-            <li>Fixed HTML template with placeholders</li>
-            <li>CSV data stored securely</li>
-          </ul>
-        </div>
-  
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <button
-            onClick={handleStartCampaign}
-            className="flex-1 w-full bg-purple-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-purple-400 transition-colors flex items-center justify-center gap-2"
-          >
-            <Play size={20} />
-            Start Campaign
-          </button>
-          <button className="flex-1 w-full bg-blue-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
-            <Eye size={20} />
-            Preview Email & Check Placeholders
-          </button>
-        </div>
-      </div>
-    </>
-  );
-  
-};
-
 const Header = ({ setIsSidebarOpen, isSidebarOpen }) => {
   return (
     <div className="">
@@ -762,39 +447,6 @@ const Header = ({ setIsSidebarOpen, isSidebarOpen }) => {
           <h2 className="text-lg sm:text-xl font-bold"></h2>
         </div>
       </div>
-    </div>
-  );
-};
-
-
-// Mock ChartComponent for demonstration purposes
-const ChartComponent = ({ type, data, title, isMini }) => {
-  const chartClass = isMini ? "h-16" : "h-50";
-  return (
-    <div
-      className={`flex items-center justify-center ${chartClass} border border-white text-white bg-white/10 backdrop-blur-md rounded-xl shadow-lg`}
-    >
-      {title} - {type} Chart Placeholder
-    </div>
-  );
-};
-
-const Card = ({ title, value, percentage, icon }) => {
-  const isPositive = percentage.includes("+");
-  const percentageColor = isPositive ? "text-green-500" : "text-red-500";
-
-  return (
-    <div className="flex items-center justify-between p-6 bg-transparent backdrop-blur-md rounded-xl shadow-lg border border-white/20">
-      <div className="flex flex-col">
-        <p className="text-sm text-slate-400">{title}</p>
-        <p className="text-3xl font-bold text-white mt-1">
-          {value}{" "}
-          <span className={`text-lg font-normal ${percentageColor}`}>
-            {percentage}
-          </span>
-        </p>
-      </div>
-      <div className="p-3 bg-purple-600 rounded-full text-white">{icon}</div>
     </div>
   );
 };
@@ -857,83 +509,6 @@ const OutreachStatPills = ({ selectedPeriod }) => {
           </div>
         </div>
       ))}
-    </div>
-  );
-};
-
-// Daily Outreach Chart — emails sent per day bar chart
-const DailyOutreachChart = ({ selectedPeriod }) => {
-  const chartData = {
-    '7': [
-      { day: 'Mon', sent: 18 },
-      { day: 'Tue', sent: 24 },
-      { day: 'Wed', sent: 15 },
-      { day: 'Thu', sent: 28 },
-      { day: 'Fri', sent: 32 },
-      { day: 'Sat', sent: 12 },
-      { day: 'Sun', sent: 16 },
-    ],
-    '15': [
-      { day: 'D1', sent: 18 }, { day: 'D2', sent: 24 }, { day: 'D3', sent: 15 },
-      { day: 'D4', sent: 28 }, { day: 'D5', sent: 32 }, { day: 'D6', sent: 12 },
-      { day: 'D7', sent: 16 }, { day: 'D8', sent: 22 }, { day: 'D9', sent: 31 },
-      { day: 'D10', sent: 19 }, { day: 'D11', sent: 25 }, { day: 'D12', sent: 38 },
-      { day: 'D13', sent: 9 }, { day: 'D14', sent: 21 }, { day: 'D15', sent: 26 },
-    ],
-    '30': [
-      { day: 'W1', sent: 98 },
-      { day: 'W2', sent: 124 },
-      { day: 'W3', sent: 156 },
-      { day: 'W4', sent: 112 },
-      { day: 'W5', sent: 134 },
-    ],
-  };
-
-  const data = chartData[selectedPeriod] || chartData['7'];
-
-  const DailyTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-[#1a1024] border border-white/20 rounded-lg px-3 py-2 shadow-xl">
-          <p className="text-[10px] text-white/50">{label}</p>
-          <p className="text-sm font-bold text-purple-400">{payload[0].value} emails</p>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  return (
-    <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 h-full flex flex-col">
-      <div className="flex justify-between items-center mb-3">
-        <div>
-          <h3 className="text-sm font-semibold text-white">Daily Outreach Activity</h3>
-          <p className="text-[11px] text-white/40">Emails sent per day</p>
-        </div>
-        <span className="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full border border-purple-500/20">
-          Last {selectedPeriod}d
-        </span>
-      </div>
-      <div className="flex-1 min-h-0">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-            <XAxis
-              dataKey="day"
-              tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }}
-              axisLine={false}
-              tickLine={false}
-            />
-            <YAxis
-              tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }}
-              axisLine={false}
-              tickLine={false}
-            />
-            <Tooltip content={<DailyTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
-            <Bar dataKey="sent" fill="#8B5CF6" radius={[3, 3, 0, 0]} maxBarSize={28} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
     </div>
   );
 };
@@ -1205,137 +780,6 @@ const PdfViewerModal = ({ isOpen, onClose, pdfUrl }) => {
     </div>
   );
 };
-
-
-// AttachmentManager Component with S3 upload support
-const AttachmentManager = ({ attachments, handleUploadAttachment, handleDeleteAttachment, handleViewAttachment, uploadingFiles = new Set() }) => {
-  const ATTACHMENT_LIMIT = 3;
-  const fileInputRef = useRef(null);
-  
-  const isAttachmentLimitReached = attachments.length >= ATTACHMENT_LIMIT;
-
-  const handleButtonClick = () => {
-    if (!isAttachmentLimitReached) {
-      fileInputRef.current.click();
-    }
-  };
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      handleUploadAttachment(file);
-      // Reset the file input to allow re-uploading the same file
-      event.target.value = null; 
-    }
-  };
-
-  const isUploading = uploadingFiles.size > 0;
-
-
-  return (
-    <div className="p-4 sm:p-6 font-syne mt-6  ">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-      <div>
-          <h1 className="text-2xl sm:text-3xl font-bold mt-7 mb-1">Attachments</h1>
-          <p className="text-white text-sm sm:text-base">
-           Create and Manage your Attachments
-          </p>
-        </div>
-        <button
-          onClick={handleButtonClick}
-          disabled={isAttachmentLimitReached || isUploading}
-          className={`mt-4 sm:mt-0 text-white font-semibold py-2 px-4 rounded-lg flex items-center shadow-lg transition duration-200 ease-in-out transform ${
-            isAttachmentLimitReached || isUploading
-              ? "bg-gray-500 cursor-not-allowed"
-              : "bg-purple-600 hover:bg-purple-700 hover:-translate-y-0.5"
-          }`}
-        >
-          <Upload size={18} className={`mr-2 ${isUploading ? 'animate-spin' : ''}`} />
-          {isUploading 
-            ? "Uploading..." 
-            : isAttachmentLimitReached 
-            ? "Max 3 Allowed" 
-            : "Upload Attachment"
-          }
-        </button>
-         <input 
-          type="file" 
-          ref={fileInputRef} 
-          onChange={handleFileChange} 
-          className="hidden" 
-          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.csv,.xls,.xlsx"
-        />
-      </div>
-
-      {/* Attachments List */}
-      <div className="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-white/20 shadow-md">
-        <h2 className="text-xl font-semibold mb-4 text-gray-200">
-          Your Attachments
-        </h2>
-        {attachments.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-[#2C2C2C]">
-              <thead>
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                    Type
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                    Size
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                    Upload Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#2C2C2C]">
-                {attachments.map((attachment) => (
-                  <tr key={attachment.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                      {attachment.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {attachment.type}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {attachment.size}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {attachment.uploadDate}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button onClick={() => handleViewAttachment(attachment)} className="text-purple-400 hover:text-purple-600 mr-4">
-                        <Eye size={16} className="inline-block mr-1" />
-                        View
-                      </button>
-                      <button
-                        onClick={() => handleDeleteAttachment(attachment)}
-                        className="text-red-400 hover:text-red-600"
-                      >
-                        <Trash2 size={16} className="inline-block mr-1" />
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p className="text-white">No attachments uploaded yet.</p>
-        )}
-      </div>
-    </div>
-  );
-};
-
 
 const TemplateViewerModal = ({ isOpen, onClose, template }) => {
   if (!isOpen || !template) return null;
@@ -1777,41 +1221,6 @@ const ColdOutreach = () => {
     }
   };
 
-  // Delete Individual Attachment
-  const handleDeleteAttachment = async (attachmentId, templateId) => {
-    if (confirm('Are you sure you want to delete this attachment?')) {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/attachments/${attachmentId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          // Update the template in state to remove the attachment
-          setColdOutreachTemplates(prev => 
-            prev.map(template => {
-              if (template.id === templateId) {
-                return {
-                  ...template,
-                  attachments: template.attachments.filter(att => att.id !== attachmentId)
-                };
-              }
-              return template;
-            })
-          );
-        } else {
-          const error = await response.json();
-        }
-      } catch (error) {
-        console.error('Error deleting attachment:', error);
-      }
-    }
-  };
-
   // Set Active Template
   const handleSetActiveTemplate = async (templateId) => {
     setActivatingTemplate(templateId);
@@ -1839,34 +1248,6 @@ const ColdOutreach = () => {
     }
   };
 
-  // Get Active Template
-  const getActiveTemplate = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/active`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const activeTemplate = await response.json();
-        return activeTemplate;
-      } else if (response.status === 400) {
-        // No active template found
-        return null;
-      } else {
-        console.error('Failed to get active template:', response.status);
-        return null;
-      }
-    } catch (error) {
-      console.error('Error getting active template:', error);
-      return null;
-    }
-  };
-
   // Load data on component mount
   useEffect(() => {
     loadColdOutreachTemplates();
@@ -1885,15 +1266,6 @@ const ColdOutreach = () => {
   };
 
   const isTemplateLimitReached = coldOutreachTemplates.length >= TEMPLATE_LIMIT;
-
-  // Format file size
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
 
   // Format date
   const formatDate = (dateString) => {
@@ -1932,7 +1304,6 @@ const ColdOutreach = () => {
         </button>
       </div>
 
-      {/* Templates Grid */}
       {/* Templates Full Width */}
 <div className="w-full">
   {coldOutreachTemplates.length > 0 ? (
@@ -2535,6 +1906,24 @@ const Templates = ({ templates, handleSaveTemplate, handleUpdateTemplate, handle
         template={templateToEdit}
       />
 
+      {/* --- EMAIL PREVIEW HELPERS --- */}
+      {/** Helper: Replace template variables with dummy values */}
+      {/** Helper: Format plain text to HTML (line breaks, bold) */}
+      {/** These helpers are defined inside the component scope for access */}
+      {(() => {
+        function replaceVariables(content) {
+          return content
+            .replace(/{{HR Name}}/g, "John")
+            .replace(/{{Company Name}}/g, "Acme Inc");
+        }
+        function formatEmailContent(content) {
+          return content
+            .replace(/\n/g, "<br/>")
+            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+        }
+        return null;
+      })()}
+
       <div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {templates.length > 0 ? (
@@ -2570,7 +1959,51 @@ const Templates = ({ templates, handleSaveTemplate, handleUpdateTemplate, handle
                     </>
                   )}
                 </div>
-                
+
+                {/* --- EMAIL PREVIEW IFRAME --- */}
+                <div className="mb-4">
+                  <h4 className="text-sm font-semibold text-white mb-2 flex items-center">
+                    <FileText size={14} className="mr-2" />
+                    Preview
+                  </h4>
+                  <div className="bg-white rounded-xl border border-gray-300 shadow-inner p-0 overflow-hidden">
+                    <iframe
+                      className="w-full h-[400px] rounded-xl"
+                      style={{ background: 'white' }}
+                      srcDoc={`<!DOCTYPE html><html><head><style>body { font-family: Arial, sans-serif; padding: 16px; color: #000; line-height: 1.5; }</style></head><body>${formatEmailContent(replaceVariables(template.emailBody || ''))}</body></html>`}
+                      sandbox="allow-same-origin"
+                      title="Email Preview"
+                    />
+                  </div>
+                </div>
+
+                {/* --- GMAIL-STYLE ATTACHMENTS UI --- */}
+                {template.attachments && template.attachments.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold text-white mb-2 flex items-center">
+                      <Paperclip size={14} className="mr-2" />
+                      Attachments ({template.attachments.length})
+                    </h4>
+                    <div className="flex flex-wrap gap-3 mt-2">
+                      {template.attachments.map((file) => (
+                        <div key={file.id} className="flex items-center gap-2 bg-black/30 px-3 py-2 rounded-lg border border-white/10">
+                          <span className="text-xs text-gray-300 truncate max-w-[120px]">
+                            {file.original_filename}
+                          </span>
+                          <span className="text-xs text-gray-500">{file.size || ''}</span>
+                          <button
+                            onClick={() => window.open(file.s3_path, '_blank')}
+                            className="text-blue-400 text-xs hover:underline"
+                          >
+                            View
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* --- ACTION BUTTONS --- */}
                 <div className="flex justify-between items-center mt-auto gap-2">
                   <button
                     onClick={() => handleViewTemplate(template)}
@@ -2578,7 +2011,6 @@ const Templates = ({ templates, handleSaveTemplate, handleUpdateTemplate, handle
                   >
                     <Eye size={18} /> View
                   </button>
-                  
                   {template.category === "Custom" && (
                     <>
                       <button
@@ -2596,7 +2028,6 @@ const Templates = ({ templates, handleSaveTemplate, handleUpdateTemplate, handle
                     </>
                   )}
                 </div>
-
               </div>
             ))
           ) : (
