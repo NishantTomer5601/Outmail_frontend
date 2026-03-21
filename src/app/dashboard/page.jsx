@@ -1505,13 +1505,6 @@ const MentorshipSection = () => {
       {/* Header */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
-            <img
-              src={session.mentorImage}
-              alt={session.mentorName}
-              className="w-full h-full object-cover"
-            />
-          </div>
           <div className="min-w-0">
             <h3 className="text-base font-bold text-white">{session.mentorName}</h3>
             <p className="text-xs text-white/60">{session.mentorTitle}</p>
