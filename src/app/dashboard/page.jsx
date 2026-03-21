@@ -4199,8 +4199,7 @@ export default function Page() {
         {activeSection === "dashboard" && (
           <>
             <CombinedDashboard />
-            {/* Use MentorshipSection component for correct logo rendering */}
-            <MentorshipSection />
+            {/* MentorshipSection removed from dashboard as it has its own section */}
           </>
         )}
         {activeSection === "coldOutreach" && <ColdOutreach />}
