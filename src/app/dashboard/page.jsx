@@ -3529,17 +3529,6 @@ export default function Page() {
 
   // Job Openings Component
   const JobOpenings = () => {
-        // Company logos for job cards (moved outside renderJobCard)
-        const companyLogos = {
-          Swiggy: "https://upload.wikimedia.org/wikipedia/commons/1/12/Swiggy_logo.png",
-          Paytm: "https://upload.wikimedia.org/wikipedia/commons/5/55/Paytm_logo.png",
-          Meesho: "https://upload.wikimedia.org/wikipedia/commons/6/60/Meesho_Logo.png",
-          CRED: "https://upload.wikimedia.org/wikipedia/commons/6/6a/CRED-logo.png",
-          Razorpay: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Razorpay_logo.svg",
-          Flipkart: "https://upload.wikimedia.org/wikipedia/commons/0/05/Flipkart_logo.png",
-          Zepto: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Zepto_logo.png",
-          Zomato: "https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.png"
-        };
     const [jobOpenings, setJobOpenings] = useState([]);
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState('all'); // 'all', 'applied', 'discarded'
@@ -3750,9 +3739,10 @@ export default function Page() {
               <div className="flex justify-between items-start mb-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-2">
-                    {companyLogos[job.company] && (
-                      <img src={companyLogos[job.company]} alt={job.company + ' logo'} className="w-7 h-7 rounded-full object-contain bg-white/20 mr-1" />
-                    )}
+                    {/* Work icon instead of logo */}
+                    <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center mr-1">
+                      <Briefcase size={18} className="text-[#6c00ff]" />
+                    </span>
                     <h3 className="text-lg font-bold text-white">{job.title}</h3>
                     <span className={`text-xs font-medium ${getStatusColor(job.status)}`}>{getStatusText(job.status)}</span>
                     {job.outreachSent && (
