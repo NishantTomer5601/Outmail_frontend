@@ -27,15 +27,45 @@ const satisfy = Satisfy({
 
 export const metadata = {
   metadataBase: new URL("https://outmail.in"),
-  title: "Outmail",
-  description: "Personalized Cold Outreach at Scale. Created by Outmail.in",
+  title: {
+    default: "Outmail | Personalized Cold Outreach & Recruiter Search at Scale",
+    template: "%s | Outmail",
+  },
+  description:
+    "Automate your career growth with Outmail. Send personalized recruiter emails, track opens, and get noticed by top companies using professional cold outreach.",
+  keywords: [
+    "cold outreach",
+    "personalized recruiter emails",
+    "student job search",
+    "recruiter outreach tool",
+    "career growth automation",
+    "university placement software",
+    "cold email platform",
+    "outmail",
+  ],
+  authors: [{ name: "Outmail", url: "https://outmail.in" }],
+  creator: "Outmail",
+  publisher: "Outmail",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
+  },
   icons: {
     icon: "/favicon-32.png",
+    shortcut: "/favicon-32.png",
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "Outmail",
-    description: "Personalized Cold Outreach at Scale",
+    title: "Outmail | Personalized Cold Outreach at Scale",
+    description:
+      "Automate your career growth with Outmail. Send personalized recruiter emails, track opens, and get noticed by top companies using professional cold outreach.",
     url: "https://outmail.in",
     siteName: "Outmail",
     images: [
@@ -51,9 +81,15 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Outmail",
-    description: "Personalized Cold Outreach at Scale",
+    title: "Outmail | Personalized Cold Outreach & Recruiter Search at Scale",
+    description:
+      "Automate your career growth with Outmail. Send personalized recruiter emails, track opens, and get noticed by top companies using professional cold outreach.",
     images: ["/image.png"],
+    creator: "@outmail_in",
+    site: "@outmail_in",
+  },
+  alternates: {
+    canonical: "https://outmail.in",
   },
 };
 

@@ -1,4 +1,3 @@
-
 import AboutUs from "@/component/aboutuscontent";
 import Hero from "@/component/Hero";
 import Navbar from "@/component/Navbar";
@@ -8,37 +7,106 @@ import CtaOne from "@/component/ctaone";
 import Pricing from "@/component/pricing";
 import Testimonials from "@/component/Testimonials";
 import Footer from "@/component/Footer";
-import Membership from "@/component/whyoutmail";
 import Faq from "@/component/faq";
-import { StaggerTestimonials } from "@/component/ui/stagger-testimonials";
-import { Card } from "@/component/ui/container-scroll-animation";
-import MissionValues from "@/component/visionmission";
-import FlipMaskCard from "@/component/flipmask";
+export const metadata = {
+  title: "Outmail | Personalized Cold Outreach & Recruiter Search at Scale",
+  description:
+    "Automate your career growth with Outmail. Send personalized recruiter emails, track opens, and get noticed by top companies using professional cold outreach.",
+  alternates: {
+    canonical: "https://outmail.in",
+  },
+  openGraph: {
+    title: "Outmail | Personalized Cold Outreach & Recruiter Search at Scale",
+    description:
+      "Automate your career growth with Outmail. Send personalized recruiter emails, track opens, and get noticed by top companies using cold outreach.",
+    url: "https://outmail.in",
+    type: "website",
+    images: [
+      {
+        url: "/image.png",
+        width: 1200,
+        height: 630,
+        alt: "Outmail - Personalized Cold Outreach at Scale",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Outmail | Personalized Cold Outreach & Recruiter Search at Scale",
+    description:
+      "Automate your career growth with Outmail. Send personalized recruiter emails, track opens, and get noticed by top companies using cold outreach.",
+    images: ["/image.png"],
+  },
+};
 
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Outmail",
+  url: "https://outmail.in",
+  logo: "https://outmail.in/Logo_Outmail.png",
+  description:
+    "Outmail is a personalized cold outreach platform helping students and professionals reach recruiters at scale.",
+  sameAs: [],
+  contactPoint: {
+    "@type": "ContactPoint",
+    email: "contact@outmail.in",
+    contactType: "customer support",
+  },
+};
 
-
+const softwareApplicationSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Outmail",
+  operatingSystem: "Web",
+  applicationCategory: "BusinessApplication",
+  url: "https://outmail.in",
+  description:
+    "Automate personalized recruiter outreach, track email opens, and get noticed by top companies using Outmail's cold outreach platform.",
+  offers: {
+    "@type": "Offer",
+    price: "499",
+    priceCurrency: "INR",
+    priceSpecification: {
+      "@type": "UnitPriceSpecification",
+      price: "499",
+      priceCurrency: "INR",
+      unitText: "per student per month",
+    },
+  },
+  provider: {
+    "@type": "Organization",
+    name: "Outmail",
+    url: "https://outmail.in",
+  },
+};
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#0a0b14] text-white">
-    <Navbar variant="dark"/>
-    <Hero/>
-    <Features/>
-    <Partners/>
-    <CtaOne/>
-    <AboutUs/>
-    <Pricing/>
-    <Testimonials/>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(softwareApplicationSchema),
+        }}
+      />
+      <Navbar variant="dark" />
+      <Hero />
+      <Features />
+      <Partners />
+      <CtaOne />
+      <AboutUs />
+      <Pricing />
+      <Testimonials />
 
-    <Faq/>
-   
-    <Footer variant="dark"/>
-   
-    
-   
+      <Faq />
 
-
+      <Footer variant="dark" />
     </div>
-
   );
 }
