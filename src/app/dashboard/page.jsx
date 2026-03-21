@@ -940,26 +940,15 @@ const DailyOutreachChart = ({ selectedPeriod }) => {
 
 // Hiring Spotlight — compact companies actively hiring
 const HiringSpotlight = () => {
-  // Indian company logos
-  const companyLogos = {
-    Swiggy: "https://upload.wikimedia.org/wikipedia/commons/1/12/Swiggy_logo.png",
-    Paytm: "https://upload.wikimedia.org/wikipedia/commons/5/55/Paytm_logo.png",
-    Meesho: "https://upload.wikimedia.org/wikipedia/commons/6/60/Meesho_Logo.png",
-    CRED: "https://upload.wikimedia.org/wikipedia/commons/6/6a/CRED-logo.png",
-    Razorpay: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Razorpay_logo.svg",
-    Flipkart: "https://upload.wikimedia.org/wikipedia/commons/0/05/Flipkart_logo.png",
-    Zepto: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Zepto_logo.png",
-    Zomato: "https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.png"
-  };
   const hiringCompanies = [
-    { name: 'Swiggy', industry: 'FoodTech', roles: 10, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400', logo: companyLogos.Swiggy },
-    { name: 'Paytm', industry: 'FinTech', roles: 8, badge: 'new', badgeColor: 'bg-green-500/20 text-green-400', logo: companyLogos.Paytm },
-    { name: 'Meesho', industry: 'E-commerce', roles: 7, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400', logo: companyLogos.Meesho },
-    { name: 'CRED', industry: 'FinTech', roles: 6, badge: 'new', badgeColor: 'bg-green-500/20 text-green-400', logo: companyLogos.CRED },
-    { name: 'Razorpay', industry: 'FinTech', roles: 5, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400', logo: companyLogos.Razorpay },
-    { name: 'Flipkart', industry: 'E-commerce', roles: 4, badge: '', badgeColor: '', logo: companyLogos.Flipkart },
-    { name: 'Zepto', industry: 'Quick Commerce', roles: 3, badge: '', badgeColor: '', logo: companyLogos.Zepto },
-    { name: 'Zomato', industry: 'FoodTech', roles: 2, badge: '', badgeColor: '', logo: companyLogos.Zomato }
+    { name: 'Swiggy', industry: 'FoodTech', roles: 10, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400' },
+    { name: 'Paytm', industry: 'FinTech', roles: 8, badge: 'new', badgeColor: 'bg-green-500/20 text-green-400' },
+    { name: 'Meesho', industry: 'E-commerce', roles: 7, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400' },
+    { name: 'CRED', industry: 'FinTech', roles: 6, badge: 'new', badgeColor: 'bg-green-500/20 text-green-400' },
+    { name: 'Razorpay', industry: 'FinTech', roles: 5, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400' },
+    { name: 'Flipkart', industry: 'E-commerce', roles: 4, badge: '', badgeColor: '' },
+    { name: 'Zepto', industry: 'Quick Commerce', roles: 3, badge: '', badgeColor: '' },
+    { name: 'Zomato', industry: 'FoodTech', roles: 2, badge: '', badgeColor: '' }
   ];
 
   return (
@@ -986,9 +975,7 @@ const HiringSpotlight = () => {
               <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px] text-white/50 font-bold flex-shrink-0">
                 {i + 1}
               </span>
-              {company.logo && (
-                <img src={company.logo} alt={company.name + ' logo'} className="w-6 h-6 rounded-full object-contain bg-white/20 mr-1" />
-              )}
+              {/* No logo, only company name */}
               <div className="min-w-0">
                 <span className="text-xs font-semibold text-white">{company.name}</span>
                 <span className="text-[10px] text-white/40 ml-1.5">{company.industry}</span>
@@ -1379,16 +1366,6 @@ const TemplateViewerModal = ({ isOpen, onClose, template }) => {
 const MentorshipSection = () => {
   const [showArchivedSessions, setShowArchivedSessions] = useState(false);
 
-  // Company logo URLs for mentors
-  const companyLogos = {
-    Swiggy: "https://upload.wikimedia.org/wikipedia/commons/1/12/Swiggy_logo.png",
-    Paytm: "https://upload.wikimedia.org/wikipedia/commons/5/55/Paytm_logo.png",
-    PhonePe: "https://upload.wikimedia.org/wikipedia/commons/6/6b/PhonePe_Logo.png",
-    Meesho: "https://upload.wikimedia.org/wikipedia/commons/6/60/Meesho_Logo.png",
-    Razorpay: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Razorpay_logo.svg",
-    Zepto: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Zepto_logo.png",
-    Flipkart: "https://upload.wikimedia.org/wikipedia/commons/0/05/Flipkart_logo.png"
-  };
 
   // Active sessions (currently happening)
   const activeSessions = [
@@ -1396,7 +1373,7 @@ const MentorshipSection = () => {
       id: 1,
       mentorName: "Ankit Sharma",
       mentorTitle: "SDE 1 at Swiggy",
-      mentorImage: companyLogos["Swiggy"],
+      mentorImage: "https://randomuser.me/api/portraits/men/1.jpg",
       sessionDate: "Mar 21, 2026", // Today (Live session)
       sessionTime: "2:00 PM - 3:00 PM",
       sessionTopic: "Cracking Product Companies as a Fresher",
@@ -1408,7 +1385,7 @@ const MentorshipSection = () => {
       id: 2,
       mentorName: "Priya Iyer",
       mentorTitle: "SDE 2 at Paytm",
-      mentorImage: companyLogos["Paytm"],
+      mentorImage: "https://randomuser.me/api/portraits/women/2.jpg",
       sessionDate: "Mar 21, 2026", // Today (Live session)
       sessionTime: "10:00 AM - 11:00 AM",
       sessionTopic: "Technical Interview Preparation",
@@ -1431,7 +1408,7 @@ const MentorshipSection = () => {
       id: 3,
       mentorName: "Rahul Verma",
       mentorTitle: "Senior Engineer at PhonePe",
-      mentorImage: companyLogos["PhonePe"],
+      mentorImage: "https://randomuser.me/api/portraits/men/3.jpg",
       sessionDate: getNextWeekDate(7),
       sessionTime: "4:00 PM - 5:00 PM",
       sessionTopic: "Career Growth & Performance Reviews",
@@ -1443,7 +1420,7 @@ const MentorshipSection = () => {
       id: 4,
       mentorName: "Sneha Agarwal",
       mentorTitle: "SDE 1 at Meesho",
-      mentorImage: companyLogos["Meesho"],
+      mentorImage: "https://randomuser.me/api/portraits/women/4.jpg",
       sessionDate: getNextWeekDate(9),
       sessionTime: "6:00 PM - 7:00 PM",
       sessionTopic: "Entrepreneurship & Fundraising",
