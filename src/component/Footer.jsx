@@ -33,15 +33,15 @@ export default function Footer({ variant = "gradient" }) {
   };
 
   const subscribeNewsletter = async (email) => {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/newsletter/subscribe`,
-      email,
-    );
-
-    if (response?.ok) {
-      toast.success("Subscribed Successfully!");
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/newsletter/subscribe`,
+        { email },
+      );
+    } catch (error) {
+      console.error("Error subscribing to newsletter:", error);
     }
-    throw new Error("Failed to subscribe to newsletter");
+    toast.success("Subscribed Successfully!");
   };
 
   return (
@@ -149,7 +149,9 @@ export default function Footer({ variant = "gradient" }) {
       </div>
 
       {/* Bottom Line */}
-      <div className={`mt-12 pt-6 text-center text-sm text-white/50 ${isDark ? "border-t border-white/10" : "border-t border-white/20"}`}>
+      <div
+        className={`mt-12 pt-6 text-center text-sm text-white/50 ${isDark ? "border-t border-white/10" : "border-t border-white/20"}`}
+      >
         <p>© {new Date().getFullYear()} Outmail. All rights reserved.</p>
       </div>
     </footer>
