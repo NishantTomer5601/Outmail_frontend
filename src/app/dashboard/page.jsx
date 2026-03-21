@@ -1348,6 +1348,30 @@ const ColdOutreach = () => {
               <p>Created: {formatDate(template.created_at)}</p>
               <p>Updated: {formatDate(template.updated_at)}</p>
             </div>
+
+            {/* Attachments Section */}
+            {template.attachments && template.attachments.length > 0 && (
+              <div className="mt-6">
+                <h5 className="text-xs font-semibold text-white mb-2 flex items-center gap-1">
+                  <Paperclip size={14} className="inline-block text-purple-300" /> Attachments
+                </h5>
+                <div className="flex flex-col gap-2">
+                  {template.attachments.map((attachment) => (
+                    <a
+                      key={attachment.id}
+                      href={attachment.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-xs text-purple-100 hover:bg-purple-500/10 transition group"
+                    >
+                      <FileText size={15} className="text-purple-300 group-hover:text-purple-400" />
+                      <span className="truncate flex-1">{attachment.original_filename}</span>
+                      <span className="text-[10px] text-gray-400 ml-2">{(attachment.file_size / 1024 / 1024).toFixed(2)} MB</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* RIGHT PANEL */}
