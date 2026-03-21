@@ -1944,9 +1944,9 @@ const ColdOutreach = () => {
                   : 'border-purple-500/30 hover:border-purple-400/60'
               }`}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-stretch">
                 {/* LEFT COLUMN: Meta & Category */}
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-4 min-w-0 md:min-w-[220px] md:max-w-[320px]">
                   <div className="flex items-center gap-3">
                     <div className={`p-3 rounded-xl text-white shadow-md ${
                       template.is_active ? 'bg-green-500' : 'bg-gradient-to-r from-purple-600 to-purple-700'
@@ -1954,7 +1954,7 @@ const ColdOutreach = () => {
                       <Mail size={18} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <h3 className="text-lg font-bold text-white break-words">
                           {template.name}
                         </h3>
@@ -1970,7 +1970,7 @@ const ColdOutreach = () => {
                     </div>
                   </div>
                   <div>
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
                       template.category === 'technical' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
                       template.category === 'non-technical' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' :
                       template.category === 'core' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
@@ -1993,7 +1993,7 @@ const ColdOutreach = () => {
                   </div>
                 </div>
                 {/* RIGHT COLUMN: Preview, Attachments, Actions */}
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-4 min-w-0 h-full justify-between">
                   <div>
                     <h4 className="text-sm font-semibold text-white mb-2 flex items-center">
                       <FileText size={14} className="mr-2" />
@@ -2042,7 +2042,7 @@ const ColdOutreach = () => {
                       </div>
                     </div>
                   )}
-                  <div className="flex flex-col sm:flex-row gap-2 mt-auto">
+                  <div className="flex flex-col sm:flex-row gap-2 mt-2 md:mt-auto w-full">
                     <button
                       onClick={() => handleEditTemplate(template)}
                       className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out flex items-center justify-center gap-2 shadow-md"
