@@ -1388,26 +1388,26 @@ const MentorshipSection = () => {
   const upcomingSessions = [
     {
       id: 3,
-      mentorName: "Emily Rodriguez",
-      mentorTitle: "VP of Engineering at Meta",
-      mentorImage: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
+      mentorName: "Rahul Verma",
+      mentorTitle: "Senior Engineer at PhonePe",
+      mentorImage: "https://randomuser.me/api/portraits/men/52.jpg",
       sessionDate: "Feb 25, 2026",
       sessionTime: "4:00 PM - 5:00 PM",
       sessionTopic: "Career Growth & Performance Reviews",
       sessionType: "Q&A",
-      whyThisMentor: "Understand what it takes to get promoted faster at large tech firms.",
+      whyThisMentor: "Understand what it takes to get promoted at Indian product companies.",
       status: "upcoming"
     },
     {
       id: 4,
-      mentorName: "David Kumar",
-      mentorTitle: "Startup Founder & Investor",
-      mentorImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+      mentorName: "Sneha Agarwal",
+      mentorTitle: "SDE 1 at Meesho",
+      mentorImage: "https://randomuser.me/api/portraits/women/45.jpg",
       sessionDate: "Feb 28, 2026",
       sessionTime: "6:00 PM - 7:00 PM",
       sessionTopic: "Entrepreneurship & Fundraising",
       sessionType: "Workshop",
-      whyThisMentor: "Covers how funded startups build their first engineering and operations team.",
+      whyThisMentor: "Covers how Indian startups build their first engineering and operations team.",
       status: "upcoming"
     }
   ];
@@ -1416,38 +1416,38 @@ const MentorshipSection = () => {
   const archivedSessions = [
     {
       id: 5,
-      mentorName: "Jennifer Kim",
-      mentorTitle: "Former VP at Stripe",
-      mentorImage: "https://images.unsplash.com/photo-1494790108755-2616b612b4c0?w=100&h=100&fit=crop&crop=face",
+      mentorName: "Vikram Singh",
+      mentorTitle: "SDE 2 at Razorpay",
+      mentorImage: "https://randomuser.me/api/portraits/men/53.jpg",
       sessionDate: "Feb 10, 2026",
       sessionTime: "3:00 PM - 4:00 PM",
-      sessionTopic: "Scaling Engineering Teams",
+      sessionTopic: "Scaling Engineering Teams in Fintech",
       sessionType: "Workshop",
-      whyThisMentor: "Real frameworks used at Stripe to grow from 10 to 200 engineers.",
+      whyThisMentor: "Real frameworks used at Razorpay to grow engineering teams.",
       status: "past"
     },
     {
       id: 6,
-      mentorName: "Robert Singh",
-      mentorTitle: "Product Director at Netflix",
-      mentorImage: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop&crop=face",
+      mentorName: "Aishwarya Nair",
+      mentorTitle: "Principal Engineer at Zepto",
+      mentorImage: "https://randomuser.me/api/portraits/women/46.jpg",
       sessionDate: "Feb 8, 2026",
       sessionTime: "1:00 PM - 2:00 PM",
-      sessionTopic: "Content Strategy & User Experience",
+      sessionTopic: "Content Strategy & User Experience in Indian Startups",
       sessionType: "Group Session",
-      whyThisMentor: "Directly applicable to product roles at consumer-facing tech companies.",
+      whyThisMentor: "Directly applicable to product roles at Indian consumer tech companies.",
       status: "past"
     },
     {
       id: 7,
-      mentorName: "Lisa Zhang",
-      mentorTitle: "AI Research Lead at OpenAI",
-      mentorImage: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=face",
+      mentorName: "Rohan Gupta",
+      mentorTitle: "Software Engineer at Flipkart",
+      mentorImage: "https://randomuser.me/api/portraits/men/54.jpg",
       sessionDate: "Feb 5, 2026",
       sessionTime: "11:00 AM - 12:00 PM",
-      sessionTopic: "Machine Learning in Production",
+      sessionTopic: "Machine Learning in Indian E-commerce",
       sessionType: "Workshop",
-      whyThisMentor: "Practical ML deployment knowledge that stands out in technical interviews.",
+      whyThisMentor: "Practical ML deployment knowledge for Indian e-commerce interviews.",
       status: "past"
     }
   ];
