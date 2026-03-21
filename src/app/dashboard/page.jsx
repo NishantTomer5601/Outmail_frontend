@@ -802,11 +802,13 @@ const Card = ({ title, value, percentage, icon }) => {
 // TopHorizontalCards Component
 // Outreach Stat Pills — Row 1 of new overview
 const OutreachStatPills = ({ selectedPeriod }) => {
-  const sentByPeriod = { '7': '145', '15': '312', '30': '624' };
+  // Maintain ratio for 7, 15, 30 days
+  const sentByPeriod = { '7': '40', '15': '81', '30': '159' };
+  const companiesByPeriod = { '7': '8', '15': '16', '30': '30' };
   const stats = [
     {
       label: `Emails Sent (${selectedPeriod}d)`,
-      value: sentByPeriod[selectedPeriod] || '145',
+      value: sentByPeriod[selectedPeriod] || '40',
       icon: Mail,
       color: 'text-purple-400',
       bg: 'bg-purple-500/15',
@@ -814,7 +816,7 @@ const OutreachStatPills = ({ selectedPeriod }) => {
     },
     {
       label: 'Total Emails Sent',
-      value: '1,465',
+      value: '380',
       icon: TrendingUp,
       color: 'text-green-400',
       bg: 'bg-green-500/15',
@@ -822,7 +824,7 @@ const OutreachStatPills = ({ selectedPeriod }) => {
     },
     {
       label: 'Companies Targeted',
-      value: '48',
+      value: companiesByPeriod[selectedPeriod] || '8',
       icon: Building,
       color: 'text-cyan-400',
       bg: 'bg-cyan-500/15',
@@ -830,7 +832,7 @@ const OutreachStatPills = ({ selectedPeriod }) => {
     },
     {
       label: 'Active Template',
-      value: 'Tech Intro v2',
+      value: 'Tech Outreach',
       icon: FileText,
       color: 'text-amber-400',
       bg: 'bg-amber-500/15',
@@ -938,10 +940,26 @@ const DailyOutreachChart = ({ selectedPeriod }) => {
 
 // Hiring Spotlight — compact companies actively hiring
 const HiringSpotlight = () => {
+  // Indian company logos
+  const companyLogos = {
+    Swiggy: "https://upload.wikimedia.org/wikipedia/commons/1/12/Swiggy_logo.png",
+    Paytm: "https://upload.wikimedia.org/wikipedia/commons/5/55/Paytm_logo.png",
+    Meesho: "https://upload.wikimedia.org/wikipedia/commons/6/60/Meesho_Logo.png",
+    CRED: "https://upload.wikimedia.org/wikipedia/commons/6/6a/CRED-logo.png",
+    Razorpay: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Razorpay_logo.svg",
+    Flipkart: "https://upload.wikimedia.org/wikipedia/commons/0/05/Flipkart_logo.png",
+    Zepto: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Zepto_logo.png",
+    Zomato: "https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.png"
+  };
   const hiringCompanies = [
-    { name: 'Stripe', industry: 'FinTech', roles: 12, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400' },
-    { name: 'OpenAI', industry: 'AI/ML', roles: 8, badge: 'new', badgeColor: 'bg-green-500/20 text-green-400' },
-    { name: 'Razorpay', industry: 'FinTech', roles: 7, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400' },
+    { name: 'Swiggy', industry: 'FoodTech', roles: 10, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400', logo: companyLogos.Swiggy },
+    { name: 'Paytm', industry: 'FinTech', roles: 8, badge: 'new', badgeColor: 'bg-green-500/20 text-green-400', logo: companyLogos.Paytm },
+    { name: 'Meesho', industry: 'E-commerce', roles: 7, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400', logo: companyLogos.Meesho },
+    { name: 'CRED', industry: 'FinTech', roles: 6, badge: 'new', badgeColor: 'bg-green-500/20 text-green-400', logo: companyLogos.CRED },
+    { name: 'Razorpay', industry: 'FinTech', roles: 5, badge: 'hot', badgeColor: 'bg-red-500/20 text-red-400', logo: companyLogos.Razorpay },
+    { name: 'Flipkart', industry: 'E-commerce', roles: 4, badge: '', badgeColor: '', logo: companyLogos.Flipkart },
+    { name: 'Zepto', industry: 'Quick Commerce', roles: 3, badge: '', badgeColor: '', logo: companyLogos.Zepto },
+    { name: 'Zomato', industry: 'FoodTech', roles: 2, badge: '', badgeColor: '', logo: companyLogos.Zomato }
   ];
 
   return (
@@ -968,6 +986,9 @@ const HiringSpotlight = () => {
               <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px] text-white/50 font-bold flex-shrink-0">
                 {i + 1}
               </span>
+              {company.logo && (
+                <img src={company.logo} alt={company.name + ' logo'} className="w-6 h-6 rounded-full object-contain bg-white/20 mr-1" />
+              )}
               <div className="min-w-0">
                 <span className="text-xs font-semibold text-white">{company.name}</span>
                 <span className="text-[10px] text-white/40 ml-1.5">{company.industry}</span>
@@ -989,9 +1010,11 @@ const HiringSpotlight = () => {
 // Recent Outreach Feed — last 5 emails sent
 const RecentOutreachFeed = () => {
   const activities = [
-    { company: 'Stripe', template: 'FinTech Intro', time: '2h ago' },
-    { company: 'Razorpay', template: 'FinTech Intro', time: '4h ago' },
-    { company: 'Notion', template: 'SaaS Outreach', time: '6h ago' },
+    { company: 'Swiggy', template: 'Tech Outreach', time: '1h ago' },
+    { company: 'Paytm', template: 'Tech Outreach', time: '2h ago' },
+    { company: 'Meesho', template: 'Tech Outreach', time: '3h ago' },
+    { company: 'CRED', template: 'Tech Outreach', time: '4h ago' },
+    { company: 'Razorpay', template: 'Tech Outreach', time: '5h ago' },
   ];
 
   return (
@@ -1356,14 +1379,25 @@ const TemplateViewerModal = ({ isOpen, onClose, template }) => {
 const MentorshipSection = () => {
   const [showArchivedSessions, setShowArchivedSessions] = useState(false);
 
+  // Company logo URLs for mentors
+  const companyLogos = {
+    Swiggy: "https://upload.wikimedia.org/wikipedia/commons/1/12/Swiggy_logo.png",
+    Paytm: "https://upload.wikimedia.org/wikipedia/commons/5/55/Paytm_logo.png",
+    PhonePe: "https://upload.wikimedia.org/wikipedia/commons/6/6b/PhonePe_Logo.png",
+    Meesho: "https://upload.wikimedia.org/wikipedia/commons/6/60/Meesho_Logo.png",
+    Razorpay: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Razorpay_logo.svg",
+    Zepto: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Zepto_logo.png",
+    Flipkart: "https://upload.wikimedia.org/wikipedia/commons/0/05/Flipkart_logo.png"
+  };
+
   // Active sessions (currently happening)
   const activeSessions = [
     {
       id: 1,
       mentorName: "Ankit Sharma",
       mentorTitle: "SDE 1 at Swiggy",
-      mentorImage: "https://randomuser.me/api/portraits/men/51.jpg",
-      sessionDate: "Feb 17, 2026",
+      mentorImage: companyLogos["Swiggy"],
+      sessionDate: "Mar 21, 2026", // Today (Live session)
       sessionTime: "2:00 PM - 3:00 PM",
       sessionTopic: "Cracking Product Companies as a Fresher",
       sessionType: "Q&A",
@@ -1374,8 +1408,8 @@ const MentorshipSection = () => {
       id: 2,
       mentorName: "Priya Iyer",
       mentorTitle: "SDE 2 at Paytm",
-      mentorImage: "https://randomuser.me/api/portraits/women/44.jpg",
-      sessionDate: "Feb 17, 2026",
+      mentorImage: companyLogos["Paytm"],
+      sessionDate: "Mar 21, 2026", // Today (Live session)
       sessionTime: "10:00 AM - 11:00 AM",
       sessionTopic: "Technical Interview Preparation",
       sessionType: "Group Session",
@@ -1384,14 +1418,21 @@ const MentorshipSection = () => {
     }
   ];
 
+  // Calculate next week's dates
+  const getNextWeekDate = (daysFromToday = 7) => {
+    const d = new Date();
+    d.setDate(d.getDate() + daysFromToday);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
   // Upcoming sessions
   const upcomingSessions = [
     {
       id: 3,
       mentorName: "Rahul Verma",
       mentorTitle: "Senior Engineer at PhonePe",
-      mentorImage: "https://randomuser.me/api/portraits/men/52.jpg",
-      sessionDate: "Feb 25, 2026",
+      mentorImage: companyLogos["PhonePe"],
+      sessionDate: getNextWeekDate(7),
       sessionTime: "4:00 PM - 5:00 PM",
       sessionTopic: "Career Growth & Performance Reviews",
       sessionType: "Q&A",
@@ -1402,8 +1443,8 @@ const MentorshipSection = () => {
       id: 4,
       mentorName: "Sneha Agarwal",
       mentorTitle: "SDE 1 at Meesho",
-      mentorImage: "https://randomuser.me/api/portraits/women/45.jpg",
-      sessionDate: "Feb 28, 2026",
+      mentorImage: companyLogos["Meesho"],
+      sessionDate: getNextWeekDate(9),
       sessionTime: "6:00 PM - 7:00 PM",
       sessionTopic: "Entrepreneurship & Fundraising",
       sessionType: "Workshop",
@@ -3717,54 +3758,68 @@ export default function Page() {
           key={job.id}
           className={`bg-white/10 backdrop-blur-md rounded-2xl p-6 border ${tier.border} hover:border-white/30 transition-all duration-300`}
         >
-          {/* Job Header */}
-          <div className="flex justify-between items-start mb-3">
-            <div className="flex-1 min-w-0">
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <h3 className="text-lg font-bold text-white">{job.title}</h3>
-                <span className={`text-xs font-medium ${getStatusColor(job.status)}`}>
-                  {getStatusText(job.status)}
-                </span>
-                {job.outreachSent && (
-                  <span className="px-2 py-0.5 bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded-full text-xs font-semibold">
-                    📧 Outreach Sent
-                  </span>
-                )}
+          // Company logos for job cards
+          const companyLogos = {
+            Swiggy: "https://upload.wikimedia.org/wikipedia/commons/1/12/Swiggy_logo.png",
+            Paytm: "https://upload.wikimedia.org/wikipedia/commons/5/55/Paytm_logo.png",
+            Meesho: "https://upload.wikimedia.org/wikipedia/commons/6/60/Meesho_Logo.png",
+            CRED: "https://upload.wikimedia.org/wikipedia/commons/6/6a/CRED-logo.png",
+            Razorpay: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Razorpay_logo.svg",
+            Flipkart: "https://upload.wikimedia.org/wikipedia/commons/0/05/Flipkart_logo.png",
+            Zepto: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Zepto_logo.png",
+            Zomato: "https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.png"
+          };
+          return (
+            <div
+              key={job.id}
+              className={`bg-white/10 backdrop-blur-md rounded-2xl p-6 border ${tier.border} hover:border-white/30 transition-all duration-300`}
+            >
+              {/* Job Header */}
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    {companyLogos[job.company] && (
+                      <img src={companyLogos[job.company]} alt={job.company + ' logo'} className="w-7 h-7 rounded-full object-contain bg-white/20 mr-1" />
+                    )}
+                    <h3 className="text-lg font-bold text-white">{job.title}</h3>
+                    <span className={`text-xs font-medium ${getStatusColor(job.status)}`}>{getStatusText(job.status)}</span>
+                    {job.outreachSent && (
+                      <span className="px-2 py-0.5 bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded-full text-xs font-semibold">
+                        📧 Outreach Sent
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-white/60 mb-3">
+                    <div className="flex items-center gap-1">
+                      <Building size={14} />
+                      {job.company}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MapPin size={14} />
+                      {job.location}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Briefcase size={14} />
+                      {job.type}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <DollarSign size={14} />
+                      {job.salary}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock size={14} />
+                      {job.posted}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Priority Score */}
+                <div className="ml-4 flex flex-col items-center bg-white/5 rounded-xl px-3 py-2 border border-white/10 shrink-0">
+                  <span className={`text-2xl font-bold ${getPriorityScoreColor(job.priorityScore)}`}>{job.priorityScore}</span>
+                  <span className="text-white/40 text-xs mt-0.5 whitespace-nowrap">Outmail Score</span>
+                </div>
               </div>
-
-              <div className="flex flex-wrap items-center gap-3 text-sm text-white/60 mb-3">
-                <div className="flex items-center gap-1">
-                  <Building size={14} />
-                  {job.company}
-                </div>
-                <div className="flex items-center gap-1">
-                  <MapPin size={14} />
-                  {job.location}
-                </div>
-                <div className="flex items-center gap-1">
-                  <Briefcase size={14} />
-                  {job.type}
-                </div>
-                <div className="flex items-center gap-1">
-                  <DollarSign size={14} />
-                  {job.salary}
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock size={14} />
-                  {job.posted}
-                </div>
-              </div>
-            </div>
-
-            {/* Priority Score */}
-            <div className="ml-4 flex flex-col items-center bg-white/5 rounded-xl px-3 py-2 border border-white/10 shrink-0">
-              <span className={`text-2xl font-bold ${getPriorityScoreColor(job.priorityScore)}`}>
-                {job.priorityScore}
-              </span>
-              <span className="text-white/40 text-xs mt-0.5 whitespace-nowrap">Outmail Score</span>
-            </div>
-          </div>
-
           {/* Signal Badges */}
           <div className="flex flex-wrap gap-2 mb-3">
             {job.signals.map((signal, i) => (
