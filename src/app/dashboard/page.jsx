@@ -4187,32 +4187,7 @@ export default function Page() {
               </div>
             </div>
 
-            {/* Job Openings Section */}
-            <div className="p-6 sm:p-8 font-syne">
-              <div className="bg-[#283647]/90 backdrop-blur-xl rounded-xl shadow-2xl mt-12" style={{boxShadow:'0px 24px 48px rgba(0,0,0,0.4)'}}>
-                <div className="p-8 border-b border-[#4D4354]/20">
-                  <h2 className="text-[1.5rem] font-bold text-[#D5E4FA] tracking-tight">Fresher Job Openings</h2>
-                </div>
-                <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {[
-                    { title: 'Software Engineer - Fresher', company: 'CRED', location: 'Bangalore' },
-                    { title: 'Graduate Trainee Engineer', company: 'Groww', location: 'Bangalore' },
-                    { title: 'Backend Developer - Entry Level', company: 'Zerodha', location: 'Bangalore' },
-                    { title: 'Frontend Developer - Fresher', company: 'Zomato', location: 'Gurgaon' },
-                    { title: 'SDE Intern', company: 'Paytm', location: 'Noida' },
-                    { title: 'Junior Software Engineer', company: 'PhonePe', location: 'Bangalore' },
-                  ].map((job, idx) => (
-                    <div key={idx} className="bg-[#0E1C2D]/80 rounded-lg p-6 flex flex-col shadow-lg">
-                      <div className="text-lg font-semibold text-[#D5E4FA]">{job.title}</div>
-                      <div className="text-sm text-[#CFC2D7] mt-1">{job.company} &middot; {job.location}</div>
-                      <button className="mt-4 px-4 py-2 rounded-lg font-bold text-white bg-gradient-to-tr from-[#DDB8FF] to-[#9333EA] shadow hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#9333EA]/60">
-                        Apply
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            {/* Job Openings Section removed as per requirements */}
           </>
         )}
         {activeSection === "coldOutreach" && <ColdOutreach />}

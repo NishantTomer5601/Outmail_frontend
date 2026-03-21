@@ -4,34 +4,48 @@ export function middleware(request) {
   // Get the pathname of the request (e.g. /, /dashboard, /about, etc.)
   const path = request.nextUrl.pathname;
 
-  // Canonical dashboard route: always use /dashboard
-  if (path === '/student/dashboard' || path === '/admin/dashboard') {
-    const redirectUrl = new URL('/dashboard', request.url);
-    request.nextUrl.searchParams.forEach((value, key) => {
-      redirectUrl.searchParams.set(key, value);
-    });
-    return NextResponse.redirect(redirectUrl);
+  // Define paths that should be protected
+  const protectedPaths = [
+    '/dashboard', // Legacy dashboard - redirect to role-based
+    '/student', 
+    '/admin'
+  ];
+
+  // Check if the current path is protected
+  const isProtectedPath = protectedPaths.some(protectedPath => 
+    path.startsWith(protectedPath)
+  );
+
+  // If it's a protected path, check for authentication
+  if (isProtectedPath) {
+    // Get the auth cookie (updated for role-based backend)
+    const authCookie = request.cookies.get('outmail_auth') || 
+                      request.cookies.get('connect.sid') || 
+                      request.cookies.get('sessionId') || 
+                      request.cookies.get('auth-token') ||
+                      request.cookies.get('session');
+    
+    // If no auth cookie, redirect to home
+    if (!authCookie) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+
+    // Legacy dashboard redirect - let the frontend handle role-based routing
+    if (path === '/dashboard') {
+      return NextResponse.redirect(new URL('/auth/success', request.url));
+    }
   }
 
-  // NOTE:
-  // Do not enforce cookie-only auth for /student or /admin here.
-  // This app supports token-based auth in localStorage as well,
-  // which middleware cannot read. Route protection is handled in AuthGuard.
+  // For auth success page, allow through
+  if (path === '/auth/success') {
+    return NextResponse.next();
+  }
 
   return NextResponse.next();
 }
 
-// See "Matching Paths" below to learn more
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
     '/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$|.*\\.jpg$|.*\\.jpeg$|.*\\.gif$|.*\\.svg$).*)',
   ],
 };
