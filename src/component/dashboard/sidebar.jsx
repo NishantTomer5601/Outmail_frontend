@@ -1,58 +1,17 @@
 "use client";
 import React from 'react';
-import { X, Home, BarChart3, Settings, Users, Mail, FileText, Shield } from 'lucide-react';
+import { X, Home, BarChart3, Settings, Mail, FileText } from 'lucide-react';
 import Link from 'next/link';
 
-export default function Sidebar({ isOpen, onClose, userRole = 'STUDENT' }) {
-  // Role-based navigation items
-  const getNavigationItems = () => {
-    const baseItems = [
-      {
-        name: 'Dashboard',
-        href: userRole === 'TPO_ADMIN' ? '/admin/dashboard' : '/student/dashboard',
-        icon: Home,
-      },
-      {
-        name: 'Campaigns',
-        href: userRole === 'TPO_ADMIN' ? '/admin/campaigns' : '/student/campaigns',
-        icon: Mail,
-      },
-      {
-        name: 'Analytics',
-        href: userRole === 'TPO_ADMIN' ? '/admin/analytics' : '/student/analytics',
-        icon: BarChart3,
-      },
-      {
-        name: 'Templates',
-        href: userRole === 'TPO_ADMIN' ? '/admin/templates' : '/student/templates',
-        icon: FileText,
-      },
-    ];
-
-    // Add admin-only items
-    if (userRole === 'TPO_ADMIN') {
-      baseItems.push(
-        {
-          name: 'Manage Students',
-          href: '/admin/students',
-          icon: Users,
-        },
-        {
-          name: 'System Settings',
-          href: '/admin/settings',
-          icon: Shield,
-        }
-      );
-    }
-
-    baseItems.push({
-      name: 'Settings',
-      href: userRole === 'TPO_ADMIN' ? '/admin/profile' : '/student/profile',
-      icon: Settings,
-    });
-
-    return baseItems;
-  };
+export default function Sidebar({ isOpen, onClose }) {
+  // Simple navigation items (no roles)
+  const getNavigationItems = () => [
+    { name: 'Dashboard', href: '/dashboard', icon: Home },
+    { name: 'Campaigns', href: '/dashboard/campaigns', icon: Mail },
+    { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
+    { name: 'Templates', href: '/dashboard/templates', icon: FileText },
+    { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+  ];
 
   return (
     <>
@@ -90,13 +49,6 @@ export default function Sidebar({ isOpen, onClose, userRole = 'STUDENT' }) {
         </div>
 
         <nav className="p-4">
-          {/* Role badge */}
-          <div className={`mb-6 ${!isOpen ? 'lg:hidden' : ''}`}>
-            <div className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">
-              {userRole === 'TPO_ADMIN' ? 'TPO Admin' : 'Student'}
-            </div>
-          </div>
-
           <ul className="space-y-2">
             {getNavigationItems().map((item) => {
               const IconComponent = item.icon;

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import Navbar from "@/component/Navbar";
+import Footer from "@/component/Footer";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles,
@@ -150,22 +151,7 @@ export default function PartnershipPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0b14] text-white">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0b14]/70 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2">
-            <Image src="/logo-nav.png" alt="Outmail Logo" width={36} height={36} />
-            <span className="font-satisfy text-3xl leading-none">Outmail</span>
-          </a>
-
-          <div className="hidden md:flex items-center gap-8 text-sm text-white/75">
-            <a href="/partnership" className="hover:text-white transition">Partnership</a>
-            <a href="mailto:contact@outmail.in" className="hover:text-white transition">Contact</a>
-          </div>
-
-          <BookCallButton onClick={() => setIsBookCallOpen(true)} className="px-4 py-2.5 rounded-full text-sm" />
-        </div>
-      </header>
+      <Navbar variant="dark" />
 
       {/* Hero */}
       <section className="relative overflow-hidden">
@@ -175,7 +161,7 @@ export default function PartnershipPage() {
             Pricing
           </motion.div>
 
-          <motion.h1 {...fadeUp} className="mt-6 font-syne text-4xl md:text-6xl font-bold leading-tight max-w-5xl mx-auto">
+          <motion.h1 {...fadeUp} className="mt-6 font-syne text-4xl sm:text-5xl font-semibold leading-tight max-w-5xl mx-auto">
             Simple Pricing for Universities That Want{" "}
             <GradientWord>Better Placement Outcomes</GradientWord>
           </motion.h1>
@@ -393,42 +379,7 @@ export default function PartnershipPage() {
         </motion.div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/10 bg-[#090b16]">
-        <div className="max-w-7xl mx-auto px-6 py-14 grid md:grid-cols-3 gap-10">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <Image src="/logo-nav.png" alt="Outmail" width={34} height={34} />
-              <span className="font-satisfy text-3xl">Outmail</span>
-            </div>
-            <p className="text-white/60 text-sm max-w-xs">
-              Helping universities improve off-campus placement outcomes.
-            </p>
-          </div>
-
-          <div>
-            <p className="font-syne text-sm uppercase tracking-[0.2em] text-white/80 mb-3">Links</p>
-            <div className="space-y-2 text-sm text-white/60">
-              <a href="/partnership" className="block hover:text-white transition">Partnership</a>
-              <a href={`${process.env.NEXT_PUBLIC_DOCS_URL || "https://docs.outmail.in"}/terms-and-conditions`} className="block hover:text-white transition">Terms and Conditions</a>
-              <a href={`${process.env.NEXT_PUBLIC_DOCS_URL || "https://docs.outmail.in"}/privacy-policy`} className="block hover:text-white transition">Privacy Policy</a>
-              <a href="/#faq-section" className="block hover:text-white transition">FAQ</a>
-            </div>
-          </div>
-
-          <div>
-            <p className="font-syne text-sm uppercase tracking-[0.2em] text-white/80 mb-3">Contact</p>
-            <a href="mailto:contact@outmail.in" className="inline-flex items-center gap-2 text-white/70 hover:text-white transition">
-              <Mail size={15} />
-              contact@outmail.in
-            </a>
-          </div>
-        </div>
-
-        <div className="border-t border-white/10 py-5 text-center text-sm text-white/45">
-          © 2026 Outmail. All rights reserved.
-        </div>
-      </footer>
+      <Footer variant="dark" />
 
       {/* Book a Call modal */}
       <AnimatePresence>

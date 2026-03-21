@@ -6,10 +6,11 @@ import { z } from "zod";
 import axios from "axios";
 import { toast } from "sonner";
 
-export default function Footer() {
+export default function Footer({ variant = "gradient" }) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const isDark = variant === "dark";
   const emailSchema = z.email();
 
   const handleSubmit = async (e) => {
@@ -33,7 +34,7 @@ export default function Footer() {
 
   const subscribeNewsletter = async (email) => {
     const response = await axios.post(
-      `${BASE_URL}/api/newsletter/subscribe`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/newsletter/subscribe`,
       email,
     );
 
@@ -44,7 +45,13 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gradient-to-l from-black via-[#6c00ff] to-black text-white px-6 pt-20 pb-10 relative">
+    <footer
+      className={`text-white px-6 pt-20 pb-10 relative ${
+        isDark
+          ? "border-t border-white/10 bg-[#090b16]"
+          : "bg-gradient-to-l from-black via-[#6c00ff] to-black"
+      }`}
+    >
       <div className="max-w-7xl mx-auto grid gap-12 md:grid-cols-2">
         {/* Left Column */}
         <div>
@@ -66,8 +73,8 @@ export default function Footer() {
 
           <ul className="flex flex-wrap gap-4 text-sm text-white/80">
             <li>
-              <a href="/Aboutus" className="hover:underline">
-                About Us
+              <a href="/Features" className="hover:underline">
+                Features
               </a>
             </li>
             <li>
@@ -142,7 +149,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom Line */}
-      <div className="border-t border-white/20 mt-12 pt-6 text-center text-sm text-white/50">
+      <div className={`mt-12 pt-6 text-center text-sm text-white/50 ${isDark ? "border-t border-white/10" : "border-t border-white/20"}`}>
         <p>© {new Date().getFullYear()} Outmail. All rights reserved.</p>
       </div>
     </footer>

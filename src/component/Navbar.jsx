@@ -7,10 +7,12 @@ import { Menu, X, User, LogOut } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 
-function Navbar() {
+function Navbar({ variant = "gradient" }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const { user, isAuthenticated, loading, logout, userRole, isAdmin, isStudent } = useAuth();
+  const { user, isAuthenticated, loading, logout } = useAuth();
+
+  const isDark = variant === "dark";
 
   const handleLogout = () => {
     logout();
@@ -18,7 +20,13 @@ function Navbar() {
   };
 
   return (
-    <header className="w-full bg-gradient-to-l from-black via-[#6c00ff] to-black">
+    <header
+      className={`w-full ${
+        isDark
+          ? "sticky top-0 z-50 border-b border-white/10 bg-[#0a0b14]/70 backdrop-blur-xl"
+          : "bg-gradient-to-l from-black via-[#6c00ff] to-black"
+      }`}
+    >
       <nav className="relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
         
         {/* Logo */}
@@ -30,9 +38,10 @@ function Navbar() {
         {/* Desktop Links */}
         <div className="hidden md:flex space-x-6 text-white text-lg font-medium">
           <a href="/" className="hover:text-[#AD46FF] transition">Home</a>
-          <a href="/Aboutus" className="hover:text-[#AD46FF] transition">About Us</a>
+          <a href="/Features" className="hover:text-[#AD46FF] transition">Features</a>
           <a href="/Pricing" className="hover:text-[#AD46FF] transition">Pricing</a>
           <a href="/Contactus" className="hover:text-[#AD46FF] transition">Contact Us</a>
+          <a href="/partnership" className="hover:text-[#AD46FF] transition">Partnership</a>
         </div>
 
         {/* User Section - Desktop */}
@@ -64,41 +73,13 @@ function Navbar() {
               {/* User Dropdown Menu */}
               {isUserMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50">
-                  {/* Role Badge */}
-                  <div className="px-4 py-2 text-xs text-gray-500 border-b border-gray-100">
-                    {userRole === 'TPO_ADMIN' ? 'TPO Admin' : 'Student'}
-                  </div>
-                  
-                  {/* Dashboard Link - Role-based */}
                   <Link
-                    href={isAdmin() ? "/admin/dashboard" : "/student/dashboard"}
+                    href="/dashboard"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition"
                     onClick={() => setIsUserMenuOpen(false)}
                   >
                     Dashboard
                   </Link>
-                  
-                  {/* Admin-only links */}
-                  {isAdmin() && (
-                    <>
-                      <Link
-                        href="/admin/students"
-                        className="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        Manage Students
-                      </Link>
-                      <Link
-                        href="/admin/reports"
-                        className="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        Reports
-                      </Link>
-                    </>
-                  )}
-                  
-                  {/* Logout */}
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 transition flex items-center gap-2"
@@ -148,9 +129,10 @@ function Navbar() {
             </button>
             <div className="flex flex-col space-y-8 text-white text-xl font-medium">
               <a href="/" className="hover:text-[#AD46FF] transition text-center">Home</a>
-              <a href="/Aboutus" className="hover:text-[#AD46FF] transition text-center">About Us</a>
+              <a href="/Features" className="hover:text-[#AD46FF] transition text-center">Features</a>
               <a href="/Pricing" className="hover:text-[#AD46FF] transition text-center">Pricing</a>
               <a href="/Contactus" className="hover:text-[#AD46FF] transition text-center">Contact Us</a>
+              <a href="/partnership" className="hover:text-[#AD46FF] transition text-center">Partnership</a>
               
               {/* Mobile Auth Section */}
               {loading ? (
@@ -171,35 +153,19 @@ function Navbar() {
                     ) : (
                       <User size={24} />
                     )}
-                    <div className="text-center">
-                      <span>{user.display_name || user.name || user.email}</span>
-                      <div className="text-xs text-white/60">
-                        {userRole === 'TPO_ADMIN' ? 'TPO Admin' : 'Student'}
+                      <div className="text-center">
+                        <span>{user.display_name || user.name || user.email}</span>
                       </div>
-                    </div>
                   </div>
                   
                   {/* Dashboard Link */}
                   <Link
-                    href={isAdmin() ? "/admin/dashboard" : "/student/dashboard"}
+                    href="/dashboard"
                     className="text-center text-white bg-[#AD46FF] font-semibold rounded-full px-8 py-3 hover:bg-[#c289f0] transition-colors"
                     onClick={() => setIsOpen(false)}
                   >
                     Dashboard
                   </Link>
-                  
-                  {/* Admin-only mobile links */}
-                  {isAdmin() && (
-                    <>
-                      <Link
-                        href="/admin/students"
-                        className="text-center text-white bg-purple-700 font-semibold rounded-full px-8 py-2 hover:bg-purple-800 transition-colors"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        Manage Students
-                      </Link>
-                    </>
-                  )}
                   
                   <button
                     onClick={handleLogout}

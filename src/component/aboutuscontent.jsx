@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 export default function AboutUs() {
   return (
-    <section className="w-full px-4 sm:px-8 md:px-16 py-20 bg-gradient-to-l from-black via-[#6c00ff] to-black text-white overflow-hidden">
+    <section className="w-full px-4 sm:px-8 md:px-16 py-20 bg-[#0a0b14] text-white overflow-hidden">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
         
         {/* LEFT: TEXT CONTENT */}

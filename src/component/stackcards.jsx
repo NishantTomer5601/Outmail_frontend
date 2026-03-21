@@ -56,63 +56,9 @@ export default function StackingCards() {
     offset: ['start start', 'end end'],
   });
 
-  useEffect(() => {
-    let isSnapping = false;
-    const COOLDOWN = 750; // ms cooldown between snaps
-    const DELTA_THRESHOLD = 15; // ignore tiny trackpad micro-movements
-
-    const handleWheel = (e) => {
-      const section = container.current;
-      if (!section) return;
-
-      // Only intercept wheel events while the stacking section spans the viewport midpoint
-      const rect = section.getBoundingClientRect();
-      const inZone =
-        rect.top < window.innerHeight * 0.5 &&
-        rect.bottom > window.innerHeight * 0.5;
-      if (!inZone) return;
-
-      // Ignore tiny trackpad drift
-      if (Math.abs(e.deltaY) < DELTA_THRESHOLD) return;
-
-      // While animating to a snap point, eat the event
-      if (isSnapping) {
-        e.preventDefault();
-        return;
-      }
-
-      // Calculate snap points: each card occupies exactly one viewport height
-      const sectionTop = window.scrollY + rect.top;
-      const snapPoints = projects.map((_, i) => sectionTop + i * window.innerHeight);
-      const currentScrollY = window.scrollY;
-
-      let targetSnap;
-      if (e.deltaY > 0) {
-        // Scrolling down — snap to the next card
-        targetSnap = snapPoints.find((p) => p > currentScrollY + 50);
-        if (targetSnap === undefined) return; // past all cards, let scroll through normally
-      } else {
-        // Scrolling up — snap to the previous card
-        const prevPoints = snapPoints.filter((p) => p < currentScrollY - 50);
-        if (prevPoints.length === 0) return; // before first card, let scroll through normally
-        targetSnap = prevPoints[prevPoints.length - 1];
-      }
-
-      e.preventDefault();
-      isSnapping = true;
-      window.scrollTo({ top: targetSnap, behavior: 'smooth' });
-      setTimeout(() => {
-        isSnapping = false;
-      }, COOLDOWN);
-    };
-
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    return () => window.removeEventListener('wheel', handleWheel);
-  }, []);
-
   return (
     <main ref={container}>
-      <section className="text-white w-full pt-0 mt-0">
+      <section className="text-white w-full pt-0 mt-0 relative">
         {projects.slice(0, 3).map((project, i) => {
           const targetScale = 1 - (projects.length - i) * 0.05;
           return (
@@ -146,12 +92,7 @@ export const Card = ({
   range,
   targetScale,
 }) => {
-  const container = useRef(null);
   const { width } = useWindowSize();
-  const { scrollYProgress } = useScroll({
-    target: container,
-    offset: ['start end', 'start start'],
-  });
 
   // const imageScale = useTransform(scrollYProgress, [0, 1], [2, 1]); // zoom-out effect — commented out for now
   const scale = useTransform(progress, range, [1, targetScale]);
@@ -165,7 +106,7 @@ export const Card = ({
         padding: '4',
         titleSize: 'text-lg',
         textSize: 'text-xs',
-        topOffset: '10px',
+        topOffset: '6px',
         layout: 'flex-col',
         textWidth: 'w-full',
         imageWidth: 'w-full',
@@ -179,7 +120,7 @@ export const Card = ({
         padding: '6',
         titleSize: 'text-xl',
         textSize: 'text-sm',
-        topOffset: '15px',
+        topOffset: '8px',
         layout: 'flex-col',
         textWidth: 'w-full',
         imageWidth: 'w-full',
@@ -193,7 +134,7 @@ export const Card = ({
         padding: '8',
         titleSize: 'text-xl',
         textSize: 'text-sm',
-        topOffset: '20px',
+        topOffset: '10px',
         layout: 'flex-row',
         textWidth: 'w-[45%]',
         imageWidth: 'w-[55%]',
@@ -207,7 +148,7 @@ export const Card = ({
         padding: '10',
         titleSize: 'text-2xl',
         textSize: 'text-sm',
-        topOffset: '25px',
+        topOffset: '12px',
         layout: 'flex-row',
         textWidth: 'w-[40%]',
         imageWidth: 'w-[60%]',
@@ -218,20 +159,27 @@ export const Card = ({
   };
 
   const responsive = getResponsiveValues();
+  const enterStart = i === 0 ? 0 : i * 0.25;
+  const enterEnd = i === 0 ? 0.15 : enterStart + 0.2;
+  const initialY = i === 0 ? 90 : 340;
+  const initialOpacity = i === 0 ? 0.92 : 0;
+  const y = useTransform(progress, [enterStart, enterEnd], [initialY, -80], { clamp: true });
+  const opacity = useTransform(progress, [enterStart, enterEnd], [initialOpacity, 1]);
 
   return (
     <div
-      ref={container}
       className="relative h-screen flex items-center justify-center sticky top-0 px-4"
     >
       <motion.div
         style={{
           scale,
-          top: `calc(-5vh + ${i * parseInt(responsive.topOffset)}px)`,
+          y,
+          opacity,
+          top: `calc(-8vh + ${i * parseInt(responsive.topOffset)}px)`,
           width: responsive.cardWidth,
           height: responsive.cardHeight,
         }}
-        className="relative rounded-2xl origin-top z-10 max-w-6xl overflow-hidden border border-purple-500/30"
+        className="relative rounded-2xl origin-top z-10 max-w-6xl overflow-hidden border border-purple-400/40"
       >
         {/* Full-bleed screenshot — static for now, zoom-out effect commented out */}
         <div className="absolute inset-0 w-full h-full">
@@ -245,7 +193,8 @@ export const Card = ({
         </div>
 
         {/* Dark gradient overlay — strong at bottom for readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/10 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/5 z-10" />
+        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/10 to-transparent z-10" />
 
         {/* Text overlay — bottom of card */}
         <div className="absolute bottom-0 left-0 right-0 z-20 p-6 md:p-10 flex items-end justify-between gap-6">

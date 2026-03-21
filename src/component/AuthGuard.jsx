@@ -16,7 +16,7 @@ export default function AuthGuard({
   fallbackPath = '/',
   showLoading = true 
 }) {
-  const { isAuthenticated, userRole, loading } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -26,23 +26,8 @@ export default function AuthGuard({
         router.push(fallbackPath);
         return;
       }
-
-      // Check role permissions
-      if (allowedRoles.length > 0 && !allowedRoles.includes(userRole)) {
-        // User doesn't have required role - redirect based on their actual role
-        switch (userRole) {
-          case 'TPO_ADMIN':
-            router.push('/admin/dashboard');
-            break;
-          case 'STUDENT':
-          default:
-            router.push('/student/dashboard');
-            break;
-        }
-        return;
-      }
     }
-  }, [isAuthenticated, userRole, loading, allowedRoles, router, fallbackPath]);
+  }, [isAuthenticated, loading, router, fallbackPath]);
 
   // Show loading spinner while checking auth
   if (loading && showLoading) {
@@ -56,8 +41,8 @@ export default function AuthGuard({
     );
   }
 
-  // Don't render children if not authenticated or insufficient permissions
-  if (!isAuthenticated || (allowedRoles.length > 0 && !allowedRoles.includes(userRole))) {
+  // Don't render children if not authenticated
+  if (!isAuthenticated) {
     return null;
   }
 

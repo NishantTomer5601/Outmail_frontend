@@ -26,7 +26,7 @@ const benefits = [
 
 const MembershipBenefits = () => {
   return (
-    <section className="bg-gradient-to-l from-black via-[#6c00ff] to-black py-24 px-4 sm:px-6 lg:px-8">
+    <section className="bg-[#0a0b14] py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
         {/* Left — Text Content */}

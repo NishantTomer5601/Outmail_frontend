@@ -26,9 +26,12 @@ export default function Features() {
   ];
 
   return (
-    <div className="bg-gradient-to-l from-black via-[#6c00ff] to-black flex items-center justify-center px-8 py-20 min-h-screen" style={{
+    <div className="relative overflow-hidden bg-[#0a0b14] flex items-center justify-center px-8 py-20 min-h-screen" style={{
 
   }}>
+      <div className="absolute top-14 right-[8%] w-24 h-24 rounded-full border border-white/10 bg-[#ad46ff]/12" />
+      <div className="absolute bottom-12 left-[6%] w-20 h-20 rounded-lg border border-white/10 bg-[#6c00ff]/12 rotate-12" />
+
       <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
         {/* Left Side */}
         <div className="text-white">
@@ -39,8 +42,8 @@ export default function Features() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
             {features.map((feature, idx) => (
-              <div key={idx} className="flex flex-col gap-4 p-6 rounded-xl  hover:bg-white/20 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-xl">
-                <div className="bg-white/20 p-3 w-fit rounded-full">
+              <div key={idx} className="flex flex-col gap-4 p-6 rounded-xl border border-white/12 bg-white/5 backdrop-blur-xl hover:border-purple-500/40 transition-all duration-300 ease-in-out transform hover:scale-[1.02] shadow-[0_0_20px_rgba(108,0,255,0.15)]">
+                <div className="bg-[#6c00ff]/30 p-3 w-fit rounded-full border border-purple-500/40">
                   {feature.icon}
                 </div>
                 <h3 className="text-lg font-semibold">{feature.title}</h3>
@@ -55,7 +58,7 @@ export default function Features() {
           <img
             src="/dashboard_edited.png" 
             alt="Outmail Dashboard Preview"
-            className="rounded-4xl shadow-xl  max-w-full transition-transform duration-300 ease-in-out transform hover:scale-105 hover:-translate-y-1 translate-x-12 md:translate-x-24 lg:translate-x-32 "
+            className="rounded-3xl border border-purple-400/40 shadow-[0_0_18px_rgba(108,0,255,0.28)] max-w-full transition-transform duration-300 ease-in-out transform hover:scale-105 hover:-translate-y-1 translate-x-12 md:translate-x-24 lg:translate-x-32"
             width={1000}
           />
         </div>

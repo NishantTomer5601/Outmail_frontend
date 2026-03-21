@@ -11,10 +11,10 @@ import MembershipBenefits from '@/component/membershipbenefits'
 
 function page() {
   return (
-    <div>
-      <Navbar/>
+    <div className="min-h-screen bg-[#0a0b14] text-white">
+      <Navbar variant="dark"/>
 
-      <div className="bg-gradient-to-l from-black via-[#6c00ff] to-black py-20">   
+      <div className="bg-[#0a0b14] py-20 relative overflow-hidden">   
       
 
       <div className="container mx-auto px-4 text-center">
@@ -40,20 +40,23 @@ function page() {
               const missionSection = document.getElementById('pricing');
               missionSection?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="rounded-full border-2 border-white/30 text-white px-5 py-3 hover:bg-white hover:text-black transition duration-300"
+            className="rounded-full border border-white/20 bg-white/5 text-white px-5 py-3 hover:bg-white/10 transition duration-300"
           >
             ↓
           </button>
         </div>
 
       </div>
+      <div className="absolute top-24 left-[10%] w-36 h-36 rounded-2xl border border-white/10 bg-[#6c00ff]/20 rotate-12 blur-[1px]" />
+      <div className="absolute top-32 right-[12%] w-20 h-20 rounded-full border border-white/15 bg-[#ad46ff]/20" />
+      <div className="absolute bottom-8 left-[20%] w-24 h-24 rounded-lg border border-white/10 bg-[#2f1a7a]/40 -rotate-12" />
       </div>
       <div id="pricing"><MembershipBenefits/></div>
       <div><Pricing/></div>
       
       <Testimonials/>
       <Faq/>
-      <Footer/>
+      <Footer variant="dark"/>
 
     </div>
   )
