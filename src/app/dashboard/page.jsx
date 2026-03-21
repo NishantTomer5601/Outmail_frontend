@@ -1358,11 +1358,11 @@ const ColdOutreach = () => {
               <h4 className="text-sm font-semibold text-white mb-2">
                 Preview
               </h4>
-
               <div
-                className="text-gray-200 bg-black/30 p-5 rounded-xl border border-white/10 min-h-[200px] leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: template.html_content }}
-              />
+                className="whitespace-pre-wrap text-sm text-gray-200 bg-black/30 p-4 rounded-xl"
+              >
+                {template.html_content}
+              </div>
             </div>
 
             {/* ACTIONS */}
@@ -1906,24 +1906,6 @@ const Templates = ({ templates, handleSaveTemplate, handleUpdateTemplate, handle
         template={templateToEdit}
       />
 
-      {/* --- EMAIL PREVIEW HELPERS --- */}
-      {/** Helper: Replace template variables with dummy values */}
-      {/** Helper: Format plain text to HTML (line breaks, bold) */}
-      {/** These helpers are defined inside the component scope for access */}
-      {(() => {
-        function replaceVariables(content) {
-          return content
-            .replace(/{{HR Name}}/g, "John")
-            .replace(/{{Company Name}}/g, "Acme Inc");
-        }
-        function formatEmailContent(content) {
-          return content
-            .replace(/\n/g, "<br/>")
-            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-        }
-        return null;
-      })()}
-
       <div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {templates.length > 0 ? (
@@ -1959,51 +1941,7 @@ const Templates = ({ templates, handleSaveTemplate, handleUpdateTemplate, handle
                     </>
                   )}
                 </div>
-
-                {/* --- EMAIL PREVIEW IFRAME --- */}
-                <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-white mb-2 flex items-center">
-                    <FileText size={14} className="mr-2" />
-                    Preview
-                  </h4>
-                  <div className="bg-white rounded-xl border border-gray-300 shadow-inner p-0 overflow-hidden">
-                    <iframe
-                      className="w-full h-[400px] rounded-xl"
-                      style={{ background: 'white' }}
-                      srcDoc={`<!DOCTYPE html><html><head><style>body { font-family: Arial, sans-serif; padding: 16px; color: #000; line-height: 1.5; }</style></head><body>${formatEmailContent(replaceVariables(template.emailBody || ''))}</body></html>`}
-                      sandbox="allow-same-origin"
-                      title="Email Preview"
-                    />
-                  </div>
-                </div>
-
-                {/* --- GMAIL-STYLE ATTACHMENTS UI --- */}
-                {template.attachments && template.attachments.length > 0 && (
-                  <div className="mb-4">
-                    <h4 className="text-sm font-semibold text-white mb-2 flex items-center">
-                      <Paperclip size={14} className="mr-2" />
-                      Attachments ({template.attachments.length})
-                    </h4>
-                    <div className="flex flex-wrap gap-3 mt-2">
-                      {template.attachments.map((file) => (
-                        <div key={file.id} className="flex items-center gap-2 bg-black/30 px-3 py-2 rounded-lg border border-white/10">
-                          <span className="text-xs text-gray-300 truncate max-w-[120px]">
-                            {file.original_filename}
-                          </span>
-                          <span className="text-xs text-gray-500">{file.size || ''}</span>
-                          <button
-                            onClick={() => window.open(file.s3_path, '_blank')}
-                            className="text-blue-400 text-xs hover:underline"
-                          >
-                            View
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* --- ACTION BUTTONS --- */}
+                
                 <div className="flex justify-between items-center mt-auto gap-2">
                   <button
                     onClick={() => handleViewTemplate(template)}
@@ -2011,6 +1949,7 @@ const Templates = ({ templates, handleSaveTemplate, handleUpdateTemplate, handle
                   >
                     <Eye size={18} /> View
                   </button>
+                  
                   {template.category === "Custom" && (
                     <>
                       <button
@@ -2028,6 +1967,7 @@ const Templates = ({ templates, handleSaveTemplate, handleUpdateTemplate, handle
                     </>
                   )}
                 </div>
+
               </div>
             ))
           ) : (
