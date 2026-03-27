@@ -58,6 +58,7 @@ import {
   Zap,
   Edit,
   Save,
+  Github,
   Phone,
   TrendingUp,
   DollarSign,
@@ -66,7 +67,9 @@ import {
   Building,
   ExternalLink,
   X,
+  AlertTriangle,
 } from "lucide-react";
+
 
 // Funding Trends Component
 const FundingTrends = ({ selectedPeriod, onPeriodChange }) => {
@@ -2004,7 +2007,13 @@ const Templates = ({ templates, handleSaveTemplate, handleUpdateTemplate, handle
 };
 
 // Settings Component
-const SettingsComponent = () => {
+// Settings Component
+const SettingsComponent = ({ 
+  attachments, 
+  handleUploadAttachment, 
+  handleDeleteAttachment, 
+  handleViewAttachment 
+}) => {
   // Get user data from auth context
   const { user, updateUser } = useAuth();
   
@@ -2012,6 +2021,10 @@ const SettingsComponent = () => {
   const [profileSettings, setProfileSettings] = useState({
     name: user?.display_name || user?.name || "",
     email: user?.email || "",
+    // Dummy fields for personal details
+    phone: user?.phone || "+91 98765 43210",
+    linkedin: user?.linkedin || "linkedin.com/in/username",
+    github: user?.github || "github.com/username",
     notifications: true,
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -2022,6 +2035,8 @@ const SettingsComponent = () => {
     dailySummary: false,
     pauseOnWeekends: true,
   });
+
+  const fileInputRef = useRef(null);
 
   const showToast = (type, message) => {
     setToast({ type, message });
@@ -2050,6 +2065,13 @@ const SettingsComponent = () => {
       ...prevSettings,
       [name]: type === "checkbox" ? checked : value,
     }));
+  };
+
+  const onFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      handleUploadAttachment(file);
+    }
   };
 
   // Handle the save action for the profile information.
@@ -2100,13 +2122,12 @@ const SettingsComponent = () => {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-4">Settings</h1>
           <p className="text-white text-sm sm:text-base">
-            Manage your account and email settings
+            Manage your account
           </p>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* Main content column */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           <div className="lg:col-span-2 space-y-6">
             {/* Profile Information Card */}
@@ -2118,94 +2139,208 @@ const SettingsComponent = () => {
                 </h2>
               </div>
               <div className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-300 mb-1"
-                  >
-                    Full Name
-                  </label>
-                  <div className="flex items-center space-x-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
+                      Full Name
+                    </label>
                     <input
                       type="text"
                       id="name"
                       name="name"
                       value={profileSettings.name}
                       onChange={handleChange}
-                      className="flex-grow p-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                      className="w-full p-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
                     />
-                    <button
-                      onClick={handleSave}
-                      disabled={isLoading}
-                      className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-colors ${
-                        isLoading 
-                          ? 'bg-gray-500 cursor-not-allowed' 
-                          : 'bg-purple-700 hover:bg-purple-600'
-                      } text-white`}
-                    >
-                      {isLoading ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          Saving...
-                        </>
-                      ) : (
-                        <>
-                          <Save size={18} />
-                          Save
-                        </>
-                      )}
-                    </button>
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <Mail className="text-gray-400" size={18} />
+                      </div>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={profileSettings.email}
+                        disabled
+                        className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-600 bg-white/5 text-gray-400 cursor-not-allowed focus:outline-none"
+                      />
+                    </div>
                   </div>
                 </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-1">
+                      Phone Number
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <Phone className="text-gray-400" size={18} />
+                      </div>
+                      <input
+                        type="text"
+                        id="phone"
+                        name="phone"
+                        value={profileSettings.phone}
+                        onChange={handleChange}
+                        placeholder="+91 XXXXX XXXXX"
+                        className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="linkedin" className="block text-sm font-medium text-gray-300 mb-1">
+                      LinkedIn Profile
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <Linkedin className="text-gray-400" size={18} />
+                      </div>
+                      <input
+                        type="text"
+                        id="linkedin"
+                        name="linkedin"
+                        value={profileSettings.linkedin}
+                        onChange={handleChange}
+                        placeholder="linkedin.com/in/..."
+                        className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-300 mb-1"
-                  >
-                    Email Address
+                  <label htmlFor="github" className="block text-sm font-medium text-gray-300 mb-1">
+                    GitHub Link
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <Mail className="text-gray-400" size={20} />
+                      <Github className="text-gray-400" size={18} />
                     </div>
                     <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={profileSettings.email}
-                      disabled
-                      className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-600 bg-white/5 text-gray-400 cursor-not-allowed focus:outline-none"
+                      type="text"
+                      id="github"
+                      name="github"
+                      value={profileSettings.github}
+                      onChange={handleChange}
+                      placeholder="github.com/..."
+                      className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
                     />
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">
-                    This email will be used for sending all campaigns
-                  </p>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    onClick={handleSave}
+                    disabled={isLoading}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-semibold shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 ${
+                      isLoading 
+                        ? 'bg-gray-500 cursor-not-allowed' 
+                        : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500'
+                    } text-white`}
+                  >
+                    {isLoading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save size={18} />
+                        Save Changes
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
-{/* Email Scheduling Rules Card
+
+            {/* Resume Management Card */}
             <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
-              <div className="flex items-center gap-4 mb-6">
-                <Clock className="text-violet-400" size={24} />
-                <h2 className="text-xl font-semibold text-white">
-                  Email Scheduling Rules
-                </h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium text-gray-300">
-                    Daily Email Limit
-                  </span>
-                  <div className="mt-2 text-xl font-bold text-white">0/50</div>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div className="flex items-center gap-4">
+                  <FileText className="text-blue-500" size={24} />
+                  <h2 className="text-xl font-semibold text-white">
+                    Manage Resumes
+                  </h2>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium text-gray-300">
-                    Hourly Email Limit
-                  </span>
-                  <div className="mt-2 text-xl font-bold text-white">0/20</div>
-                </div>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={attachments.length >= 3}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-md ${
+                    attachments.length >= 3
+                      ? 'bg-gray-600 cursor-not-allowed text-gray-400'
+                      : 'bg-white text-black hover:bg-white/90'
+                  }`}
+                >
+                  <Plus size={16} />
+                  Upload New
+                </button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={onFileUpload}
+                  className="hidden"
+                  accept=".pdf,.doc,.docx"
+                />
               </div>
-            </div> */}
+
+              {attachments.length > 0 ? (
+                <div className="space-y-3">
+                  {attachments.map((file) => (
+                    <div 
+                      key={file.id} 
+                      className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all group"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="p-2.5 rounded-lg bg-blue-500/20 text-blue-400">
+                          <FileText size={20} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-white truncate">{file.name}</p>
+                          <p className="text-xs text-white/40 mt-0.5">{file.size} • Uploaded on {file.uploadDate}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 ml-4">
+                        <button
+                          onClick={() => handleViewAttachment(file)}
+                          className="p-2 rounded-lg bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+                          title="View Resume"
+                        >
+                          <Eye size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteAttachment(file)}
+                          className="p-2 rounded-lg bg-red-500/10 text-red-400/60 hover:text-red-400 hover:bg-red-500/20 transition-all"
+                          title="Delete Resume"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-10 border-2 border-dashed border-white/10 rounded-2xl bg-white/5">
+                  <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Upload size={20} className="text-white/20" />
+                  </div>
+                  <p className="text-sm text-white/40 mb-1">No resumes uploaded yet.</p>
+                  <p className="text-xs text-white/20">Upload up to 3 resumes to use in your outreach.</p>
+                </div>
+              )}
+              <div className="mt-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                <p className="text-xs text-blue-300 flex items-center gap-2">
+                  <Globe size={12} />
+                  Your resumes are used to personalize cold emails and match you with jobs.
+                </p>
+              </div>
+            </div>
 
             {/* Email Preferences Card */}
             <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
@@ -2307,28 +2442,23 @@ const SettingsComponent = () => {
                 </h2>
               </div>
               <div className="flex flex-col items-center text-center">
-                <User className="text-gray-400 mb-2" size={40} />
+                <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mb-3 shadow-lg group hover:rotate-12 transition-transform duration-300">
+                  <Zap className="text-white fill-current" size={32} />
+                </div>
                 <span className="text-lg font-bold text-white">Pro Plan</span>
+                <p className="text-xs text-white/40 mt-1">Full access to all AI features</p>
               </div>
               <ul className="mt-6 space-y-3">
-                <li className="flex items-center gap-3 text-gray-300">
-                  <Check className="text-green-500" size={20} />
-                  <span>Cold outreach templates</span>
+                <li className="flex items-center gap-3 text-gray-300 text-xs">
+                  <Check className="text-green-500" size={16} />
+                  <span>Unlimited cold outreach</span>
                 </li>
-                <li className="flex items-center gap-3 text-gray-300">
-                  <Check className="text-green-500" size={20} />
-                  <span>Smart company targeting</span>
+                <li className="flex items-center gap-3 text-gray-300 text-xs">
+                  <Check className="text-green-500" size={16} />
+                  <span>Smart resume parsing</span>
                 </li>
-                <li className="flex items-center gap-3 text-gray-300">
-                  <Check className="text-green-500" size={20} />
-                  <span>Outmail data-powered sends</span>
-                </li>
-                <li className="flex items-center gap-3 text-gray-300">
-                  <Check className="text-green-500" size={20} />
-                  <span>Mentorship session access</span>
-                </li>
-                <li className="flex items-center gap-3 text-gray-300">
-                  <Check className="text-green-500" size={20} />
+                <li className="flex items-center gap-3 text-gray-300 text-xs">
+                  <Check className="text-green-500" size={16} />
                   <span>Priority job recommendations</span>
                 </li>
               </ul>
@@ -2339,7 +2469,7 @@ const SettingsComponent = () => {
         {/* Danger Zone */}
         <div className="border border-red-500/30 bg-red-500/5 rounded-2xl p-6">
           <div className="flex items-center gap-3 mb-1">
-            <Zap className="text-red-400" size={18} />
+            <AlertTriangle className="text-red-400" size={18} />
             <h2 className="text-base font-semibold text-red-400">Danger Zone</h2>
           </div>
           <p className="text-xs text-white/40 mb-5">These actions are permanent and cannot be undone. Proceed with caution.</p>
@@ -2349,7 +2479,7 @@ const SettingsComponent = () => {
               className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-red-500/30 text-red-400 text-sm hover:bg-red-500/10 transition-colors"
             >
               <Trash2 size={14} />
-              Clear All Templates &amp; Attachments
+              Clear All Data
             </button>
             <button
               onClick={() => showToast('error', 'Account deletion — please contact support@outmail.in')}
@@ -3479,7 +3609,15 @@ export default function Page() {
         {activeSection === "coldOutreach" && <ColdOutreach />}
         {activeSection === "mentorship" && <MentorshipSection />}
         {activeSection === "jobOpenings" && <JobOpenings />}
-        {activeSection === "settings" && <SettingsComponent />}
+        {activeSection === "settings" && (
+          <SettingsComponent 
+            attachments={attachments}
+            handleUploadAttachment={handleUploadAttachment}
+            handleDeleteAttachment={handleDeleteAttachment}
+            handleViewAttachment={handleViewAttachment}
+          />
+        )}
+
         {activeSection === "contact" && (
           <div className="p-6 sm:p-8 font-syne text-white">
             {/* Heading + SLA badge */}
