@@ -27,11 +27,8 @@ const captureTokenFromURL = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     if (token) {
-      console.log('🎯 Token captured from URL');
       setAuthToken(token);
-      // Set JWT as cookie for server-side auth (expires in 7 days)
       document.cookie = `outmail_auth=${token}; path=/; max-age=${7 * 24 * 60 * 60}; secure; samesite=strict`;
-      // Clean URL without reloading
       window.history.replaceState({}, document.title, window.location.pathname);
       return token;
     }
@@ -53,28 +50,13 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState(null); // kept only for compatibility with backend payload
 
-  // *PRODUCTION MODE - BACKEND IS READY*
-  // Backend HTTP-only cookie authentication is now working
-  const DEV_MODE = false;
-
   // Check authentication status
   const checkAuth = async () => {
-    if (DEV_MODE) {
-      setLoading(false);
-      setUser(null);
-      setIsAuthenticated(false);
-      setUserRole(null);
-      return;
-    }
-
     try {
       setLoading(true);
       
       // Check for token in URL first (OAuth redirect)
-      const urlToken = captureTokenFromURL();
-      if (urlToken) {
-        console.log('🔑 Token captured from OAuth redirect');
-      }
+      captureTokenFromURL();
       
       // Get stored token
       const token = getAuthToken();
@@ -83,51 +65,22 @@ export const AuthProvider = ({ children }) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
       
-      // Prepare headers - support both authentication methods
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-        console.log('🔐 Using token-based authentication');
-      } else {
-        console.log('🍪 Attempting cookie-based authentication');
-      }
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/me`, {
-        method: 'GET',
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/me`, {
         credentials: 'include', // For cookie auth fallback
-        headers,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
         signal: controller.signal
       });
 
       clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const userData = await response.json();
-        console.log('✅ User authenticated:', userData);
-        setUser(userData);
-        // we no longer use role for routing; store it as-is if present
-        setUserRole(userData.role || null);
-        setIsAuthenticated(true);
-      } else if (response.status === 401) {
-        console.log('🔒 Authentication failed - clearing stored token');
-        setAuthToken(null); // Clear invalid token
-        setUser(null);
-        setUserRole(null);
-        setIsAuthenticated(false);
-      } else {
-        console.log('❌ Auth check failed with status:', response.status);
-        setUser(null);
-        setUserRole(null);
-        setIsAuthenticated(false);
-      }
+      const userData = response.data;
+      const finalUser = userData.user || userData;
+      setUser(finalUser);
+      setUserRole(finalUser.role || null);
+      setIsAuthenticated(true);
     } catch (error) {
-      console.error('🚨 Auth check failed:', error);
-      if (error.name === 'AbortError') {
-        console.error('🚨 Request timed out - backend might be down');
-      }
       setUser(null);
       setUserRole(null);
       setIsAuthenticated(false);
@@ -150,8 +103,7 @@ export const AuthProvider = ({ children }) => {
         headers['Authorization'] = `Bearer ${token}`;
       }
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`, {
-        method: 'POST',
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/logout`, {
         credentials: 'include', // For cookie auth
         headers,
       });
@@ -195,9 +147,6 @@ export const AuthProvider = ({ children }) => {
     }
     
     try {
-      console.log('🔍 Attempting to update user profile:', userData);
-      console.log('🌐 API URL:', `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/update`);
-      
       const token = getAuthToken();
       
       // Prepare headers - support both authentication methods
@@ -212,18 +161,17 @@ export const AuthProvider = ({ children }) => {
         console.log('🍪 Using cookie for profile update');
       }
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/update`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user`, {
         method: 'PUT',
         credentials: 'include', // For cookie auth fallback
         headers,
         body: JSON.stringify(userData),
       });
 
-      console.log('📡 Response status:', response.status);
-      console.log('📡 Response headers:', response.headers);
 
       if (response.ok) {
-        const updatedUser = await response.json();
+        const result = await response.json();
+        const updatedUser = result.user || result;
         console.log('✅ Profile updated successfully:', updatedUser);
         setUser(updatedUser);
         return { success: true, user: updatedUser };
