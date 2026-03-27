@@ -1,0 +1,64 @@
+import React, { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import FundingTrends from "./FundingTrends";
+import OutreachStatPills from "./OutreachStatPills";
+import HiringSpotlight from "./HiringSpotlight";
+import RecentOutreachFeed from "./RecentOutreachFeed";
+import HotHiringNews from "./HotHiringNews";
+
+const DashboardOverview = () => {
+  const { user } = useAuth();
+  const [selectedPeriod, setSelectedPeriod] = useState('7');
+
+  return (
+    <div className="flex flex-col p-5 gap-4 pb-8">
+      {/* Row 1: Welcome + Period Selector + Stat Pills */}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-white">
+            Welcome back,{' '}
+            <span className="text-purple-400">{user?.display_name || user?.name || 'User'}</span> 
+          </h2>
+          <div className="relative inline-block">
+            <select
+              className="bg-white/10 text-gray-300 px-3 py-1.5 rounded-lg appearance-none pr-7 text-xs border border-white/10"
+              value={selectedPeriod}
+              onChange={(e) => setSelectedPeriod(e.target.value)}
+            >
+              <option value="7">Last 7 days</option>
+              <option value="15">Last 15 days</option>
+              <option value="30">Last 30 days</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+              <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
+            </div>
+          </div>
+        </div>
+        <OutreachStatPills selectedPeriod={selectedPeriod} />
+      </div>
+
+      {/* Row 2: Industry Funding Trends (left, wider 3/5) + Hot Hiring News (right 2/5) */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <div className="lg:col-span-3" style={{ minHeight: '340px' }}>
+          <FundingTrends selectedPeriod={selectedPeriod} onPeriodChange={setSelectedPeriod} />
+        </div>
+        <div className="lg:col-span-2" style={{ minHeight: '340px' }}>
+          <HotHiringNews />
+        </div>
+      </div>
+
+      {/* Row 3: Companies Hiring Now (left) + Recent Outreach Feed (right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div style={{ minHeight: '240px' }}>
+          <HiringSpotlight />
+        </div>
+        <div style={{ minHeight: '240px' }}>
+          <RecentOutreachFeed />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DashboardOverview;

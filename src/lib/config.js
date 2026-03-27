@@ -14,13 +14,13 @@ const config = {
   // API Endpoints
   endpoints: {
     auth: {
-      me: '/api/me',
-      logout: '/auth/logout',
+      me: '/api/user/me',
+      logout: '/api/auth/logout',
       googleOAuth: '/api/auth/google',
     },
     student: {
-      base: '/api/student',
-      profile: '/api/student/profile',
+      base: '/api/user',
+      profile: '/api/user',
       campaigns: '/api/student/campaigns',
       analytics: '/api/student/analytics',
     },

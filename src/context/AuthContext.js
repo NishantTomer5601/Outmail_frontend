@@ -1,5 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useEffect } from 'react';
+import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 const AuthContext = createContext({});
 
@@ -27,11 +29,8 @@ const captureTokenFromURL = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     if (token) {
-      console.log('🎯 Token captured from URL');
       setAuthToken(token);
-      // Set JWT as cookie for server-side auth (expires in 7 days)
       document.cookie = `outmail_auth=${token}; path=/; max-age=${7 * 24 * 60 * 60}; secure; samesite=strict`;
-      // Clean URL without reloading
       window.history.replaceState({}, document.title, window.location.pathname);
       return token;
     }
@@ -53,28 +52,13 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState(null); // kept only for compatibility with backend payload
 
-  // *PRODUCTION MODE - BACKEND IS READY*
-  // Backend HTTP-only cookie authentication is now working
-  const DEV_MODE = false;
-
   // Check authentication status
   const checkAuth = async () => {
-    if (DEV_MODE) {
-      setLoading(false);
-      setUser(null);
-      setIsAuthenticated(false);
-      setUserRole(null);
-      return;
-    }
-
     try {
       setLoading(true);
       
       // Check for token in URL first (OAuth redirect)
-      const urlToken = captureTokenFromURL();
-      if (urlToken) {
-        console.log('🔑 Token captured from OAuth redirect');
-      }
+      captureTokenFromURL();
       
       // Get stored token
       const token = getAuthToken();
@@ -83,51 +67,17 @@ export const AuthProvider = ({ children }) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
       
-      // Prepare headers - support both authentication methods
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-        console.log('🔐 Using token-based authentication');
-      } else {
-        console.log('🍪 Attempting cookie-based authentication');
-      }
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/me`, {
-        method: 'GET',
-        credentials: 'include', // For cookie auth fallback
-        headers,
+      const response = await api.get('/api/user/me', {
         signal: controller.signal
       });
 
       clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const userData = await response.json();
-        console.log('✅ User authenticated:', userData);
-        setUser(userData);
-        // we no longer use role for routing; store it as-is if present
-        setUserRole(userData.role || null);
-        setIsAuthenticated(true);
-      } else if (response.status === 401) {
-        console.log('🔒 Authentication failed - clearing stored token');
-        setAuthToken(null); // Clear invalid token
-        setUser(null);
-        setUserRole(null);
-        setIsAuthenticated(false);
-      } else {
-        console.log('❌ Auth check failed with status:', response.status);
-        setUser(null);
-        setUserRole(null);
-        setIsAuthenticated(false);
-      }
+      const userData = response.data;
+      const finalUser = userData.user || userData;
+      setUser(finalUser);
+      setUserRole(finalUser.role || null);
+      setIsAuthenticated(true);
     } catch (error) {
-      console.error('🚨 Auth check failed:', error);
-      if (error.name === 'AbortError') {
-        console.error('🚨 Request timed out - backend might be down');
-      }
       setUser(null);
       setUserRole(null);
       setIsAuthenticated(false);
@@ -139,24 +89,7 @@ export const AuthProvider = ({ children }) => {
   // Logout function
   const logout = async () => {
     try {
-      const token = getAuthToken();
-      
-      // Prepare headers for logout request
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`, {
-        method: 'POST',
-        credentials: 'include', // For cookie auth
-        headers,
-      });
-      
-      console.log('📤 Logout request completed');
+      await api.post('/api/auth/logout', {});
     } catch (error) {
       console.error('🚨 Logout error:', error);
     } finally {
@@ -193,75 +126,15 @@ export const AuthProvider = ({ children }) => {
       setUser(updatedUser);
       return { success: true, user: updatedUser };
     }
-    
     try {
-      console.log('🔍 Attempting to update user profile:', userData);
-      console.log('🌐 API URL:', `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/update`);
-      
-      const token = getAuthToken();
-      
-      // Prepare headers - support both authentication methods
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-        console.log('🔐 Using token for profile update');
-      } else {
-        console.log('🍪 Using cookie for profile update');
-      }
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/update`, {
-        method: 'PUT',
-        credentials: 'include', // For cookie auth fallback
-        headers,
-        body: JSON.stringify(userData),
-      });
-
-      console.log('📡 Response status:', response.status);
-      console.log('📡 Response headers:', response.headers);
-
-      if (response.ok) {
-        const updatedUser = await response.json();
-        console.log('✅ Profile updated successfully:', updatedUser);
-        setUser(updatedUser);
-        return { success: true, user: updatedUser };
-      } else {
-        console.log('❌ Response not OK, status:', response.status);
-        
-        if (response.status === 401) {
-          console.log('🔒 Unauthorized - clearing token');
-          setAuthToken(null);
-          setUser(null);
-          setUserRole(null);
-          setIsAuthenticated(false);
-        }
-        
-        try {
-          const errorData = await response.json();
-          console.log('❌ Error response:', errorData);
-          return { success: false, error: errorData.message || `Server error (${response.status})` };
-        } catch (parseError) {
-          console.log('❌ Could not parse error response:', parseError);
-          return { success: false, error: `Server error (${response.status}): ${response.statusText}` };
-        }
-      }
-    } catch (error) {
-      console.error('🚨 Update user failed:', error);
-      console.error('🚨 Error type:', error.constructor.name);
-      console.error('🚨 Error message:', error.message);
-      
-      // Provide more specific error messages
-      if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        return { success: false, error: 'Cannot connect to server. Check if backend is running.' };
-      } else if (error.name === 'TypeError' && error.message.includes('NetworkError')) {
-        return { success: false, error: 'Network error. Check your internet connection.' };
-      } else if (error.message.includes('CORS')) {
-        return { success: false, error: 'CORS error. Check backend CORS configuration.' };
-      } else {
-        return { success: false, error: `Network error: ${error.message}` };
-      }
+      const response = await api.put('/api/user', userData);
+      const updatedUser = response.data.user || response.data;
+      setUser(updatedUser);
+      toast.success("User updated successfully!")
+      return { success: true, user: updatedUser };
+    } catch (error) {      
+      const errorMessage = error.response?.data?.message || error.message;
+      return { success: false, error: errorMessage };
     }
   };
 
