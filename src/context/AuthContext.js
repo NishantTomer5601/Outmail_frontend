@@ -1,5 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useEffect } from 'react';
+import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 const AuthContext = createContext({});
 
@@ -65,12 +67,7 @@ export const AuthProvider = ({ children }) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
       
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/me`, {
-        credentials: 'include', // For cookie auth fallback
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
+      const response = await api.get('/api/user/me', {
         signal: controller.signal
       });
 
@@ -92,23 +89,7 @@ export const AuthProvider = ({ children }) => {
   // Logout function
   const logout = async () => {
     try {
-      const token = getAuthToken();
-      
-      // Prepare headers for logout request
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/logout`, {
-        credentials: 'include', // For cookie auth
-        headers,
-      });
-      
-      console.log('📤 Logout request completed');
+      await api.post('/api/auth/logout', {});
     } catch (error) {
       console.error('🚨 Logout error:', error);
     } finally {
@@ -145,71 +126,15 @@ export const AuthProvider = ({ children }) => {
       setUser(updatedUser);
       return { success: true, user: updatedUser };
     }
-    
     try {
-      const token = getAuthToken();
-      
-      // Prepare headers - support both authentication methods
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-        console.log('🔐 Using token for profile update');
-      } else {
-        console.log('🍪 Using cookie for profile update');
-      }
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user`, {
-        method: 'PUT',
-        credentials: 'include', // For cookie auth fallback
-        headers,
-        body: JSON.stringify(userData),
-      });
-
-
-      if (response.ok) {
-        const result = await response.json();
-        const updatedUser = result.user || result;
-        console.log('✅ Profile updated successfully:', updatedUser);
-        setUser(updatedUser);
-        return { success: true, user: updatedUser };
-      } else {
-        console.log('❌ Response not OK, status:', response.status);
-        
-        if (response.status === 401) {
-          console.log('🔒 Unauthorized - clearing token');
-          setAuthToken(null);
-          setUser(null);
-          setUserRole(null);
-          setIsAuthenticated(false);
-        }
-        
-        try {
-          const errorData = await response.json();
-          console.log('❌ Error response:', errorData);
-          return { success: false, error: errorData.message || `Server error (${response.status})` };
-        } catch (parseError) {
-          console.log('❌ Could not parse error response:', parseError);
-          return { success: false, error: `Server error (${response.status}): ${response.statusText}` };
-        }
-      }
-    } catch (error) {
-      console.error('🚨 Update user failed:', error);
-      console.error('🚨 Error type:', error.constructor.name);
-      console.error('🚨 Error message:', error.message);
-      
-      // Provide more specific error messages
-      if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        return { success: false, error: 'Cannot connect to server. Check if backend is running.' };
-      } else if (error.name === 'TypeError' && error.message.includes('NetworkError')) {
-        return { success: false, error: 'Network error. Check your internet connection.' };
-      } else if (error.message.includes('CORS')) {
-        return { success: false, error: 'CORS error. Check backend CORS configuration.' };
-      } else {
-        return { success: false, error: `Network error: ${error.message}` };
-      }
+      const response = await api.put('/api/user', userData);
+      const updatedUser = response.data.user || response.data;
+      setUser(updatedUser);
+      toast.success("User updated successfully!")
+      return { success: true, user: updatedUser };
+    } catch (error) {      
+      const errorMessage = error.response?.data?.message || error.message;
+      return { success: false, error: errorMessage };
     }
   };
 
