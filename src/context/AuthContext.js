@@ -109,23 +109,6 @@ export const AuthProvider = ({ children }) => {
 
   // Update user profile function
   const updateUser = async (userData) => {
-    // TEMPORARY MOCK - REMOVE WHEN BACKEND IS READY
-    const ENABLE_MOCK = false; // Set to false when backend is implemented
-    
-    if (ENABLE_MOCK) {
-      console.log('🔧 Using mock update (backend not ready)');
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Update local user state with new name
-      const updatedUser = { 
-        ...user, 
-        display_name: userData.display_name,
-        name: userData.name 
-      };
-      setUser(updatedUser);
-      return { success: true, user: updatedUser };
-    }
     try {
       const response = await api.put('/api/user', userData);
       const updatedUser = response.data.user || response.data;

@@ -9,7 +9,6 @@ const ContactForm = () => {
     e.preventDefault();
     setShowPopup(true);
     setMessage("");
-    setTimeout(() => setShowPopup(false), 3000);
   };
 
   return (

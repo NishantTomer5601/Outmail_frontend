@@ -11,32 +11,6 @@ export const api = axios.create({
   }
 })
 
-export const authenticatedFetch = async (url, options = {}) => {
-  const defaultOptions = {
-    credentials: 'include', // Always send cookies
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
-  };
-
-  try {
-    const response = await fetch(url, defaultOptions);
-    
-    // If unauthorized, redirect to login
-    if (response.status === 401) {
-      window.location.href = '/';
-      return null;
-    }
-    
-    return response;
-  } catch (error) {
-    console.error('API call failed:', error);
-    throw error;
-  }
-};
-
 // Add request interceptor for tokens
 api.interceptors.request.use(
   (config) => {

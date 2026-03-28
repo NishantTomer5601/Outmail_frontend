@@ -139,10 +139,8 @@ const JobOpeningsTab = () => {
 
   useEffect(() => {
     setLoading(true);
-    setTimeout(() => {
-      setJobOpenings(mockJobOpenings);
-      setLoading(false);
-    }, 1000);
+    setJobOpenings(mockJobOpenings);
+    setLoading(false);
   }, []);
 
   const handleApply = (jobId) => {

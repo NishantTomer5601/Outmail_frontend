@@ -20,8 +20,6 @@ const FundingTrends = ({ selectedPeriod, onPeriodChange }) => {
 
   const fetchFundingData = async (period) => {
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
     const mockData = {
       '7': [
         { industry: 'FinTech', amount: 420, color: '#8B5CF6' },

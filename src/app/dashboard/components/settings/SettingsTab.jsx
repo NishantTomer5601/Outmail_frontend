@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
+import { api } from "@/lib/api";
+import { toast } from "sonner";
 import { 
   Check, 
   X, 
@@ -35,24 +37,19 @@ const SettingsTab = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [lastSaveTime, setLastSaveTime] = useState(0);
-  const [toast, setToast] = useState(null);
   const [preferences, setPreferences] = useState({
     notifyOnComplete: true,
     dailySummary: false,
     pauseOnWeekends: true,
   });
+  const [testEmail, setTestEmail] = useState("");
+  const [isTestLoading, setIsTestLoading] = useState(false);
 
   const fileInputRef = useRef(null);
 
   const [attachments, setAttachments] = useState([]);
   const [uploadingFiles, setUploadingFiles] = useState(new Set());
   const ATTACHMENT_LIMIT = 3;
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-  const getAuthHeaders = () => {
-    const token = localStorage.getItem('authToken');
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
-  };
 
   const ALLOWED_FILE_TYPES = {
     'application/pdf': 'PDF',
@@ -82,35 +79,25 @@ const SettingsTab = () => {
     const loadUserFiles = async () => {
       if (!user) return;
       try {
-        const response = await fetch(`${API_BASE_URL}/api/resumes`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            ...getAuthHeaders()
-          },
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          if (Array.isArray(result)) {
-            const formattedAttachments = result.map(item => {
-              const randomSizeKB = Math.floor(Math.random() * (2048 - 500) + 500);
-              const randomSize = randomSizeKB >= 1024 
-                ? `${(randomSizeKB / 1024).toFixed(2)} MB` 
-                : `${randomSizeKB} KB`;
-              return {
-                id: item.id,
-                name: item.filename || item.original_filename || item.name || 'Unknown File',
-                type: item.mimeType || item.type || item.fileType || 'Unknown',
-                size: randomSize,
-                uploadDate: item.uploaded_at ? new Date(item.uploaded_at).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
-                url: item.s3_path,
-                uploaded: true
-              };
-            });
-            setAttachments(formattedAttachments);
-          }
+        const response = await api.get('/api/resumes');
+        
+        if (response.data && Array.isArray(response.data)) {
+          const formattedAttachments = response.data.map(item => {
+            const randomSizeKB = Math.floor(Math.random() * (2048 - 500) + 500);
+            const randomSize = randomSizeKB >= 1024 
+              ? `${(randomSizeKB / 1024).toFixed(2)} MB` 
+              : `${randomSizeKB} KB`;
+            return {
+              id: item.id,
+              name: item.filename || item.original_filename || item.name || 'Unknown File',
+              type: item.mimeType || item.type || item.fileType || 'Unknown',
+              size: randomSize,
+              uploadDate: item.uploaded_at ? new Date(item.uploaded_at).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
+              url: item.s3_path,
+              uploaded: true
+            };
+          });
+          setAttachments(formattedAttachments);
         }
       } catch (error) {
         console.warn('Error loading user files:', error.message);
@@ -138,19 +125,13 @@ const SettingsTab = () => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch(`${API_BASE_URL}/api/resumes/`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        credentials: 'include',
-        body: formData,
+      const response = await api.post('/api/resumes/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
-        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const result = await response.json();
+      const result = response.data;
       
       const newAttachment = {
         id: result.id,
@@ -166,7 +147,7 @@ const SettingsTab = () => {
       setAttachments(prev => [...prev, newAttachment]);
     } catch (error) {
       console.error('Upload error:', error);
-      alert(`Upload failed: ${error.message}`);
+      alert(`Upload failed: ${error.response?.data?.error || error.message}`);
     } finally {
       setUploadingFiles(prev => {
         const newSet = new Set(prev);
@@ -182,24 +163,11 @@ const SettingsTab = () => {
 
     if (attachment.uploaded && attachment.id) {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/resumes/${attachment.id}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            ...getAuthHeaders()
-          },
-          credentials: 'include',
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: 'Delete failed' }));
-          throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
-        }
-
+        await api.delete(`/api/resumes/${attachment.id}`);
         setAttachments(prev => prev.filter((att) => att.id !== attachment.id));
       } catch (error) {
         console.error('Delete error:', error);
-        alert(`Delete failed: ${error.message}`);
+        alert(`Delete failed: ${error.response?.data?.error || error.message}`);
       }
     } else {
       setAttachments(prev => prev.filter((att) => att.id !== attachment.id));
@@ -218,10 +186,6 @@ const SettingsTab = () => {
     }
   };
 
-  const showToast = (type, message) => {
-    setToast({ type, message });
-    setTimeout(() => setToast(null), 3500);
-  };
 
   const togglePref = (key) => {
     setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
@@ -254,12 +218,12 @@ const SettingsTab = () => {
 
   const handleSave = async () => {
     if (!profileSettings.name.trim()) {
-      showToast('error', 'Name cannot be empty');
+      toast.error('Name cannot be empty');
       return;
     }
     const now = Date.now();
     if (now - lastSaveTime < 2000) {
-      showToast('error', 'Please wait a moment before saving again');
+      toast.error('Please wait a moment before saving again');
       return;
     }
     setIsLoading(true);
@@ -270,30 +234,66 @@ const SettingsTab = () => {
         name: profileSettings.name
       });
       if (result.success) {
-        showToast('success', 'Profile updated successfully!');
+        toast.success('Profile updated successfully!');
       } else {
-        showToast('error', 'Failed to update profile: ' + result.error);
+        toast.error('Failed to update profile: ' + result.error);
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      showToast('error', 'An error occurred while updating your profile.');
+      toast.error('An error occurred while updating your profile.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleRunTestPipeline = async () => {
+    if (!testEmail.trim()) {
+      toast.error('Please enter a recipient email');
+      return;
+    }
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(testEmail)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    if (attachments.length === 0) {
+      toast.error('Please upload a resume first');
+      return;
+    }
+
+    setIsTestLoading(true);
+    try {
+      await api.post('/api/cold-outreach/test-pipeline', {
+        hrEmail: testEmail,
+      });
+
+      toast.success('Test pipeline triggered successfully!');
+      setTestEmail("");
+    } catch (error) {
+      console.error('Error running test pipeline:', error);
+      toast.error(error.response?.data?.error || 'An error occurred while running the test pipeline.');
+    } finally {
+      setIsTestLoading(false);
+    }
+  };
+
+  const deleteUser = async () => {
+    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      try {
+        await api.delete('/api/user');
+        router.push('/');
+      } catch (error) {
+        console.error('Error deleting user:', error);
+        toast.error('An error occurred while deleting your account.');
+      }
+    }
+  };
+
   return (
     <div className="p-4 sm:p-6 font-syne">
-      {toast && (
-        <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-xl border text-sm font-medium ${
-          toast.type === 'success'
-            ? 'bg-green-500/20 border-green-500/40 text-green-300'
-            : 'bg-red-500/20 border-red-500/40 text-red-300'
-        }`}>
-          {toast.type === 'success' ? <Check size={16} /> : <X size={16} />}
-          {toast.message}
-        </div>
-      )}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-4 text-white">Settings</h1>
@@ -517,6 +517,75 @@ const SettingsTab = () => {
             </div>
 
             <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400">
+                  <Zap size={24} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-white">
+                    Test Outreach Pipeline
+                  </h2>
+                  <p className="text-xs text-white/40 mt-0.5">
+                    Send a sample personalized email to a test recipient to see the AI in action.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="testEmail" className="block text-sm font-medium text-gray-300 mb-1">
+                    Recipient Email (Your email or a test account)
+                  </label>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-grow">
+                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <Mail className="text-gray-400" size={18} />
+                      </div>
+                      <input
+                        type="email"
+                        id="testEmail"
+                        value={testEmail}
+                        onChange={(e) => setTestEmail(e.target.value)}
+                        placeholder="test@example.com"
+                        className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                      />
+                    </div>
+                    <button
+                      onClick={handleRunTestPipeline}
+                      disabled={isTestLoading}
+                      className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold shadow-lg transition-all duration-300 ${
+                        isTestLoading 
+                          ? 'bg-gray-500 cursor-not-allowed' 
+                          : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 hover:scale-105 active:scale-95'
+                      } text-white min-w-[160px]`}
+                    >
+                      {isTestLoading ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Running...
+                        </>
+                      ) : (
+                        <>
+                          <Zap size={18} />
+                          Run Test
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                  <p className="text-xs text-yellow-300 flex items-start gap-2">
+                    <AlertTriangle size={14} className="mt-0.5 flex-shrink-0" />
+                    <span>
+                      This will use your latest uploaded resume to generate a personalized email for a demo startup and send it to the specified email.
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
               <div className="flex items-center gap-3 mb-6">
                 <Bell className="text-purple-400" size={22} />
                 <h2 className="text-xl font-semibold text-white">Email Preferences</h2>
@@ -595,7 +664,7 @@ const SettingsTab = () => {
                 <span className="text-xs text-green-400 font-medium">Gmail connected</span>
               </div>
               <button
-                onClick={() => showToast('error', 'Disconnect — please contact support to unlink your account')}
+                onClick={() => toast.error('Disconnect — please contact support to unlink your account')}
                 className="w-full py-2 rounded-lg border border-red-500/30 text-red-400 text-sm hover:bg-red-500/10 transition-colors"
               >
                 Disconnect Account
@@ -644,14 +713,14 @@ const SettingsTab = () => {
           <p className="text-xs text-white/40 mb-5">These actions are permanent and cannot be undone. Proceed with caution.</p>
           <div className="flex flex-col sm:flex-row gap-3">
             <button
-              onClick={() => showToast('error', 'Clear all data — feature coming soon')}
+              onClick={() => toast.error('Clear all data — feature coming soon')}
               className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-red-500/30 text-red-400 text-sm hover:bg-red-500/10 transition-colors"
             >
               <Trash2 size={14} />
               Clear All Data
             </button>
             <button
-              onClick={() => showToast('error', 'Account deletion — please contact support@outmail.in')}
+              onClick={deleteUser}
               className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-red-500/15 border border-red-500/30 text-red-400 text-sm hover:bg-red-500/25 transition-colors"
             >
               <X size={14} />

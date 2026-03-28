@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { z } from "zod";
-import axios from "axios";
 import { toast } from "sonner";
+import { api } from "@/lib/api";
 
 export default function Footer({ variant = "gradient" }) {
   const [email, setEmail] = useState("");
@@ -34,10 +34,7 @@ export default function Footer({ variant = "gradient" }) {
 
   const subscribeNewsletter = async (email) => {
     try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/newsletter/subscribe`,
-        { email },
-      );
+      await api.post(`/api/newsletter/subscribe`, { email });
     } catch (error) {
       console.error("Error subscribing to newsletter:", error);
     }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Mail, Paperclip, FileText } from "lucide-react";
+import { api } from "@/lib/api";
 import ColdOutreachCreateModal from "./ColdOutreachCreateModal";
 import ColdOutreachEditModal from "./ColdOutreachEditModal";
 
@@ -16,24 +17,8 @@ const ColdOutreachTab = () => {
   const loadColdOutreachTemplates = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const templates = await response.json();
-        setColdOutreachTemplates(templates);
-      } else if (response.status === 401) {
-        window.location.href = '/';
-      } else {
-        console.error('Failed to load cold outreach templates:', response.status);
-        setColdOutreachTemplates([]);
-      }
+      const response = await api.get('/api/cold-outreach/templates');
+      setColdOutreachTemplates(response.data || []);
     } catch (error) {
       console.error('Error loading cold outreach templates:', error);
       setColdOutreachTemplates([]);
@@ -56,22 +41,18 @@ const ColdOutreachTab = () => {
         });
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates`, {
-        method: 'POST',
+      const response = await api.post('/api/cold-outreach/templates', formData, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Content-Type': 'multipart/form-data',
         },
-        credentials: 'include',
-        body: formData,
       });
 
-      if (response.ok) {
-        const newTemplate = await response.json();
-        setColdOutreachTemplates(prev => [...prev, newTemplate]);
-        setIsCreateModalOpen(false);
-      }
+      const newTemplate = response.data;
+      setColdOutreachTemplates(prev => [...prev, newTemplate]);
+      setIsCreateModalOpen(false);
     } catch (error) {
       console.error('Error creating template:', error);
+      alert(error.response?.data?.error || 'Failed to create template');
     }
   };
 
@@ -89,27 +70,23 @@ const ColdOutreachTab = () => {
         });
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/${templateId}`, {
-        method: 'PUT',
+      const response = await api.put(`/api/cold-outreach/templates/${templateId}`, formData, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Content-Type': 'multipart/form-data',
         },
-        credentials: 'include',
-        body: formData,
       });
 
-      if (response.ok) {
-        const updatedTemplate = await response.json();
-        setColdOutreachTemplates(prev => 
-          prev.map(template => 
-            template.id === templateId ? updatedTemplate : template
-          )
-        );
-        setIsEditModalOpen(false);
-        setTemplateToEdit(null);
-      }
+      const updatedTemplate = response.data;
+      setColdOutreachTemplates(prev => 
+        prev.map(template => 
+          template.id === templateId ? updatedTemplate : template
+        )
+      );
+      setIsEditModalOpen(false);
+      setTemplateToEdit(null);
     } catch (error) {
       console.error('Error updating template:', error);
+      alert(error.response?.data?.error || 'Failed to update template');
     }
   };
 
@@ -117,22 +94,13 @@ const ColdOutreachTab = () => {
   const handleDeleteTemplate = async (templateId) => {
     if (window.confirm('Are you sure you want to delete this template? This will also delete all its attachments.')) {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/${templateId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          setColdOutreachTemplates(prev => 
-            prev.filter(template => template.id !== templateId)
-          );
-        }
+        await api.delete(`/api/cold-outreach/templates/${templateId}`);
+        setColdOutreachTemplates(prev => 
+          prev.filter(template => template.id !== templateId)
+        );
       } catch (error) {
         console.error('Error deleting template:', error);
+        alert(error.response?.data?.error || 'Failed to delete template');
       }
     }
   };
@@ -140,23 +108,11 @@ const ColdOutreachTab = () => {
   // Set Active Template
   const handleSetActiveTemplate = async (templateId) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cold-outreach/templates/${templateId}/activate`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        await loadColdOutreachTemplates();
-      } else {
-        const error = await response.json();
-        console.error('Failed to activate template:', error);
-      }
+      await api.put(`/api/cold-outreach/templates/${templateId}/activate`);
+      await loadColdOutreachTemplates();
     } catch (error) {
       console.error('Error activating template:', error);
+      alert(error.response?.data?.error || 'Failed to activate template');
     }
   };
 
