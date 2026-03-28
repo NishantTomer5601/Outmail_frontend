@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Mail, Clock, Handshake, CalendarDays } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
-import axios from 'axios';
+import { api } from '@/lib/api';
 
 const infoItems = [
   {
@@ -44,7 +44,7 @@ export default function GetInTouch() {
     setIsSubmitting(true);
     
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/contact`, form)
+      await api.post(`/api/auth/contact`, form)
       toast.success('Message sent successfully!');
       setSubmitted(true);
     } catch (error) {

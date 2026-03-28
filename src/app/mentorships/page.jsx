@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "@/utils/api";
 import {
   Star,
   Loader2,
@@ -37,8 +37,7 @@ export default function MentorshipsPage() {
   useEffect(() => {
     async function fetchSessions() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
-        const response = await axios.get(`${apiUrl}/api/mentorship/sessions`);
+        const response = await api.get("/api/mentorship/sessions");
         const data = response.data;
 
         // Transform the data

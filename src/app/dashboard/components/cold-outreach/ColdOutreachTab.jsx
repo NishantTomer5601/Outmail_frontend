@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Mail, Paperclip, FileText } from "lucide-react";
 import { api } from "@/lib/api";
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/component/ui/ConfirmDialog";
 import ColdOutreachCreateModal from "./ColdOutreachCreateModal";
 import ColdOutreachEditModal from "./ColdOutreachEditModal";
 
@@ -10,6 +12,8 @@ const ColdOutreachTab = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [templateToEdit, setTemplateToEdit] = useState(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [templateToDelete, setTemplateToDelete] = useState(null);
   
   const TEMPLATE_LIMIT = 3;
 
@@ -50,10 +54,12 @@ const ColdOutreachTab = () => {
       const newTemplate = response.data;
       setColdOutreachTemplates(prev => [...prev, newTemplate]);
       setIsCreateModalOpen(false);
+      toast.success('Template created successfully!');
     } catch (error) {
       console.error('Error creating template:', error);
-      alert(error.response?.data?.error || 'Failed to create template');
+      toast.error(error.response?.data?.error || 'Failed to create template');
     }
+
   };
 
   // Update Cold Outreach Template
@@ -84,24 +90,32 @@ const ColdOutreachTab = () => {
       );
       setIsEditModalOpen(false);
       setTemplateToEdit(null);
+      toast.success('Template updated successfully!');
     } catch (error) {
       console.error('Error updating template:', error);
-      alert(error.response?.data?.error || 'Failed to update template');
+      toast.error(error.response?.data?.error || 'Failed to update template');
     }
   };
 
   // Delete Cold Outreach Template
   const handleDeleteTemplate = async (templateId) => {
-    if (window.confirm('Are you sure you want to delete this template? This will also delete all its attachments.')) {
-      try {
-        await api.delete(`/api/cold-outreach/templates/${templateId}`);
-        setColdOutreachTemplates(prev => 
-          prev.filter(template => template.id !== templateId)
-        );
-      } catch (error) {
-        console.error('Error deleting template:', error);
-        alert(error.response?.data?.error || 'Failed to delete template');
-      }
+    setTemplateToDelete(templateId);
+    setIsConfirmOpen(true);
+  };
+
+  const confirmDeleteTemplate = async () => {
+    if (!templateToDelete) return;
+    try {
+      await api.delete(`/api/cold-outreach/templates/${templateToDelete}`);
+      setColdOutreachTemplates(prev => 
+        prev.filter(template => template.id !== templateToDelete)
+      );
+      toast.success('Template deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting template:', error);
+      toast.error(error.response?.data?.error || 'Failed to delete template');
+    } finally {
+      setTemplateToDelete(null);
     }
   };
 
@@ -110,9 +124,10 @@ const ColdOutreachTab = () => {
     try {
       await api.put(`/api/cold-outreach/templates/${templateId}/activate`);
       await loadColdOutreachTemplates();
+      toast.success('Template activated successfully!');
     } catch (error) {
       console.error('Error activating template:', error);
-      alert(error.response?.data?.error || 'Failed to activate template');
+      toast.error(error.response?.data?.error || 'Failed to activate template');
     }
   };
 
@@ -293,6 +308,19 @@ const ColdOutreachTab = () => {
         }}
         onUpdate={handleUpdateTemplate}
         template={templateToEdit}
+      />
+
+      <ConfirmDialog 
+        isOpen={isConfirmOpen}
+        onClose={() => {
+          setIsConfirmOpen(false);
+          setTemplateToDelete(null);
+        }}
+        onConfirm={confirmDeleteTemplate}
+        title="Delete Template?"
+        description="Are you sure you want to delete this template? This will also delete all its attachments. This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
       />
     </div>
   );

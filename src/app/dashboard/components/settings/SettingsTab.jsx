@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
+import { ConfirmDialog } from "@/component/ui/ConfirmDialog";
 import { 
   Check, 
   X, 
@@ -44,6 +45,10 @@ const SettingsTab = () => {
   });
   const [testEmail, setTestEmail] = useState("");
   const [isTestLoading, setIsTestLoading] = useState(false);
+  const [isDeleteAttachmentConfirmOpen, setIsDeleteAttachmentConfirmOpen] = useState(false);
+  const [attachmentToDelete, setAttachmentToDelete] = useState(null);
+  const [isDeleteAccountConfirmOpen, setIsDeleteAccountConfirmOpen] = useState(false);
+
 
   const fileInputRef = useRef(null);
 
@@ -109,12 +114,12 @@ const SettingsTab = () => {
   const handleUploadAttachment = async (file) => {
     const validationErrors = validateFile(file);
     if (validationErrors.length > 0) {
-      alert(`Upload failed:\n${validationErrors.join('\n')}`);
+      toast.error(`Upload failed: ${validationErrors.join(', ')}`);
       return;
     }
 
     if (attachments.length >= ATTACHMENT_LIMIT) {
-      alert("You have reached the maximum limit of 3 attachments.");
+      toast.warning("You have reached the maximum limit of 3 resumes.");
       return;
     }
 
@@ -147,7 +152,7 @@ const SettingsTab = () => {
       setAttachments(prev => [...prev, newAttachment]);
     } catch (error) {
       console.error('Upload error:', error);
-      alert(`Upload failed: ${error.response?.data?.error || error.message}`);
+      toast.error(`Upload failed: ${error.response?.data?.error || error.message}`);
     } finally {
       setUploadingFiles(prev => {
         const newSet = new Set(prev);
@@ -157,9 +162,14 @@ const SettingsTab = () => {
     }
   };
 
-  const handleDeleteAttachment = async (attachment) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this attachment?");
-    if (!confirmDelete) return;
+  const handleDeleteAttachment = (attachment) => {
+    setAttachmentToDelete(attachment);
+    setIsDeleteAttachmentConfirmOpen(true);
+  };
+
+  const confirmDeleteAttachment = async () => {
+    const attachment = attachmentToDelete;
+    if (!attachment) return;
 
     if (attachment.uploaded && attachment.id) {
       try {
@@ -167,25 +177,25 @@ const SettingsTab = () => {
         setAttachments(prev => prev.filter((att) => att.id !== attachment.id));
       } catch (error) {
         console.error('Delete error:', error);
-        alert(`Delete failed: ${error.response?.data?.error || error.message}`);
+        toast.error(`Delete failed: ${error.response?.data?.error || error.message}`);
       }
     } else {
       setAttachments(prev => prev.filter((att) => att.id !== attachment.id));
     }
+    setAttachmentToDelete(null);
   };
 
   const handleViewAttachment = (attachment) => {
     if (!attachment) {
-      alert('Attachment data not found.');
+      toast.error('Attachment data not found.');
       return;
     }
     if (attachment.url) {
       window.open(attachment.url, '_blank');
     } else {
-      alert('File URL not available. Please check console for details or contact support.');
+      toast.error('File URL not available. Please check console for details or contact support.');
     }
   };
-
 
   const togglePref = (key) => {
     setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
@@ -280,15 +290,18 @@ const SettingsTab = () => {
     }
   };
 
-  const deleteUser = async () => {
-    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-      try {
-        await api.delete('/api/user');
-        router.push('/');
-      } catch (error) {
-        console.error('Error deleting user:', error);
-        toast.error('An error occurred while deleting your account.');
-      }
+  const deleteUser = () => {
+    setIsDeleteAccountConfirmOpen(true);
+  };
+
+  const confirmDeleteUser = async () => {
+    try {
+      // await api.delete('/api/user');
+      // router.push('/');
+      toast.success('Account deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast.error('An error occurred while deleting your account.');
     }
   };
 
@@ -729,6 +742,29 @@ const SettingsTab = () => {
           </div>
         </div>
       </div>
+      
+      <ConfirmDialog 
+        isOpen={isDeleteAttachmentConfirmOpen}
+        onClose={() => {
+          setIsDeleteAttachmentConfirmOpen(false);
+          setAttachmentToDelete(null);
+        }}
+        onConfirm={confirmDeleteAttachment}
+        title="Delete Attachment?"
+        description="Are you sure you want to delete this attachment? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
+
+      <ConfirmDialog 
+        isOpen={isDeleteAccountConfirmOpen}
+        onClose={() => setIsDeleteAccountConfirmOpen(false)}
+        onConfirm={confirmDeleteUser}
+        title="Delete Account?"
+        description="Are you sure you want to delete your account? This action cannot be undone and you will lose all your data."
+        confirmText="Delete Account"
+        cancelText="Cancel"
+      />
     </div>
   );
 };

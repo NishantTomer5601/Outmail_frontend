@@ -12,6 +12,7 @@
     "@nivo/bar": "^0.99.0",
     "@nivo/line": "^0.99.0",
     "@nivo/pie": "^0.99.0",
+    "@radix-ui/react-alert-dialog": "^1.1.15",
     "axios": "^1.13.6",
     "clsx": "^2.1.1",
     "framer-motion": "^12.36.0",

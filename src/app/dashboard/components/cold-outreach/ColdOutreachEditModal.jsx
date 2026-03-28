@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X } from "lucide-react";
+import { toast } from "sonner";
 
 const ColdOutreachEditModal = ({ isOpen, onClose, onUpdate, template }) => {
   const [formData, setFormData] = useState({
@@ -36,8 +37,10 @@ const ColdOutreachEditModal = ({ isOpen, onClose, onUpdate, template }) => {
     const currentAttachmentCount = template?.attachments?.length || 0;
     
     if (currentAttachmentCount + files.length + selectedFiles.length > 3) {
+      toast.warning("Maximum 3 attachments allowed per template.");
       return;
     }
+
     setFiles(prev => [...prev, ...selectedFiles]);
   };
 

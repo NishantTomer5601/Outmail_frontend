@@ -2,6 +2,8 @@ import { Geist, Geist_Mono, Satisfy, Syne } from "next/font/google";
 import "./globals.css";
 import SmoothScrollWrapper from "@/component/SmoothScrollWrapper";
 import { AuthProvider } from "@/context/AuthContext";
+import { Toaster } from "sonner";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -140,6 +142,7 @@ export default function RootLayout({ children }) {
       >
         <AuthProvider>
           <SmoothScrollWrapper>
+            <Toaster position="top-center" richColors />
             <div>{children}</div>
           </SmoothScrollWrapper>
         </AuthProvider>
