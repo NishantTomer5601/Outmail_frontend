@@ -1,13 +1,41 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Mail, TrendingUp, Building, FileText } from "lucide-react";
+import { api } from "@/lib/api";
 
 const OutreachStatPills = ({ selectedPeriod }) => {
-  const sentByPeriod = { '7': '40', '15': '81', '30': '159' };
-  const companiesByPeriod = { '7': '8', '15': '16', '30': '30' };
-  const stats = [
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get('/api/student/analytics');
+        if (response.data.success) {
+          setStats(response.data.stats);
+        }
+      } catch (error) {
+        console.error("Failed to fetch student stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, [selectedPeriod]);
+
+  const getPeriodValue = () => {
+    if (!stats) return "0";
+    if (selectedPeriod === '7') return stats.sent7d;
+    if (selectedPeriod === '15') return stats.sent15d;
+    if (selectedPeriod === '30') return stats.sent30d;
+    return stats.sent7d;
+  };
+
+  const statConfig = [
     {
       label: `Emails Sent (${selectedPeriod}d)`,
-      value: sentByPeriod[selectedPeriod] || '40',
+      value: loading ? "..." : getPeriodValue(),
       icon: Mail,
       color: 'text-purple-400',
       bg: 'bg-purple-500/15',
@@ -15,7 +43,7 @@ const OutreachStatPills = ({ selectedPeriod }) => {
     },
     {
       label: 'Total Emails Sent',
-      value: '380',
+      value: loading ? "..." : stats?.totalSent || '0',
       icon: TrendingUp,
       color: 'text-green-400',
       bg: 'bg-green-500/15',
@@ -23,7 +51,7 @@ const OutreachStatPills = ({ selectedPeriod }) => {
     },
     {
       label: 'Companies Targeted',
-      value: companiesByPeriod[selectedPeriod] || '8',
+      value: loading ? "..." : stats?.companiesTargeted || '0',
       icon: Building,
       color: 'text-cyan-400',
       bg: 'bg-cyan-500/15',
@@ -31,7 +59,7 @@ const OutreachStatPills = ({ selectedPeriod }) => {
     },
     {
       label: 'Active Template',
-      value: 'Tech Outreach',
+      value: loading ? "..." : stats?.activeTemplate || 'None',
       icon: FileText,
       color: 'text-amber-400',
       bg: 'bg-amber-500/15',
@@ -42,7 +70,7 @@ const OutreachStatPills = ({ selectedPeriod }) => {
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-      {stats.map((stat) => (
+      {statConfig.map((stat) => (
         <div
           key={stat.label}
           className={`${stat.bg} ${stat.border} border backdrop-blur-md rounded-xl p-3 flex items-center gap-3`}

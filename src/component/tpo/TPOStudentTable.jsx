@@ -1,19 +1,7 @@
 "use client";
-import { useState } from "react";
-import { ArrowUpDown, ChevronDown, Search } from "lucide-react";
-
-const students = [
-  { name: "Arjun Mehta",     branch: "CS",       emails: 142, openRate: 72, responses: 11, interviews: 3, jobs: 24, status: "active"   },
-  { name: "Priya Nair",      branch: "CS",       emails: 118, openRate: 68, responses: 9,  interviews: 2, jobs: 18, status: "active"   },
-  { name: "Rohan Sharma",    branch: "ECE",      emails: 95,  openRate: 61, responses: 6,  interviews: 1, jobs: 14, status: "active"   },
-  { name: "Sneha Iyer",      branch: "Mech",     emails: 87,  openRate: 58, responses: 5,  interviews: 1, jobs: 12, status: "active"   },
-  { name: "Karan Verma",     branch: "CS",       emails: 134, openRate: 74, responses: 13, interviews: 4, jobs: 31, status: "active"   },
-  { name: "Ananya Kapoor",   branch: "EEE",      emails: 76,  openRate: 55, responses: 4,  interviews: 0, jobs: 9,  status: "inactive" },
-  { name: "Dev Patel",       branch: "CS",       emails: 109, openRate: 66, responses: 8,  interviews: 2, jobs: 20, status: "active"   },
-  { name: "Meera Krishnan",  branch: "Civil",    emails: 43,  openRate: 48, responses: 2,  interviews: 0, jobs: 6,  status: "inactive" },
-  { name: "Vikram Rao",      branch: "CS",       emails: 128, openRate: 70, responses: 10, interviews: 3, jobs: 22, status: "active"   },
-  { name: "Isha Gupta",      branch: "BioTech",  emails: 62,  openRate: 53, responses: 3,  interviews: 0, jobs: 8,  status: "inactive" },
-];
+import React, { useState, useEffect } from "react";
+import { ArrowUpDown, Search } from "lucide-react";
+import { api } from "@/lib/api";
 
 const statusBadge = (s) =>
   s === "active"
@@ -21,12 +9,33 @@ const statusBadge = (s) =>
     : "bg-gray-100 text-gray-500";
 
 export default function TPOStudentTable() {
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
 
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get('/api/admin/students');
+        if (response.data.success) {
+          setStudents(response.data.students || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch students:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, []);
+
   const filtered = students.filter((s) => {
     const matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.branch.toLowerCase().includes(search.toLowerCase());
+      s.branch.toLowerCase().includes(search.toLowerCase()) ||
+      s.email.toLowerCase().includes(search.toLowerCase());
     const matchFilter = filter === "all" || s.status === filter;
     return matchSearch && matchFilter;
   });
@@ -79,43 +88,60 @@ export default function TPOStudentTable() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((s) => (
-              <tr key={s.name} className="border-t border-gray-50 hover:bg-gray-50 transition">
-                <td className="px-5 py-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-full bg-purple-100 text-purple-700 text-xs font-bold flex items-center justify-center flex-shrink-0">
-                      {s.name.split(" ").map((n) => n[0]).join("")}
-                    </div>
-                    <span className="font-medium text-gray-800 whitespace-nowrap">{s.name}</span>
-                  </div>
-                </td>
-                <td className="px-5 py-3 text-gray-500 text-xs">{s.branch}</td>
-                <td className="px-5 py-3 font-semibold text-gray-800">{s.emails}</td>
-                <td className="px-5 py-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-purple-500"
-                        style={{ width: `${s.openRate}%` }}
-                      />
-                    </div>
-                    <span className="text-xs text-gray-600">{s.openRate}%</span>
-                  </div>
-                </td>
-                <td className="px-5 py-3 text-gray-700">{s.responses}</td>
-                <td className="px-5 py-3">
-                  <span className={`text-xs font-semibold ${s.interviews > 0 ? "text-green-600" : "text-gray-400"}`}>
-                    {s.interviews > 0 ? `${s.interviews} ✓` : "—"}
-                  </span>
-                </td>
-                <td className="px-5 py-3 text-gray-700">{s.jobs}</td>
-                <td className="px-5 py-3">
-                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${statusBadge(s.status)}`}>
-                    {s.status}
-                  </span>
+            {loading ? (
+              <tr>
+                <td colSpan={8} className="px-5 py-10 text-center text-gray-400 text-xs">
+                  Loading students...
                 </td>
               </tr>
-            ))}
+            ) : filtered.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="px-5 py-10 text-center text-gray-400 text-xs">
+                  No students found
+                </td>
+              </tr>
+            ) : (
+              filtered.map((s) => (
+                <tr key={s.id} className="border-t border-gray-50 hover:bg-gray-50 transition">
+                  <td className="px-5 py-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-full bg-purple-100 text-purple-700 text-xs font-bold flex items-center justify-center flex-shrink-0">
+                        {s.name.split(" ").map((n) => n[0]).join("")}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-medium text-gray-800 whitespace-nowrap">{s.name}</span>
+                        <span className="text-[10px] text-gray-400 truncate max-w-[120px]">{s.email}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-5 py-3 text-gray-500 text-xs">{s.branch}</td>
+                  <td className="px-5 py-3 font-semibold text-gray-800">{s.emails}</td>
+                  <td className="px-5 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-purple-500"
+                          style={{ width: `${s.openRate}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-gray-600">{s.openRate}%</span>
+                    </div>
+                  </td>
+                  <td className="px-5 py-3 text-gray-700">{s.responses}</td>
+                  <td className="px-5 py-3">
+                    <span className={`text-xs font-semibold ${s.interviews > 0 ? "text-green-600" : "text-gray-400"}`}>
+                      {s.interviews > 0 ? `${s.interviews} ✓` : "—"}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3 text-gray-700">{s.jobs}</td>
+                  <td className="px-5 py-3">
+                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${statusBadge(s.status)}`}>
+                      {s.status}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
