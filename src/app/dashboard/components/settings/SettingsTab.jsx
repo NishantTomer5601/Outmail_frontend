@@ -43,8 +43,6 @@ const SettingsTab = () => {
     dailySummary: false,
     pauseOnWeekends: true,
   });
-  const [testEmail, setTestEmail] = useState("");
-  const [isTestLoading, setIsTestLoading] = useState(false);
   const [isDeleteAttachmentConfirmOpen, setIsDeleteAttachmentConfirmOpen] = useState(false);
   const [attachmentToDelete, setAttachmentToDelete] = useState(null);
   const [isDeleteAccountConfirmOpen, setIsDeleteAccountConfirmOpen] = useState(false);
@@ -253,40 +251,6 @@ const SettingsTab = () => {
       toast.error('An error occurred while updating your profile.');
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleRunTestPipeline = async () => {
-    if (!testEmail.trim()) {
-      toast.error('Please enter a recipient email');
-      return;
-    }
-    
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(testEmail)) {
-      toast.error('Please enter a valid email address');
-      return;
-    }
-
-    if (attachments.length === 0) {
-      toast.error('Please upload a resume first');
-      return;
-    }
-
-    setIsTestLoading(true);
-    try {
-      await api.post('/api/cold-outreach/test-pipeline', {
-        hrEmail: testEmail,
-      });
-
-      toast.success('Test pipeline triggered successfully!');
-      setTestEmail("");
-    } catch (error) {
-      console.error('Error running test pipeline:', error);
-      toast.error(error.response?.data?.error || 'An error occurred while running the test pipeline.');
-    } finally {
-      setIsTestLoading(false);
     }
   };
 
@@ -526,75 +490,6 @@ const SettingsTab = () => {
                   <Globe size={12} />
                   Your resumes are used to personalize cold emails and match you with jobs.
                 </p>
-              </div>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400">
-                  <Zap size={24} />
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-white">
-                    Test Outreach Pipeline
-                  </h2>
-                  <p className="text-xs text-white/40 mt-0.5">
-                    Send a sample personalized email to a test recipient to see the AI in action.
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="testEmail" className="block text-sm font-medium text-gray-300 mb-1">
-                    Recipient Email (Your email or a test account)
-                  </label>
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="relative flex-grow">
-                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <Mail className="text-gray-400" size={18} />
-                      </div>
-                      <input
-                        type="email"
-                        id="testEmail"
-                        value={testEmail}
-                        onChange={(e) => setTestEmail(e.target.value)}
-                        placeholder="test@example.com"
-                        className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
-                      />
-                    </div>
-                    <button
-                      onClick={handleRunTestPipeline}
-                      disabled={isTestLoading}
-                      className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold shadow-lg transition-all duration-300 ${
-                        isTestLoading 
-                          ? 'bg-gray-500 cursor-not-allowed' 
-                          : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 hover:scale-105 active:scale-95'
-                      } text-white min-w-[160px]`}
-                    >
-                      {isTestLoading ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          Running...
-                        </>
-                      ) : (
-                        <>
-                          <Zap size={18} />
-                          Run Test
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-                  <p className="text-xs text-yellow-300 flex items-start gap-2">
-                    <AlertTriangle size={14} className="mt-0.5 flex-shrink-0" />
-                    <span>
-                      This will use your latest uploaded resume to generate a personalized email for a demo startup and send it to the specified email.
-                    </span>
-                  </p>
-                </div>
               </div>
             </div>
 

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import api from "@/utils/api";
+import { api } from "@/lib/api";
 import {
   Star,
   Loader2,

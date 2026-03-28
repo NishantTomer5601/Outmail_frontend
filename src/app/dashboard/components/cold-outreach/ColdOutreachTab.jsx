@@ -1,157 +1,65 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Mail, Paperclip, FileText } from "lucide-react";
+import { Mail, Zap, AlertTriangle } from "lucide-react";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
-import { ConfirmDialog } from "@/component/ui/ConfirmDialog";
-import ColdOutreachCreateModal from "./ColdOutreachCreateModal";
-import ColdOutreachEditModal from "./ColdOutreachEditModal";
 
 const ColdOutreachTab = () => {
-  const [coldOutreachTemplates, setColdOutreachTemplates] = useState([]);
+  const [testEmail, setTestEmail] = useState("");
+  const [isTestLoading, setIsTestLoading] = useState(false);
+  const [hasResumes, setHasResumes] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [templateToEdit, setTemplateToEdit] = useState(null);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [templateToDelete, setTemplateToDelete] = useState(null);
-  
-  const TEMPLATE_LIMIT = 3;
-
-  // Load Cold Outreach Templates
-  const loadColdOutreachTemplates = async () => {
-    setLoading(true);
-    try {
-      const response = await api.get('/api/cold-outreach/templates');
-      setColdOutreachTemplates(response.data || []);
-    } catch (error) {
-      console.error('Error loading cold outreach templates:', error);
-      setColdOutreachTemplates([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Create Cold Outreach Template
-  const handleCreateTemplate = async (templateData, files) => {
-    try {
-      const formData = new FormData();
-      formData.append('name', templateData.name);
-      formData.append('subject', templateData.subject);
-      formData.append('html_content', templateData.html_content);
-      
-      if (files && files.length > 0) {
-        files.forEach(file => {
-          formData.append('attachments', file);
-        });
-      }
-
-      const response = await api.post('/api/cold-outreach/templates', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      const newTemplate = response.data;
-      setColdOutreachTemplates(prev => [...prev, newTemplate]);
-      setIsCreateModalOpen(false);
-      toast.success('Template created successfully!');
-    } catch (error) {
-      console.error('Error creating template:', error);
-      toast.error(error.response?.data?.error || 'Failed to create template');
-    }
-
-  };
-
-  // Update Cold Outreach Template
-  const handleUpdateTemplate = async (templateId, templateData, files) => {
-    try {
-      const formData = new FormData();
-      formData.append('name', templateData.name);
-      formData.append('subject', templateData.subject);
-      formData.append('html_content', templateData.html_content);
-      
-      if (files && files.length > 0) {
-        files.forEach(file => {
-          formData.append('attachments', file);
-        });
-      }
-
-      const response = await api.put(`/api/cold-outreach/templates/${templateId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      const updatedTemplate = response.data;
-      setColdOutreachTemplates(prev => 
-        prev.map(template => 
-          template.id === templateId ? updatedTemplate : template
-        )
-      );
-      setIsEditModalOpen(false);
-      setTemplateToEdit(null);
-      toast.success('Template updated successfully!');
-    } catch (error) {
-      console.error('Error updating template:', error);
-      toast.error(error.response?.data?.error || 'Failed to update template');
-    }
-  };
-
-  // Delete Cold Outreach Template
-  const handleDeleteTemplate = async (templateId) => {
-    setTemplateToDelete(templateId);
-    setIsConfirmOpen(true);
-  };
-
-  const confirmDeleteTemplate = async () => {
-    if (!templateToDelete) return;
-    try {
-      await api.delete(`/api/cold-outreach/templates/${templateToDelete}`);
-      setColdOutreachTemplates(prev => 
-        prev.filter(template => template.id !== templateToDelete)
-      );
-      toast.success('Template deleted successfully!');
-    } catch (error) {
-      console.error('Error deleting template:', error);
-      toast.error(error.response?.data?.error || 'Failed to delete template');
-    } finally {
-      setTemplateToDelete(null);
-    }
-  };
-
-  // Set Active Template
-  const handleSetActiveTemplate = async (templateId) => {
-    try {
-      await api.put(`/api/cold-outreach/templates/${templateId}/activate`);
-      await loadColdOutreachTemplates();
-      toast.success('Template activated successfully!');
-    } catch (error) {
-      console.error('Error activating template:', error);
-      toast.error(error.response?.data?.error || 'Failed to activate template');
-    }
-  };
 
   // Load data on component mount
   useEffect(() => {
-    loadColdOutreachTemplates();
+    // Check if user has resumes for test pipeline
+    const checkResumes = async () => {
+      setLoading(true);
+      try {
+        const response = await api.get('/api/resumes');
+        if (response.data && response.data.length > 0) {
+          setHasResumes(true);
+        }
+      } catch (error) {
+        console.warn('Error checking resumes:', error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkResumes();
   }, []);
 
-  const handleCreateNew = () => {
-    if (coldOutreachTemplates.length >= TEMPLATE_LIMIT) {
+  const handleRunTestPipeline = async () => {
+    if (!testEmail.trim()) {
+      toast.error('Please enter a recipient email');
       return;
     }
-    setIsCreateModalOpen(true);
-  };
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(testEmail)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
 
-  const handleEditTemplate = (template) => {
-    setTemplateToEdit(template);
-    setIsEditModalOpen(true);
-  };
+    if (!hasResumes) {
+      toast.error('Please upload a resume in Settings first');
+      return;
+    }
 
-  const isTemplateLimitReached = coldOutreachTemplates.length >= TEMPLATE_LIMIT;
+    setIsTestLoading(true);
+    try {
+      await api.post('/api/cold-outreach/test-pipeline', {
+        hrEmail: testEmail,
+      });
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
+      toast.success('Test pipeline triggered successfully!');
+      setTestEmail("");
+    } catch (error) {
+      console.error('Error running test pipeline:', error);
+      toast.error(error.response?.data?.error || 'An error occurred while running the test pipeline.');
+    } finally {
+      setIsTestLoading(false);
+    }
   };
 
   if (loading) {
@@ -168,160 +76,79 @@ const ColdOutreachTab = () => {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-10">Cold Outreach</h1>
           <p className="text-white text-sm sm:text-base">
-            Create and manage outreach templates with attachments
+            Test and run your automated cold outreach pipeline
           </p>
         </div>
-        <button
-          onClick={handleCreateNew}
-          disabled={isTemplateLimitReached}
-          className={`mt-4 sm:mt-0 text-white font-semibold py-2 px-4 rounded-lg flex items-center shadow-lg transition duration-200 ease-in-out transform ${
-            isTemplateLimitReached
-              ? "bg-gray-500 cursor-not-allowed"
-              : "bg-purple-600 hover:bg-purple-700 hover:-translate-y-0.5"
-          }`}
-        >
-          <Plus size={20} className="mr-2" />
-          {isTemplateLimitReached ? "Max 3 Allowed" : "Create Template"}
-        </button>
       </div>
 
-      <div className="w-full">
-        {coldOutreachTemplates.length > 0 ? (
-          coldOutreachTemplates.map((template) => (
-            <div
-              key={template.id}
-              className={`mb-6 w-full bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-lg p-6 rounded-2xl border transition-all duration-300 shadow-lg ${
-                template.is_active 
-                  ? 'border-green-400 bg-gradient-to-br from-green-500/20 to-green-500/5 shadow-green-500/25' 
-                  : 'border-purple-500/30'
-              }`}
-            >
-              <div className="flex flex-col lg:flex-row gap-8 w-full">
-                <div className="lg:w-1/3 w-full border-b lg:border-b-0 lg:border-r border-white/10 pb-4 lg:pb-0 lg:pr-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`p-3 rounded-xl text-white ${
-                      template.is_active ? 'bg-green-500' : 'bg-purple-600'
-                    }`}>
-                      <Mail size={18} />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white">
-                        {template.name}
-                      </h3>
-                      <p className="text-gray-300 text-sm">
-                        {template.subject}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mb-4">
-                    <span className="px-3 py-1 text-xs rounded-full bg-purple-500/20 text-purple-300">
-                      {template.category || "General"}
-                    </span>
-                  </div>
-
-                  <div className="text-xs text-gray-400">
-                    <p>Created: {formatDate(template.created_at)}</p>
-                    <p>Updated: {formatDate(template.updated_at)}</p>
-                  </div>
-
-                  {template.attachments && template.attachments.length > 0 && (
-                    <div className="mt-6">
-                      <h5 className="text-xs font-semibold text-white mb-2 flex items-center gap-1">
-                        <Paperclip size={14} className="inline-block text-purple-300" /> Attachments
-                      </h5>
-                      <div className="flex flex-col gap-2">
-                        {template.attachments.map((attachment) => (
-                          <a
-                            key={attachment.id}
-                            href={attachment.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-xs text-purple-100 hover:bg-purple-500/10 transition group"
-                          >
-                            <FileText size={15} className="text-purple-300 group-hover:text-purple-400" />
-                            <span className="truncate flex-1">{attachment.original_filename}</span>
-                            <span className="text-[10px] text-gray-400 ml-2">{(attachment.file_size / 1024 / 1024).toFixed(2)} MB</span>
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex-1 flex flex-col justify-between">
-                  <div className="mb-6">
-                    <h4 className="text-sm font-semibold text-white mb-2">
-                      Preview
-                    </h4>
-                    <div
-                      className="whitespace-pre-wrap text-sm text-gray-200 bg-black/30 p-4 rounded-xl"
-                    >
-                      {template.html_content}
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => handleEditTemplate(template)}
-                      className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl"
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      onClick={() => handleSetActiveTemplate(template.id)}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl"
-                    >
-                      Set Active
-                    </button>
-
-                    <button
-                      onClick={() => handleDeleteTemplate(template.id)}
-                      className="bg-red-600 hover:bg-red-700 text-white px-4 rounded-xl"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-white">No templates yet</p>
+      <div className="mt-6 mb-10 bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400">
+            <Zap size={24} />
           </div>
-        )}
+          <div>
+            <h2 className="text-xl font-semibold text-white">
+              Test Outreach Pipeline
+            </h2>
+            <p className="text-xs text-white/40 mt-0.5">
+              Send a sample personalized email to a test recipient to see the AI in action.
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="testEmail" className="block text-sm font-medium text-gray-300 mb-1">
+              Recipient Email (Your email or a test account)
+            </label>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-grow">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <Mail className="text-gray-400" size={18} />
+                </div>
+                <input
+                  type="email"
+                  id="testEmail"
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                  placeholder="test@example.com"
+                  className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                />
+              </div>
+              <button
+                onClick={handleRunTestPipeline}
+                disabled={isTestLoading}
+                className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold shadow-lg transition-all duration-300 ${
+                  isTestLoading 
+                    ? 'bg-gray-500 cursor-not-allowed' 
+                    : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 hover:scale-105 active:scale-95'
+                } text-white min-w-[160px]`}
+              >
+                {isTestLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Running...
+                  </>
+                ) : (
+                  <>
+                    <Zap size={18} />
+                    Run Test
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+          
+          <div className="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+            <p className="text-xs text-yellow-300 flex items-start gap-2">
+              <AlertTriangle size={14} className="mt-0.5 flex-shrink-0" />
+              <span>
+                This will use your latest uploaded resume to generate a personalized email for a demo startup and send it to the specified email.
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
-
-      <ColdOutreachCreateModal 
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSave={handleCreateTemplate}
-      />
-      
-      <ColdOutreachEditModal
-        isOpen={isEditModalOpen}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setTemplateToEdit(null);
-        }}
-        onUpdate={handleUpdateTemplate}
-        template={templateToEdit}
-      />
-
-      <ConfirmDialog 
-        isOpen={isConfirmOpen}
-        onClose={() => {
-          setIsConfirmOpen(false);
-          setTemplateToDelete(null);
-        }}
-        onConfirm={confirmDeleteTemplate}
-        title="Delete Template?"
-        description="Are you sure you want to delete this template? This will also delete all its attachments. This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
-      />
     </div>
   );
 };
