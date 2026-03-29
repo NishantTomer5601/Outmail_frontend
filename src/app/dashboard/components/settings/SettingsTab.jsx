@@ -136,18 +136,24 @@ const SettingsTab = () => {
 
       const result = response.data;
       
+      const fileSizeKB = file.size / 1024;
+      const formattedSize = fileSizeKB >= 1024 
+        ? `${(fileSizeKB / 1024).toFixed(2)} MB` 
+        : `${Math.round(fileSizeKB)} KB`;
+
       const newAttachment = {
-        id: result.id,
-        name: result.filename,
-        type: file.type,
-        size: `${(result.fileSize / 1024 / 1024).toFixed(2)} MB`,
+        id: result.id || `temp-${Date.now()}`,
+        name: result.filename || result.original_filename || result.name || file.name || 'Unknown File',
+        type: file.type || 'application/pdf',
+        size: formattedSize,
         uploadDate: new Date().toISOString().slice(0, 10),
-        url: result.s3Url,
+        url: result.s3Url || result.s3_path || '',
         file: null,
         uploaded: true
       };
       
       setAttachments(prev => [...prev, newAttachment]);
+      toast.success('Resume uploaded successfully!');
     } catch (error) {
       console.error('Upload error:', error);
       toast.error(`Upload failed: ${error.response?.data?.error || error.message}`);
@@ -422,15 +428,19 @@ const SettingsTab = () => {
                 </div>
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={attachments.length >= 3}
+                  disabled={attachments.length >= 3 || uploadingFiles.size > 0}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-md ${
-                    attachments.length >= 3
+                    attachments.length >= 3 || uploadingFiles.size > 0
                       ? 'bg-gray-600 cursor-not-allowed text-gray-400'
                       : 'bg-white text-black hover:bg-white/90'
                   }`}
                 >
-                  <Upload size={16} />
-                  Upload New
+                  {uploadingFiles.size > 0 ? (
+                    <div className="w-4 h-4 border-2 border-gray-400 border-t-white rounded-full animate-spin"></div>
+                  ) : (
+                    <Upload size={16} />
+                  )}
+                  {uploadingFiles.size > 0 ? 'Uploading...' : 'Upload New'}
                 </button>
                 <input
                   type="file"
