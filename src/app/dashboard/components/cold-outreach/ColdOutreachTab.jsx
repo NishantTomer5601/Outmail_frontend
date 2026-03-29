@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Mail, Zap, AlertTriangle, Building2, MapPin, Briefcase } from "lucide-react";
+import { Mail, Zap, AlertTriangle, Building2, MapPin, Briefcase, ChevronRight } from "lucide-react";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 
@@ -26,7 +26,6 @@ const ColdOutreachTab = () => {
 
         if (companiesResponse.data && companiesResponse.data.length > 0) {
           setDemoCompanies(companiesResponse.data);
-          setSelectedCompany(companiesResponse.data[0]); // Select first by default
         }
       } catch (error) {
         console.warn('Error fetching data:', error.message);
@@ -37,9 +36,9 @@ const ColdOutreachTab = () => {
     fetchData();
   }, []);
 
-  const handleRunTestPipeline = async () => {
-    if (!selectedCompany) {
-      toast.error('Please select a demo company');
+  const handleRunTestPipeline = async (company) => {
+    if (!company) {
+      toast.error('Please select a company');
       return;
     }
 
@@ -48,23 +47,26 @@ const ColdOutreachTab = () => {
       return;
     }
 
+    setSelectedCompany(company);
     setIsTestLoading(true);
+    
     try {
       await api.post('/api/cold-outreach/test-pipeline', {
-        hrEmail: selectedCompany.email,
-        companyName: selectedCompany.name,
-        domain: selectedCompany.industry || "Technology",
-        location: selectedCompany.location || "Remote",
-        teamSize: selectedCompany.size === "startup" ? "1-10" : selectedCompany.size === "small" ? "11-50" : "51-200",
-        companyStage: selectedCompany.size === "startup" ? "Seed" : "Series A",
+        hrEmail: company.email,
+        companyName: company.name,
+        domain: company.industry || "Technology",
+        location: company.location || "Remote",
+        teamSize: company.size === "startup" ? "1-10" : company.size === "small" ? "11-50" : "51-200",
+        companyStage: company.size === "startup" ? "Seed" : "Series A",
       });
 
-      toast.success(`Test pipeline triggered for ${selectedCompany.name}!`);
+      toast.success(`Pipeline triggered successfully! An email will be sent to ${company.name} shortly.`);
     } catch (error) {
       console.error('Error running test pipeline:', error);
-      toast.error(error.response?.data?.error || 'An error occurred while running the test pipeline.');
+      toast.error(error.response?.data?.error || 'An error occurred while triggering the pipeline.');
     } finally {
       setIsTestLoading(false);
+      setSelectedCompany(null);
     }
   };
 
@@ -80,102 +82,109 @@ const ColdOutreachTab = () => {
     <div className="w-full max-w-none px-2 sm:px-6 md:px-10 py-6 font-syne">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-10">Cold Outreach</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-10">Cold Outreach Pipeline</h1>
           <p className="text-white text-sm sm:text-base">
-            Test and run your automated cold outreach pipeline
+            Select a targeted company and launch a personalized outreach campaign.
           </p>
         </div>
       </div>
 
-      <div className="mt-6 mb-10 bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400">
-            <Zap size={24} />
+      <div className="mt-6 mb-10 bg-[#121212]/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/10">
+        <div className="flex items-center gap-4 mb-8 pb-6 border-b border-white/10">
+          <div className="p-3 bg-purple-500/10 rounded-xl text-purple-400 border border-purple-500/20">
+            <Building2 size={24} />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-white">
-              Test Outreach Pipeline
+            <h2 className="text-xl font-bold text-white">
+              Targeted Companies
             </h2>
-            <p className="text-xs text-white/40 mt-0.5">
-              Select a demo company below to send a sample personalized email and see the AI in action.
+            <p className="text-sm text-gray-400 mt-1">
+              Select a company to automatically generate and send a tailored outreach email using your resume.
             </p>
           </div>
         </div>
 
         <div className="space-y-6">
-          {demoCompanies.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {demoCompanies.map((company) => (
-                <div 
-                  key={company.id}
-                  onClick={() => setSelectedCompany(company)}
-                  className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
-                    selectedCompany?.id === company.id 
-                      ? 'bg-purple-500/20 border-purple-500' 
-                      : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
-                  }`}
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-gray-800 rounded-lg">
-                      <Building2 size={18} className={selectedCompany?.id === company.id ? 'text-purple-400' : 'text-gray-400'} />
-                    </div>
-                    <h3 className="font-semibold text-white">{company.name}</h3>
-                  </div>
-                  
-                  <div className="space-y-2 mt-3 text-sm text-gray-400">
-                    <div className="flex items-center gap-2">
-                      <Briefcase size={14} />
-                      <span>{company.industry || 'Technology'}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin size={14} />
-                      <span>{company.location || 'Remote'}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Mail size={14} />
-                      <span className="truncate">{company.email}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-4 text-center text-gray-400 bg-white/5 rounded-lg">
-              No demo companies available.
+          {!hasResumes && (
+            <div className="p-4 mb-6 rounded-lg bg-red-500/10 border border-red-500/20 flex items-start gap-3">
+              <AlertTriangle size={18} className="text-red-400 mt-0.5 flex-shrink-0" />
+              <div>
+                <h4 className="text-red-400 font-semibold mb-1">Resume Required</h4>
+                <p className="text-sm text-red-400/80">
+                  You need to upload at least one resume in the Settings before you can run outreach campaigns. The AI uses your resume to generate personalized emails.
+                </p>
+              </div>
             </div>
           )}
 
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-white/10">
-            <button
-              onClick={handleRunTestPipeline}
-              disabled={isTestLoading || !selectedCompany}
-              className={`flex items-center justify-center gap-2 px-8 py-3 rounded-lg font-semibold shadow-lg transition-all duration-300 w-full sm:w-auto ${
-                isTestLoading || !selectedCompany
-                  ? 'bg-gray-500 cursor-not-allowed' 
-                  : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 hover:scale-105 active:scale-95'
-              } text-white`}
-            >
-              {isTestLoading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Running...
-                </>
-              ) : (
-                <>
-                  <Zap size={18} />
-                  Send Email to {selectedCompany ? selectedCompany.name : 'Selected Company'}
-                </>
-              )}
-            </button>
-          </div>
-          
-          <div className="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-            <p className="text-xs text-yellow-300 flex items-start gap-2">
-              <AlertTriangle size={14} className="mt-0.5 flex-shrink-0" />
-              <span>
-                This will use your latest uploaded resume to generate a personalized email for the selected startup and send it via your connected Gmail.
-              </span>
-            </p>
+          <div className="flex flex-col gap-4">
+            {demoCompanies.length > 0 ? (
+              demoCompanies.map((company) => (
+                <div 
+                  key={company.id}
+                  className="flex flex-col md:flex-row items-start md:items-center justify-between p-5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group"
+                >
+                  <div className="flex items-start gap-4 mb-4 md:mb-0">
+                    <div className="w-12 h-12 bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner">
+                      <span className="text-lg font-bold text-white/80">{company.name.charAt(0)}</span>
+                    </div>
+                    
+                    <div>
+                      <h3 className="text-lg font-bold text-white mb-1 group-hover:text-purple-300 transition-colors">{company.name}</h3>
+                      <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm text-gray-400">
+                        <div className="flex items-center gap-1.5">
+                          <Briefcase size={14} className="text-purple-400/70" />
+                          <span>{company.industry || 'Technology'}</span>
+                        </div>
+                        <div className="hidden md:block w-1 h-1 rounded-full bg-gray-600"></div>
+                        <div className="flex items-center gap-1.5">
+                          <MapPin size={14} className="text-green-400/70" />
+                          <span>{company.location || 'Remote'}</span>
+                        </div>
+                        <div className="hidden md:block w-1 h-1 rounded-full bg-gray-600"></div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-xs border border-blue-500/20">
+                            {company.size === 'startup' ? 'Startup' : company.size === 'small' ? 'Small Biz' : company.size === 'medium' ? 'Mid-Market' : 'Enterprise'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleRunTestPipeline(company)}
+                    disabled={isTestLoading || !hasResumes}
+                    className={`flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-semibold shadow-md transition-all duration-300 w-full md:w-auto ${
+                      isTestLoading && selectedCompany?.id === company.id
+                        ? 'bg-purple-600/50 cursor-not-allowed border border-purple-500/30 text-white/70' 
+                        : !hasResumes || isTestLoading
+                        ? 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700'
+                        : 'bg-white/10 hover:bg-purple-600 border border-white/10 hover:border-purple-500 text-white hover:shadow-lg hover:shadow-purple-500/20'
+                    }`}
+                  >
+                    {isTestLoading && selectedCompany?.id === company.id ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Zap size={16} className={(!hasResumes || isTestLoading) ? "text-gray-500" : "text-yellow-400"} />
+                        Run Outreach
+                      </>
+                    )}
+                  </button>
+                </div>
+              ))
+            ) : (
+              <div className="p-10 text-center border border-dashed border-white/20 rounded-xl bg-white/5">
+                <div className="mx-auto w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-3">
+                  <Building2 size={24} className="text-gray-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-300 mb-1">No Companies Found</h3>
+                <p className="text-sm text-gray-500">There are no targeted companies available at the moment.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
