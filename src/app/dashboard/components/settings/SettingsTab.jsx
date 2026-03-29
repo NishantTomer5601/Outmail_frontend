@@ -60,10 +60,7 @@ const SettingsTab = () => {
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX',
     'image/jpeg': 'JPEG',
     'image/jpg': 'JPG', 
-    'image/png': 'PNG',
-    'text/csv': 'CSV',
-    'application/vnd.ms-excel': 'XLS',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLSX'
+    'image/png': 'PNG'
   };
   const MAX_FILE_SIZE = 10 * 1024 * 1024;
 

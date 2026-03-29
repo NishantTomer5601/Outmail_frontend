@@ -3,11 +3,11 @@ import { Clock, Mail } from "lucide-react";
 
 const RecentOutreachFeed = () => {
   const activities = [
-    { company: 'Swiggy', template: 'Tech Outreach', time: '1h ago' },
-    { company: 'Paytm', template: 'Tech Outreach', time: '2h ago' },
-    { company: 'Meesho', template: 'Tech Outreach', time: '3h ago' },
-    { company: 'CRED', template: 'Tech Outreach', time: '4h ago' },
-    { company: 'Razorpay', template: 'Tech Outreach', time: '5h ago' },
+    { company: 'Swiggy', type: 'Cold Outreach', time: '1h ago' },
+    { company: 'Paytm', type: 'Cold Outreach', time: '2h ago' },
+    { company: 'Meesho', type: 'Cold Outreach', time: '3h ago' },
+    { company: 'CRED', type: 'Cold Outreach', time: '4h ago' },
+    { company: 'Razorpay', type: 'Cold Outreach', time: '5h ago' },
   ];
 
   return (
@@ -30,7 +30,7 @@ const RecentOutreachFeed = () => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-white truncate">{activity.company}</p>
-              <p className="text-[10px] text-white/40 truncate">{activity.template}</p>
+              <p className="text-[10px] text-white/40 truncate">{activity.type}</p>
             </div>
             <span className="text-[10px] text-white/35 flex-shrink-0">{activity.time}</span>
           </div>

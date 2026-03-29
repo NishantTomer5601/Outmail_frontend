@@ -30,8 +30,8 @@ const OutreachStatPills = ({ selectedPeriod }) => {
       border: 'border-cyan-500/25',
     },
     {
-      label: 'Active Template',
-      value: 'Tech Outreach',
+      label: 'Active Outreach',
+      value: 'Cold Emails',
       icon: FileText,
       color: 'text-amber-400',
       bg: 'bg-amber-500/15',
