@@ -5,167 +5,50 @@ const JobOpeningsTab = () => {
   const [jobOpenings, setJobOpenings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 1 });
 
-  const mockJobOpenings = [
-    {
-      id: 1,
-      title: "Frontend Developer",
-      company: "Swiggy",
-      location: "Bangalore, India",
-      type: "Full-time",
-      salary: "₹12L - ₹18L",
-      posted: "2 days ago",
-      description: "Join Swiggy's web team to build scalable and delightful user experiences for millions of users.",
-      requirements: ["2+ years React", "TypeScript", "Next.js", "UI/UX"],
-      status: "pending",
-      priorityScore: 92,
-      outreachSent: true,
-      signals: ["🔥 Funded Recently", "📈 Hiring Surge", "⚡ Hot Industry"],
-      url: "https://careers.swiggy.com/job/frontend-developer"
-    },
-    {
-      id: 2,
-      title: "Full Stack Engineer",
-      company: "Paytm",
-      location: "Noida, India",
-      type: "Full-time",
-      salary: "₹10L - ₹16L",
-      posted: "1 day ago",
-      description: "Work on Paytm's fintech products used by millions across India.",
-      requirements: ["Node.js", "React", "PostgreSQL", "AWS"],
-      status: "pending",
-      priorityScore: 85,
-      outreachSent: false,
-      signals: ["💰 Series B+", "🚀 Fast Growing", "🎯 High Demand Role"],
-      url: "https://paytm.com/careers/full-stack-engineer"
-    },
-    {
-      id: 3,
-      title: "React Developer",
-      company: "Meesho",
-      location: "Bangalore, India",
-      type: "Full-time",
-      salary: "₹9L - ₹14L",
-      posted: "3 days ago",
-      description: "React developer for Meesho's fast-growing e-commerce platform.",
-      requirements: ["React", "Redux", "REST APIs", "Git"],
-      status: "applied",
-      priorityScore: 78,
-      outreachSent: true,
-      signals: ["🌍 Remote Friendly", "🤝 Active Recruiter", "⏰ Act Fast"],
-      url: "https://meesho.io/careers/react-developer"
-    },
-    {
-      id: 4,
-      title: "UI/UX Developer",
-      company: "CRED",
-      location: "Bangalore, India",
-      type: "Full-time",
-      salary: "₹11L - ₹15L",
-      posted: "5 days ago",
-      description: "Shape next-generation design systems for CRED's fintech products.",
-      requirements: ["Figma", "HTML/CSS", "JavaScript", "User research"],
-      status: "discarded",
-      priorityScore: 68,
-      outreachSent: false,
-      signals: ["📊 Market Leader", "🎯 High Demand Role", "🌍 Remote Friendly"],
-      url: "https://cred.club/careers/ui-ux-developer"
-    },
-    {
-      id: 5,
-      title: "JavaScript Engineer",
-      company: "Razorpay",
-      location: "Bangalore, India",
-      type: "Full-time",
-      salary: "₹13L - ₹17L",
-      posted: "1 week ago",
-      description: "Build modern web applications for Razorpay's payment platform.",
-      requirements: ["ES6+", "Node.js", "MongoDB", "Docker"],
-      status: "pending",
-      priorityScore: 88,
-      outreachSent: true,
-      signals: ["🔥 Funded Recently", "💰 Series B+", "📈 Hiring Surge"],
-      url: "https://razorpay.com/careers/javascript-engineer"
-    },
-    {
-      id: 6,
-      title: "Backend Engineer",
-      company: "Flipkart",
-      location: "Bangalore, India",
-      type: "Full-time",
-      salary: "₹12L - ₹16L",
-      posted: "4 days ago",
-      description: "Scale distributed backend services for Flipkart's e-commerce platform.",
-      requirements: ["Python", "Go", "Kubernetes", "Microservices"],
-      status: "pending",
-      priorityScore: 63,
-      outreachSent: false,
-      signals: ["⚡ Hot Industry", "🚀 Fast Growing", "🤝 Active Recruiter"],
-      url: "https://flipkartcareers.com/#!/job/backend-engineer"
-    },
-    {
-      id: 7,
-      title: "Product Engineer",
-      company: "Zepto",
-      location: "Mumbai, India",
-      type: "Full-time",
-      salary: "₹10L - ₹14L",
-      posted: "6 days ago",
-      description: "Own features end-to-end at Zepto, India's fastest-growing quick commerce startup.",
-      requirements: ["React", "Node.js", "Product thinking", "Agile"],
-      status: "pending",
-      priorityScore: 57,
-      outreachSent: false,
-      signals: ["⏰ Act Fast", "🎯 High Demand Role", "📊 Market Leader"],
-      url: "https://careers.zeptonow.com/product-engineer"
-    },
-    {
-      id: 8,
-      title: "Mobile Developer (React Native)",
-      company: "Zomato",
-      location: "Gurgaon, India",
-      type: "Full-time",
-      salary: "₹11L - ₹15L",
-      posted: "2 days ago",
-      description: "Build cross-platform mobile experiences for Zomato's consumer app.",
-      requirements: ["React Native", "TypeScript", "iOS/Android", "REST APIs"],
-      status: "pending",
-      priorityScore: 72,
-      outreachSent: false,
-      signals: ["📈 Hiring Surge", "💰 Series B+", "🌍 Remote Friendly"],
-      url: "https://www.zomato.com/careers/mobile-developer"
+  const fetchJobs = async (page = 1, currentFilter = filter) => {
+    setLoading(true);
+    try {
+      const statusParam = currentFilter === 'all' ? 'pending' : currentFilter;
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
+      const response = await fetch(`${backendUrl}/api/jobs?page=${page}&limit=10&status=${statusParam}`);
+      const data = await response.json();
+      if (data.success) {
+        setJobOpenings(data.data);
+        setPagination(data.pagination);
+      }
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   useEffect(() => {
-    setLoading(true);
-    setJobOpenings(mockJobOpenings);
-    setLoading(false);
-  }, []);
+    fetchJobs(1, filter);
+  }, [filter]);
 
   const handleApply = (jobId) => {
-    setJobOpenings(prev =>
-      prev.map(job => job.id === jobId ? { ...job, status: 'applied' } : job)
-    );
+    // Dummy in-memory removal for now
+    setJobOpenings(prev => prev.filter(job => job.id !== jobId));
   };
 
   const handleDiscard = (jobId) => {
-    setJobOpenings(prev =>
-      prev.map(job => job.id === jobId ? { ...job, status: 'discarded' } : job)
-    );
+    // Dummy in-memory removal for now
+    setJobOpenings(prev => prev.filter(job => job.id !== jobId));
+  };
+
+  const handleResetStatus = (jobId) => {
+    // Dummy in-memory removal for now
+    setJobOpenings(prev => prev.filter(job => job.id !== jobId));
   };
 
   const handleOpenJob = (url) => {
-    window.open(url, '_blank');
+    if (url) window.open(url, '_blank');
   };
 
-  const filteredJobs = jobOpenings
-    .filter(job => {
-      if (filter === 'all') return job.status === 'pending';
-      return job.status === filter;
-    })
-    .sort((a, b) => b.priorityScore - a.priorityScore);
-
+  const filteredJobs = jobOpenings;
   const getStatusColor = (status) => {
     switch (status) {
       case 'applied': return 'text-green-400';
@@ -251,7 +134,7 @@ const JobOpeningsTab = () => {
         </div>
 
         <div className="flex flex-wrap gap-2 mb-3">
-          {job.signals.map((signal, i) => (
+          {job.signals && job.signals.map((signal, i) => (
             <span key={i} className="px-2 py-1 bg-purple-500/15 border border-purple-500/25 text-purple-200 rounded-full text-xs font-medium">
               {signal}
             </span>
@@ -264,7 +147,7 @@ const JobOpeningsTab = () => {
 
         <div className="mb-4">
           <div className="flex flex-wrap gap-2">
-            {job.requirements.map((req, index) => (
+            {job.requirements && job.requirements.map((req, index) => (
               <span key={index} className="px-2 py-1 bg-white/10 text-white/70 rounded-lg text-xs">
                 {req}
               </span>
@@ -297,9 +180,7 @@ const JobOpeningsTab = () => {
           </button>
           {job.status !== 'pending' && (
             <button
-              onClick={() => setJobOpenings(prev =>
-                prev.map(j => j.id === job.id ? { ...j, status: 'pending' } : j)
-              )}
+              onClick={() => handleResetStatus(job.id)}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm"
             >
               Reset Status
@@ -340,7 +221,7 @@ const JobOpeningsTab = () => {
                   : 'text-white/70 hover:text-white hover:bg-white/10'
               }`}
             >
-              {filterType} ({jobOpenings.filter(job => filterType === 'all' ? job.status === 'pending' : job.status === filterType).length})
+              {filterType}
             </button>
           ))}
         </div>
@@ -375,6 +256,29 @@ const JobOpeningsTab = () => {
               {standard.map(renderJobCard)}
             </>
           )}
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {!loading && pagination.totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-8">
+          <button
+            disabled={pagination.page === 1}
+            onClick={() => fetchJobs(pagination.page - 1)}
+            className="px-4 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors text-sm font-medium"
+          >
+            Previous
+          </button>
+          <span className="text-white/70 text-sm">
+            Page {pagination.page} of {pagination.totalPages}
+          </span>
+          <button
+            disabled={pagination.page === pagination.totalPages}
+            onClick={() => fetchJobs(pagination.page + 1)}
+            className="px-4 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors text-sm font-medium"
+          >
+            Next
+          </button>
         </div>
       )}
     </div>
