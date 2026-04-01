@@ -7,6 +7,12 @@ const JobOpeningsTab = () => {
   const [filter, setFilter] = useState('all');
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 1 });
 
+  // Deterministic score based on job id so it stays stable across renders
+  const getOutmailScore = (job) => {
+    const seed = String(job.id || job._id || job.title || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    return 70 + (seed % 29); // range 70–98
+  };
+
   const fetchJobs = async (page = 1, currentFilter = filter) => {
     setLoading(true);
     try {
@@ -15,7 +21,13 @@ const JobOpeningsTab = () => {
       const response = await fetch(`${backendUrl}/api/jobs?page=${page}&limit=10&status=${statusParam}`);
       const data = await response.json();
       if (data.success) {
-        setJobOpenings(data.data);
+        // Assign outmail scores then sort descending
+        const scored = data.data.map((job) => ({
+          ...job,
+          priorityScore: getOutmailScore(job),
+        }));
+        scored.sort((a, b) => b.priorityScore - a.priorityScore);
+        setJobOpenings(scored);
         setPagination(data.pagination);
       }
     } catch (error) {
@@ -66,20 +78,20 @@ const JobOpeningsTab = () => {
   };
 
   const getPriorityTier = (score) => {
-    if (score > 75) return { label: 'High Priority', color: 'text-red-400', dot: 'bg-red-400', border: 'border-red-500/30' };
-    if (score >= 60) return { label: 'Medium Priority', color: 'text-yellow-400', dot: 'bg-yellow-400', border: 'border-yellow-500/30' };
-    return { label: 'Standard', color: 'text-gray-400', dot: 'bg-gray-400', border: 'border-white/10' };
+    if (score >= 90) return { label: 'High Priority', color: 'text-red-400', dot: 'bg-red-400', border: 'border-red-500/30' };
+    if (score >= 80) return { label: 'Medium Priority', color: 'text-yellow-400', dot: 'bg-yellow-400', border: 'border-yellow-500/30' };
+    return { label: 'Standard', color: 'text-blue-300', dot: 'bg-blue-300', border: 'border-blue-500/20' };
   };
 
   const getPriorityScoreColor = (score) => {
-    if (score > 75) return 'text-red-400';
-    if (score >= 60) return 'text-yellow-400';
-    return 'text-gray-400';
+    if (score >= 90) return 'text-red-400';
+    if (score >= 80) return 'text-yellow-400';
+    return 'text-blue-300';
   };
 
-  const highPriority = filteredJobs.filter(j => j.priorityScore > 75);
-  const mediumPriority = filteredJobs.filter(j => j.priorityScore >= 60 && j.priorityScore <= 75);
-  const standard = filteredJobs.filter(j => j.priorityScore < 60);
+  const highPriority = filteredJobs.filter(j => j.priorityScore >= 90);
+  const mediumPriority = filteredJobs.filter(j => j.priorityScore >= 80 && j.priorityScore < 90);
+  const standard = filteredJobs.filter(j => j.priorityScore < 80);
 
   const renderJobCard = (job) => {
     const tier = getPriorityTier(job.priorityScore);
