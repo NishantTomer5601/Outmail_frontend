@@ -89,7 +89,7 @@ const ColdOutreachTab = () => {
         </div>
       </div>
 
-      <div className="mt-6 mb-10 bg-[#121212]/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/10">
+      <div className="mt-6 mb-10 bg-white/10 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/10">
         <div className="flex items-center gap-4 mb-8 pb-6 border-b border-white/10">
           <div className="p-3 bg-purple-500/10 rounded-xl text-purple-400 border border-purple-500/20">
             <Building2 size={24} />
@@ -122,10 +122,10 @@ const ColdOutreachTab = () => {
               demoCompanies.map((company) => (
                 <div 
                   key={company.id}
-                  className="flex flex-col md:flex-row items-start md:items-center justify-between p-5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group"
+                  className="flex flex-col md:flex-row items-start md:items-center justify-between p-5 rounded-xl border border-white/10 bg-white/10 hover:bg-white/15 hover:border-white/25 transition-all duration-300 group"
                 >
                   <div className="flex items-start gap-4 mb-4 md:mb-0">
-                    <div className="w-12 h-12 bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner">
+                    <div className="w-12 h-12 bg-white/20 border border-white/10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner">
                       <span className="text-lg font-bold text-white/80">{company.name.charAt(0)}</span>
                     </div>
                     
@@ -177,7 +177,7 @@ const ColdOutreachTab = () => {
                 </div>
               ))
             ) : (
-              <div className="p-10 text-center border border-dashed border-white/20 rounded-xl bg-white/5">
+              <div className="p-10 text-center border border-dashed border-white/20 rounded-xl bg-white/10">
                 <div className="mx-auto w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-3">
                   <Building2 size={24} className="text-gray-500" />
                 </div>
