@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 const plans = [
   {
@@ -105,8 +106,8 @@ export default function ZPricing() {
               </ul>
 
               {/* CTA */}
-              <a
-                href="#"
+              <Link
+                href="/"
                 className={`w-full block text-center py-3 px-4 rounded-full font-semibold text-sm transition-all duration-200
                   ${plan.highlight
                     ? 'bg-white text-black hover:bg-gray-100'
@@ -115,7 +116,7 @@ export default function ZPricing() {
                 role="button"
               >
                 {plan.cta} →
-              </a>
+              </Link>
             </div>
           ))}
         </div>

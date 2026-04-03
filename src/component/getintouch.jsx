@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Mail, Clock, Handshake, CalendarDays } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
 import { api } from '@/lib/api';
@@ -84,9 +85,9 @@ export default function GetInTouch() {
                     <div>
                       <p className="text-white/50 text-xs font-medium uppercase tracking-wider mb-0.5">{item.label}</p>
                       {item.isLink ? (
-                        <a href="#" className="text-white font-semibold text-sm hover:text-purple-300 transition underline underline-offset-2">
+                        <Link href="/" className="text-white font-semibold text-sm hover:text-purple-300 transition underline underline-offset-2">
                           {item.value}
-                        </a>
+                        </Link>
                       ) : (
                         <p className="text-white font-semibold text-sm">{item.value}</p>
                       )}

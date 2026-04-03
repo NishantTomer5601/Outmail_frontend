@@ -21,7 +21,10 @@ import {
   Globe, 
   Bell, 
   Zap, 
-  AlertTriangle 
+  AlertTriangle,
+  Briefcase,
+  MapPin,
+  ExternalLink
 } from "lucide-react";
 
 const SettingsTab = () => {
@@ -30,9 +33,13 @@ const SettingsTab = () => {
   const [profileSettings, setProfileSettings] = useState({
     name: user?.display_name || user?.name || "",
     email: user?.email || "",
-    phone: user?.phone || "+91 98765 43210",
-    linkedin: user?.linkedin || "linkedin.com/in/username",
-    github: user?.github || "github.com/username",
+    phone: user?.phone || "",
+    linkedin_url: user?.linkedin_url || "",
+    github_url: user?.github_url || "",
+    job_title: user?.job_title || "",
+    location: user?.location || "",
+    portfolio_url: user?.portfolio_url || "",
+    bio: user?.bio || "",
     notifications: true,
   });
 
@@ -207,7 +214,14 @@ const SettingsTab = () => {
       setProfileSettings(prev => ({
         ...prev,
         name: user.display_name || user.name || "",
-        email: user.email || ""
+        email: user.email || "",
+        phone: user.phone || "",
+        linkedin_url: user.linkedin_url || "",
+        github_url: user.github_url || "",
+        job_title: user.job_title || "",
+        location: user.location || "",
+        portfolio_url: user.portfolio_url || "",
+        bio: user.bio || ""
       }));
     }
   }, [user]);
@@ -242,7 +256,14 @@ const SettingsTab = () => {
     try {
       const result = await updateUser({
         display_name: profileSettings.name,
-        name: profileSettings.name
+        name: profileSettings.name,
+        phone: profileSettings.phone,
+        linkedin_url: profileSettings.linkedin_url,
+        github_url: profileSettings.github_url,
+        job_title: profileSettings.job_title,
+        location: profileSettings.location,
+        portfolio_url: profileSettings.portfolio_url,
+        bio: profileSettings.bio
       });
       if (result.success) {
         toast.success('Profile updated successfully!');
@@ -349,7 +370,7 @@ const SettingsTab = () => {
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="linkedin" className="block text-sm font-medium text-gray-300 mb-1">
+                    <label htmlFor="linkedin_url" className="block text-sm font-medium text-gray-300 mb-1">
                       LinkedIn Profile
                     </label>
                     <div className="relative">
@@ -358,9 +379,9 @@ const SettingsTab = () => {
                       </div>
                       <input
                         type="text"
-                        id="linkedin"
-                        name="linkedin"
-                        value={profileSettings.linkedin}
+                        id="linkedin_url"
+                        name="linkedin_url"
+                        value={profileSettings.linkedin_url}
                         onChange={handleChange}
                         placeholder="linkedin.com/in/..."
                         className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
@@ -369,25 +390,101 @@ const SettingsTab = () => {
                   </div>
                 </div>
 
-                <div>
-                  <label htmlFor="github" className="block text-sm font-medium text-gray-300 mb-1">
-                    GitHub Link
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <Github className="text-gray-400" size={18} />
+                  <div>
+                    <label htmlFor="github_url" className="block text-sm font-medium text-gray-300 mb-1">
+                      GitHub Link
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <Github className="text-gray-400" size={18} />
+                      </div>
+                      <input
+                        type="text"
+                        id="github_url"
+                        name="github_url"
+                        value={profileSettings.github_url}
+                        onChange={handleChange}
+                        placeholder="github.com/..."
+                        className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                      />
                     </div>
-                    <input
-                      type="text"
-                      id="github"
-                      name="github"
-                      value={profileSettings.github}
-                      onChange={handleChange}
-                      placeholder="github.com/..."
-                      className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
-                    />
                   </div>
-                </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                    <div>
+                      <label htmlFor="job_title" className="block text-sm font-medium text-gray-300 mb-1">
+                        Current Job Title / Role
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                          <Briefcase className="text-gray-400" size={18} />
+                        </div>
+                        <input
+                          type="text"
+                          id="job_title"
+                          name="job_title"
+                          value={profileSettings.job_title}
+                          onChange={handleChange}
+                          placeholder="e.g. Software Engineer"
+                          className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="location" className="block text-sm font-medium text-gray-300 mb-1">
+                        Location
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                          <MapPin className="text-gray-400" size={18} />
+                        </div>
+                        <input
+                          type="text"
+                          id="location"
+                          name="location"
+                          value={profileSettings.location}
+                          onChange={handleChange}
+                          placeholder="e.g. Bangalore, India"
+                          className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <label htmlFor="portfolio_url" className="block text-sm font-medium text-gray-300 mb-1">
+                      Portfolio / Website
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <ExternalLink className="text-gray-400" size={18} />
+                      </div>
+                      <input
+                        type="text"
+                        id="portfolio_url"
+                        name="portfolio_url"
+                        value={profileSettings.portfolio_url}
+                        onChange={handleChange}
+                        placeholder="https://yourportfolio.com"
+                        className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <label htmlFor="bio" className="block text-sm font-medium text-gray-300 mb-1">
+                      Bio / About You
+                    </label>
+                    <textarea
+                      id="bio"
+                      name="bio"
+                      rows="4"
+                      value={profileSettings.bio}
+                      onChange={handleChange}
+                      placeholder="Write a short bio about yourself..."
+                      className="w-full p-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors resize-none"
+                    ></textarea>
+                  </div>
 
                 <div className="flex justify-end pt-2">
                   <button

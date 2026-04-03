@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -68,39 +69,29 @@ export default function Footer({ variant = "gradient" }) {
             to convert them.
           </p>
 
-          <ul className="flex flex-wrap gap-4 text-sm text-white/80">
-            <li>
-              <a href="/Features" className="hover:underline">
-                Features
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://docs.outmail.in/terms-and-conditions"
-                className="hover:underline"
-              >
-                Terms and Conditions
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://docs.outmail.in/privacy-policy"
-                className="hover:underline"
-              >
-                Privacy Policy
-              </a>
-            </li>
-            <li>
-              <a href="#faq-section" className="hover:underline">
-                FAQ
-              </a>
-            </li>
-            <li>
-              <a href="/Contactus" className="hover:underline">
-                Contact Us
-              </a>
-            </li>
-          </ul>
+          <div className="flex flex-wrap gap-4 text-sm text-white/80">
+            <Link href="/Features" className="hover:underline">
+              Features
+            </Link>
+            <Link
+              href="https://docs.outmail.in/terms-and-conditions"
+              className="hover:underline"
+            >
+              Terms and Conditions
+            </Link>
+            <Link
+              href="https://docs.outmail.in/privacy-policy"
+              className="hover:underline"
+            >
+              Privacy Policy
+            </Link>
+            <Link href="#faq-section" className="hover:underline">
+              FAQ
+            </Link>
+            <Link href="/Contactus" className="hover:underline">
+              Contact Us
+            </Link>
+          </div>
         </div>
 
         {/* Right Column */}
