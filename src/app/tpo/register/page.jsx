@@ -42,8 +42,13 @@ export default function TpoRegisterPage() {
 
       if (response.data.success) {
         toast.success("Account created successfully!");
-        localStorage.setItem('authToken', response.data.token);
+        const token = response.data.token;
+        localStorage.setItem('authToken', token);
         localStorage.setItem('userRole', 'TPO_ADMIN');
+        
+        // Set cookie for middleware
+        document.cookie = `outmail_auth=${token}; path=/; max-age=${7 * 24 * 60 * 60}; secure; samesite=strict`;
+        
         router.push('/tpo/dashboard');
       }
     } catch (error) {

@@ -17,23 +17,27 @@ export function middleware(request) {
   const isAuthenticated = !!(authCookie || urlToken);
 
   // 2. Protected Routes (Must be logged in)
-  const protectedRoutes = ["/dashboard", "/admin"];
+  const protectedRoutes = ["/dashboard", "/admin", "/tpo"];
   const isProtectedRoute = protectedRoutes.some((route) =>
     path.startsWith(route)
   );
+  
+  // Exclude login and register from protection
+  const isPublicTpoRoute = path === "/tpo/login" || path === "/tpo/register";
 
-  if (isProtectedRoute && !isAuthenticated) {
+  if (isProtectedRoute && !isAuthenticated && !isPublicTpoRoute) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
   // 3. Auth Routes (Only for guest)
-  const authRoutes = ["/app-login", "/auth"];
+  const authRoutes = ["/app-login", "/auth", "/tpo/login", "/tpo/register"];
   const isAuthRoute = authRoutes.some((route) => path.startsWith(route));
 
   // If user is already authenticated, don't show login pages
   // Except for /auth/success which is a transient state
   if (isAuthRoute && isAuthenticated && !path.startsWith("/auth/success")) {
-    return NextResponse.redirect(new URL(`/dashboard${query}`, request.url));
+    const redirectPath = path.startsWith("/tpo") ? "/tpo/dashboard" : "/dashboard";
+    return NextResponse.redirect(new URL(`${redirectPath}${query}`, request.url));
   }
 
   return NextResponse.next();
