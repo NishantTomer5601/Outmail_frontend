@@ -16,8 +16,9 @@ export default function TPOPageShell({ children, title, subtitle }) {
   }, []);
 
   const tpoUser = {
+    ...user,
     name: user?.name || user?.display_name || "TPO Admin",
-    college: user?.institute || "Outmail Partner",
+    institution: user?.institution || { name: "Outmail Partner" },
     role: "Placement Officer",
   };
 

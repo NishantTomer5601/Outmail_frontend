@@ -14,7 +14,7 @@ export default function TPOTopBar({ onMenuClick, user }) {
         </button>
         <div>
           <h1 className="text-sm font-semibold text-gray-900">Placement Officer Dashboard</h1>
-          <p className="text-xs text-gray-400">{user?.college}</p>
+          <p className="text-xs text-gray-400">{user?.institution?.name}</p>
         </div>
       </div>
 

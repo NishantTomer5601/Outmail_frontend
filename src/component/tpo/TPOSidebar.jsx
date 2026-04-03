@@ -11,8 +11,10 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  X
+  X,
+  LogOutIcon
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const navItems = [
   { label: "Overview", href: "/tpo/dashboard", icon: LayoutDashboard },
@@ -88,10 +90,10 @@ export default function TPOSidebar({ isOpen, onToggle, user }) {
       {/* College Badge */}
       {isOpen && (
         <div className="px-4 py-4 border-t border-gray-100">
-          <div className="bg-purple-50 rounded-lg px-3 py-2.5">
-            <p className="text-xs font-semibold text-purple-700">{user?.college || "Institute"}</p>
-            <p className="text-xs text-purple-500 mt-0.5">Admin Dashboard View</p>
-          </div>
+          <Link href="/">
+            <span className="text-sm font-medium">Logout</span>
+            <LogOutIcon size={18} className="flex-shrink-0" />
+          </Link>
         </div>
       )}
       </aside>

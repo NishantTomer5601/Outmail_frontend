@@ -8,14 +8,14 @@ import TPOStudentTable from "@/component/tpo/TPOStudentTable";
 import TPOMentorshipPanel from "@/component/tpo/TPOMentorshipPanel";
 
 export default function TPODashboard() {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Mock TPO user — replace with real auth later
   const tpoUser = {
-    name: "Prof. Anita Sharma",
-    college: "BITS Pilani — Pilani Campus",
+    name: user?.name || user?.display_name || "TPO Admin",
+    college: user?.institution?.name || "Outmail Partner",
     role: "Placement Officer",
-    avatar: null,
+    avatar: user?.profile_picture || null,
   };
 
   return (
@@ -51,8 +51,9 @@ export default function TPODashboard() {
             <div className="flex gap-3">
               <select className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
                 <option>All Batches</option>
-                <option>2025–26</option>
-                <option>2024–25</option>
+                <option>2026-2027</option>
+                <option>2025-26</option>
+                <option>2024-25</option>
               </select>
               <button className="text-sm bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition font-medium">
                 Export Report

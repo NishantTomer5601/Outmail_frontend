@@ -51,6 +51,7 @@ const teamMembers = [
 ];
 
 export default function SettingsPage() {
+  const { user } = useAuth();
   const [notifs, setNotifs] = useState({
     weeklyReport:   true,
     studentActivity:true,
@@ -62,30 +63,37 @@ export default function SettingsPage() {
   const [newEmail, setNewEmail] = useState("");
   const [danger, setDanger] = useState(false);
 
+  // Institution data helper
+  const inst = user?.institution || {};
+
   return (
     <TPOPageShell title="Settings" subtitle="Manage your institution profile, team, and notification preferences">
       <div className="space-y-6">
 
-        {/* College Profile */}
+        {/* Institution Profile */}
         <Section icon={Building2} title="Institution Profile">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <Field label="Institution Name">
-              <Input defaultValue="BITS Pilani — Pilani Campus" />
+              <Input defaultValue={inst.name || "Loading..."} readOnly />
             </Field>
             <Field label="Batch Year">
               <Input defaultValue="2025" />
             </Field>
             <Field label="City / Location">
-              <Input defaultValue="Pilani, Rajasthan" />
+              <Input defaultValue={inst.location || "Not specified"} />
             </Field>
             <Field label="Primary Contact Email">
-              <Input defaultValue="tpo@bitspilani.ac.in" />
+              <Input defaultValue={inst.contact_email || user?.email || ""} />
             </Field>
           </div>
           <Field label="Institution Logo" hint="Upload a PNG or SVG — max 500 KB. Shown in reports and student emails.">
             <div className="flex items-center gap-4">
-              <div className="h-14 w-14 rounded-xl bg-purple-100 border-2 border-dashed border-purple-300 flex items-center justify-center text-purple-600 font-bold text-lg">
-                B
+              <div className="h-14 w-14 rounded-xl bg-purple-100 border-2 border-dashed border-purple-300 flex items-center justify-center overflow-hidden">
+                {inst.logo_url ? (
+                  <img src={inst.logo_url} alt="Logo" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-purple-600 font-bold text-lg">{(inst.name || "B")[0]}</span>
+                )}
               </div>
               <button className="text-xs font-semibold text-purple-600 border border-purple-200 px-4 py-2 rounded-lg hover:bg-purple-50 transition">
                 Upload Logo
