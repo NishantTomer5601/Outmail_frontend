@@ -11,6 +11,7 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  X
 } from "lucide-react";
 
 const navItems = [
@@ -24,13 +25,21 @@ const navItems = [
   { label: "Settings", href: "/tpo/settings", icon: Settings },
 ];
 
-export default function TPOSidebar({ isOpen, onToggle }) {
+export default function TPOSidebar({ isOpen, onToggle, user }) {
   return (
-    <aside
-      className={`fixed top-0 left-0 z-40 h-full bg-white border-r border-gray-200 transition-all duration-300 flex flex-col ${
-        isOpen ? "w-64" : "w-20"
-      }`}
-    >
+    <>
+      {/* Overlay Backdrop - only show on mobile when sidebar is open */}
+      {isOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-30 transition-opacity"
+          onClick={onToggle}
+        />
+      )}
+
+      <aside
+        className={`fixed top-0 left-0 z-40 h-full bg-white border-r border-gray-200 transition-all duration-300 flex flex-col 
+          ${isOpen ? "w-64 translate-x-0" : "w-64 -translate-x-full lg:w-20 lg:translate-x-0"}`}
+      >
       {/* Logo */}
       <div className="flex items-center justify-between px-4 py-5 border-b border-gray-100">
         <div className="flex items-center gap-3 overflow-hidden">
@@ -48,7 +57,14 @@ export default function TPOSidebar({ isOpen, onToggle }) {
           onClick={onToggle}
           className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"
         >
-          {isOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+          {isOpen ? (
+            <div className="flex">
+              <ChevronLeft size={16} className="hidden lg:block" />
+              <X size={18} className="lg:hidden" />
+            </div>
+          ) : (
+            <ChevronRight size={16} />
+          )}
         </button>
       </div>
 
@@ -58,6 +74,9 @@ export default function TPOSidebar({ isOpen, onToggle }) {
           <Link
             key={label}
             href={href}
+            onClick={() => {
+              if (window.innerWidth < 1024) onToggle();
+            }}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-purple-50 hover:text-purple-700 transition-colors group"
           >
             <Icon size={18} className="flex-shrink-0" />
@@ -70,11 +89,12 @@ export default function TPOSidebar({ isOpen, onToggle }) {
       {isOpen && (
         <div className="px-4 py-4 border-t border-gray-100">
           <div className="bg-purple-50 rounded-lg px-3 py-2.5">
-            <p className="text-xs font-semibold text-purple-700">BITS Pilani</p>
-            <p className="text-xs text-purple-500 mt-0.5">Pilani Campus · Batch 2025–26</p>
+            <p className="text-xs font-semibold text-purple-700">{user?.college || "Institute"}</p>
+            <p className="text-xs text-purple-500 mt-0.5">Admin Dashboard View</p>
           </div>
         </div>
       )}
-    </aside>
+      </aside>
+    </>
   );
 }

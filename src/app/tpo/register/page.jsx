@@ -4,10 +4,13 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, User, Building, UserPlus, ArrowRight } from 'lucide-react';
+import { Mail, Lock, User, Building, UserPlus, ArrowRight, Loader2 } from 'lucide-react';
+import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 export default function TpoRegisterPage() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     institute: '',
@@ -20,10 +23,35 @@ export default function TpoRegisterPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Register attempt:', formData);
-    router.push('/tpo/dashboard');
+    
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await api.post('/api/auth/tpo-register', {
+        name: formData.name,
+        institute: formData.institute,
+        email: formData.email,
+        password: formData.password
+      });
+
+      if (response.data.success) {
+        toast.success("Account created successfully!");
+        localStorage.setItem('authToken', response.data.token);
+        localStorage.setItem('userRole', 'TPO_ADMIN');
+        router.push('/tpo/dashboard');
+      }
+    } catch (error) {
+      console.error('Register attempt failed:', error);
+      toast.error(error.response?.data?.error || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -158,9 +186,18 @@ export default function TpoRegisterPage() {
 
             <button
               type="submit"
-              className="md:col-span-2 mt-4 bg-gradient-to-r from-[#6c00ff] to-[#ad46ff] text-white font-bold py-4 rounded-xl shadow-lg shadow-purple-900/30 hover:brightness-110 active:scale-[0.98] transition flex items-center justify-center gap-3 group"
+              disabled={loading}
+              className="md:col-span-2 mt-4 bg-gradient-to-r from-[#6c00ff] to-[#ad46ff] text-white font-bold py-4 rounded-xl shadow-lg shadow-purple-900/30 hover:brightness-110 active:scale-[0.98] transition flex items-center justify-center gap-3 group disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Create Account <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              {loading ? (
+                <>
+                  Processing <Loader2 size={20} className="animate-spin" />
+                </>
+              ) : (
+                <>
+                  Create Account <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
             </button>
           </form>
 

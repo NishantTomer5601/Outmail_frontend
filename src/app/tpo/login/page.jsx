@@ -4,17 +4,34 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 export default function TpoLoginPage() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login attempt:', { email, password });
-    router.push('/tpo/dashboard');
+    setLoading(true);
+    try {
+      const response = await api.post('/api/auth/tpo-login', { email, password });
+      
+      if (response.data.success) {
+        toast.success("Welcome back!");
+        localStorage.setItem('authToken', response.data.token);
+        localStorage.setItem('userRole', 'TPO_ADMIN');
+        router.push('/tpo/dashboard');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error(error.response?.data?.error || "Login failed. Please check your credentials.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -89,9 +106,18 @@ export default function TpoLoginPage() {
 
             <button
               type="submit"
-              className="w-full mt-6 bg-gradient-to-r from-[#6c00ff] to-[#ad46ff] text-white font-bold py-4 rounded-xl shadow-lg shadow-purple-900/20 hover:brightness-110 active:scale-[0.98] transition flex items-center justify-center gap-2 group"
+              disabled={loading}
+              className="w-full mt-6 bg-gradient-to-r from-[#6c00ff] to-[#ad46ff] text-white font-bold py-4 rounded-xl shadow-lg shadow-purple-900/20 hover:brightness-110 active:scale-[0.98] transition flex items-center justify-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Sign In <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              {loading ? (
+                <>
+                  Verifying <Loader2 size={18} className="animate-spin" />
+                </>
+              ) : (
+                <>
+                  Sign In <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
             </button>
           </form>
 

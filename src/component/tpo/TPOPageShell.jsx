@@ -1,20 +1,29 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TPOSidebar from "@/component/tpo/TPOSidebar";
 import TPOTopBar from "@/component/tpo/TPOTopBar";
-
-const tpoUser = {
-  name: "Prof. Anita Sharma",
-  college: "BITS Pilani — Pilani Campus",
-  role: "Placement Officer",
-};
+import { useAuth } from "@/context/AuthContext";
 
 export default function TPOPageShell({ children, title, subtitle }) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { user } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Initialize sidebar state based on screen size
+  useEffect(() => {
+    if (window.innerWidth >= 1024) {
+      setSidebarOpen(true);
+    }
+  }, []);
+
+  const tpoUser = {
+    name: user?.name || user?.display_name || "TPO Admin",
+    college: user?.institute || "Outmail Partner",
+    role: "Placement Officer",
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <TPOSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+      <TPOSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} user={tpoUser} />
       <div className={`flex-1 flex flex-col transition-all duration-300 ${sidebarOpen ? "lg:ml-64" : "lg:ml-20"}`}>
         <TPOTopBar onMenuClick={() => setSidebarOpen(!sidebarOpen)} user={tpoUser} />
         <main className="flex-1 p-6">

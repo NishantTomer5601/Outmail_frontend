@@ -43,7 +43,7 @@ export default function TPOTopBar({ onMenuClick, user }) {
           </div>
           <div className="hidden md:block">
             <p className="text-sm font-medium text-gray-900 leading-none">{user?.name}</p>
-            <p className="text-xs text-gray-400 mt-0.5">{user?.role}</p>
+            <p className="text-xs text-gray-400 mt-0.5">Placement Officer</p>
           </div>
         </div>
       </div>
