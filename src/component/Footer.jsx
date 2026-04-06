@@ -74,13 +74,13 @@ export default function Footer({ variant = "gradient" }) {
               Features
             </Link>
             <Link
-              href="https://docs.outmail.in/terms-and-conditions"
+              href="/terms-and-conditions"
               className="hover:underline"
             >
               Terms and Conditions
             </Link>
             <Link
-              href="https://docs.outmail.in/privacy-policy"
+              href="/privacy-policy"
               className="hover:underline"
             >
               Privacy Policy
