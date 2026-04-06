@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 
 export function middleware(request) {
   const path = request.nextUrl.pathname;
+  const origin = request.nextUrl.origin;
   const searchParams = request.nextUrl.searchParams.toString();
   const query = searchParams ? `?${searchParams}` : "";
 
-  // 1. Identification
   const authCookie =
     request.cookies.get("outmail_auth") ||
     request.cookies.get("connect.sid") ||
@@ -16,28 +16,39 @@ export function middleware(request) {
   const urlToken = request.nextUrl.searchParams.get("token");
   const isAuthenticated = !!(authCookie || urlToken);
 
-  // 2. Protected Routes (Must be logged in)
-  const protectedRoutes = ["/dashboard", "/admin", "/tpo"];
+  const alwaysPublicPaths = [
+    "/terms-and-conditions",
+    "/privacy-policy",
+    "/auth/success",
+  ];
+  if (alwaysPublicPaths.includes(path)) {
+    return NextResponse.next();
+  }
+
+  const authRoutes = ["/app-login", "/auth"];
+  const isAuthRoute = authRoutes.some((route) => path.startsWith(route));
+
+  if (isAuthRoute) {
+    if (isAuthenticated) {
+      return NextResponse.redirect(new URL(`/dashboard${query}`, origin));
+    }
+    return NextResponse.next();
+  }
+
+  const protectedRoutes = ["/dashboard", "/admin"];
   const isProtectedRoute = protectedRoutes.some((route) =>
     path.startsWith(route)
   );
-  
-  // Exclude login and register from protection
-  const isPublicTpoRoute = path === "/tpo/login" || path === "/tpo/register";
 
-  if (isProtectedRoute && !isAuthenticated && !isPublicTpoRoute) {
-    return NextResponse.redirect(new URL("/", request.url));
+  const tpoPublicRoutes = ["/tpo/login", "/tpo/register"];
+  const isTpoPublicRoute = tpoPublicRoutes.includes(path);
+
+  if (isProtectedRoute && !isAuthenticated) {
+    return NextResponse.redirect(new URL("/", origin));
   }
 
-  // 3. Auth Routes (Only for guest)
-  const authRoutes = ["/app-login", "/auth", "/tpo/login", "/tpo/register"];
-  const isAuthRoute = authRoutes.some((route) => path.startsWith(route));
-
-  // If user is already authenticated, don't show login pages
-  // Except for /auth/success which is a transient state
-  if (isAuthRoute && isAuthenticated && !path.startsWith("/auth/success")) {
-    const redirectPath = path.startsWith("/tpo") ? "/tpo/dashboard" : "/dashboard";
-    return NextResponse.redirect(new URL(`${redirectPath}${query}`, request.url));
+  if (path.startsWith("/tpo") && !isTpoPublicRoute && !isAuthenticated) {
+    return NextResponse.redirect(new URL("/", origin));
   }
 
   return NextResponse.next();
