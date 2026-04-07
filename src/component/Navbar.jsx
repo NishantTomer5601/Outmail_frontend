@@ -2,13 +2,14 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X, User, LogOut } from "lucide-react";
+import { Menu, X, User, LogOut, ChevronDown } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 
 function Navbar({ variant = "gradient" }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isLoginDropdownOpen, setIsLoginDropdownOpen] = useState(false);
   const { user, isAuthenticated, loading, logout } = useAuth();
 
   const isDark = variant === "dark";
@@ -90,12 +91,49 @@ function Navbar({ variant = "gradient" }) {
               )}
             </div>
           ) : (
-            <Link
-              href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google`}
-              className="text-white bg-[#AD46FF] font-semibold rounded-full px-4 py-1.5 hover:bg-[#c289f0] transition-colors"
-            >
-              Login
-            </Link>
+            <div className="relative">
+              <button
+                onClick={() => setIsLoginDropdownOpen(!isLoginDropdownOpen)}
+                className="text-white bg-[#AD46FF] font-semibold rounded-full px-5 py-2 hover:bg-[#c289f0] transition-all flex items-center gap-2 shadow-lg shadow-purple-500/20 active:scale-95"
+              >
+                <span>Login</span>
+                <ChevronDown 
+                  size={18} 
+                  className={`transition-transform duration-300 ${isLoginDropdownOpen ? 'rotate-180' : ''}`} 
+                />
+              </button>
+
+              <AnimatePresence>
+                {isLoginDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 mt-3 w-56 bg-[#0a0b14]/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 py-2 z-50 overflow-hidden ring-1 ring-white/5"
+                  >
+                    <Link
+                      href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google`}
+                      className="flex items-center gap-3 px-6 py-4 text-white hover:bg-white/10 transition-colors group"
+                      onClick={() => setIsLoginDropdownOpen(false)}
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-sm">Login as Student</span>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/tpo/login"
+                      className="flex items-center gap-3 px-6 py-4 text-white hover:bg-white/10 transition-colors group"
+                      onClick={() => setIsLoginDropdownOpen(false)}
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-sm">Login as TPO Admin</span>
+                      </div>
+                    </Link>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           )}
         </div>
 
@@ -175,23 +213,39 @@ function Navbar({ variant = "gradient" }) {
                   </button>
                 </div>
               ) : (
-                <Link
-                  href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google`}
-                  className="text-center text-white bg-[#AD46FF] font-semibold rounded-full px-8 py-3 mt-4 hover:bg-[#c289f0] transition-colors"
-                >
-                  Login
-                </Link>
+                <div className="flex flex-col space-y-4 w-full px-6">
+                  <div className="text-white/50 text-xs font-bold uppercase tracking-widest text-center mb-1">Login Options</div>
+                  <Link
+                    href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google`}
+                    className="flex flex-col items-center justify-center w-full bg-white/10 border border-white/5 backdrop-blur-md text-white font-semibold rounded-2xl p-4 hover:bg-white/20 transition-all active:scale-[0.98]"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span className="text-lg">Login as Student</span>
+                    <span className="text-[10px] text-white/40 font-medium">For students pursuing careers</span>
+                  </Link>
+                  <Link
+                    href="/tpo/login"
+                    className="flex flex-col items-center justify-center w-full bg-[#AD46FF] text-white font-semibold rounded-2xl p-4 hover:bg-[#c289f0] transition-all shadow-lg shadow-purple-500/20 active:scale-[0.98]"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span className="text-lg">Login as TPO admin</span>
+                    <span className="text-[10px] text-white/70 font-medium">For training & placement officers</span>
+                  </Link>
+                </div>
               )}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Backdrop for user menu */}
-      {isUserMenuOpen && (
+      {/* Backdrop for open menus */}
+      {(isUserMenuOpen || isLoginDropdownOpen) && (
         <div
           className="fixed inset-0 z-40"
-          onClick={() => setIsUserMenuOpen(false)}
+          onClick={() => {
+            setIsUserMenuOpen(false);
+            setIsLoginDropdownOpen(false);
+          }}
         />
       )}
     </header>
