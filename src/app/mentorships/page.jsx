@@ -7,6 +7,8 @@ import {
   Calendar,
   ChevronRight,
   TrendingUp,
+  Clock,
+  Tag
 } from "lucide-react";
 import Navbar from "@/component/Navbar";
 import Footer from "@/component/Footer";
@@ -45,7 +47,11 @@ export default function MentorshipsPage() {
           id: s.id,
           mentor: s.mentorName,
           role: s.mentorRole,
+          image: s.mentorImage,
           topic: s.topic,
+          sessionTime: s.sessionTime,
+          sessionType: s.sessionType,
+          whyAttend: s.whyThisMentor,
           date: new Date(s.date).toLocaleDateString("en-GB", {
             day: "numeric",
             month: "short",
@@ -118,9 +124,17 @@ export default function MentorshipsPage() {
               >
                 {/* Mentor Header */}
                 <div className="flex items-center gap-5 mb-10">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6c00ff] to-[#ad46ff] flex items-center justify-center text-xl font-bold text-white shadow-[0_8px_20px_-6px_rgba(108,0,255,0.5)]">
-                    {s.mentor.split(" ").map(n => n[0]).join("")}
-                  </div>
+                  {s.image ? (
+                    <img 
+                      src={s.image} 
+                      alt={s.mentor} 
+                      className="w-16 h-16 rounded-2xl object-cover shadow-[0_8px_20px_-6px_rgba(108,0,255,0.5)]"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6c00ff] to-[#ad46ff] flex items-center justify-center text-xl font-bold text-white shadow-[0_8px_20px_-6px_rgba(108,0,255,0.5)]">
+                      {s.mentor.split(" ").map(n => n[0]).join("")}
+                    </div>
+                  )}
                   <div>
                     <h3 className="text-xl font-syne font-bold text-white tracking-wide uppercase">
                       {s.mentor}
@@ -131,16 +145,41 @@ export default function MentorshipsPage() {
 
                 {/* Session Context Box */}
                 <div className="bg-white/5 border border-white/5 rounded-3xl p-7 mb-10">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Calendar size={14} className="text-[#ad46ff]" />
-                    <span className="text-xs font-bold text-[#ad46ff] tracking-[0.15em]">
-                      {s.date}
-                    </span>
+                  <div className="flex flex-wrap items-center gap-4 mb-3">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={14} className="text-[#ad46ff]" />
+                      <span className="text-[10px] font-bold text-[#ad46ff] tracking-[0.15em]">
+                        {s.date}
+                      </span>
+                    </div>
+                    {s.sessionTime && (
+                      <div className="flex items-center gap-2">
+                        <Clock size={14} className="text-[#ad46ff]" />
+                        <span className="text-[10px] font-bold text-white/40 tracking-[0.1 tracking-[0.1em]">
+                          {s.sessionTime}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  <h4 className="text-2xl font-syne font-bold leading-tight">
+                  <h4 className="text-2xl font-syne font-bold leading-tight mb-4">
                     {s.topic}
                   </h4>
+                  {s.sessionType && (
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-wider text-white/60">
+                      <Tag size={10} /> {s.sessionType}
+                    </div>
+                  )}
                 </div>
+
+                {/* Why Attend Box */}
+                {s.whyAttend && (
+                  <div className="mb-10 px-4 py-3 bg-purple-500/5 border-l-2 border-purple-500/30 rounded-r-xl">
+                    <p className="text-xs font-bold text-purple-300/80 uppercase tracking-widest mb-1">Expert Focus</p>
+                    <p className="text-sm text-white/60 italic leading-relaxed">
+                      {s.whyAttend}
+                    </p>
+                  </div>
+                )}
 
                 {/* Performance Metrics */}
                 <div className="flex items-end justify-between border-t border-white/5 pt-2 mb-10">
