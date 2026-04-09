@@ -1,0 +1,31 @@
+import Navbar from "@/component/Navbar";
+import Footer from "@/component/Footer";
+import Faq from "@/component/faq";
+
+export const metadata = {
+  title: "FAQ | Outmail - Personalized Cold Outreach",
+  description:
+    "Frequently asked questions about Outmail. Learn how our personalized cold outreach and recruiter search at scale can help your career growth.",
+  alternates: {
+    canonical: "https://outmail.in/faq",
+  },
+  openGraph: {
+    title: "FAQ | Outmail - Personalized Cold Outreach",
+    description:
+      "Frequently asked questions about Outmail. Learn how our personalized cold outreach and recruiter search at scale can help your career growth.",
+    url: "https://outmail.in/faq",
+    type: "website",
+  },
+};
+
+export default function FAQPage() {
+  return (
+    <div className="min-h-screen bg-[#0a0b14] text-white">
+      <Navbar variant="dark" />
+      <main className="pt-20">
+        <Faq />
+      </main>
+      <Footer variant="dark" />
+    </div>
+  );
+}

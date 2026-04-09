@@ -85,7 +85,7 @@ export default function Footer({ variant = "gradient" }) {
             >
               Privacy Policy
             </Link>
-            <Link href="#faq-section" className="hover:underline">
+            <Link href="/faq" className="hover:underline">
               FAQ
             </Link>
             <Link href="/Contactus" className="hover:underline">
