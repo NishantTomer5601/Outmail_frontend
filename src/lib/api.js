@@ -29,12 +29,6 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // If unauthorized, redirect to home page
-    if (error.response?.status === 401) {
-      if (typeof window !== 'undefined' && window.location.pathname !== '/') {
-        window.location.href = '/';
-      }
-    }
     return Promise.reject(error);
   }
 );
