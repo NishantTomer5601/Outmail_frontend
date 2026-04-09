@@ -16,16 +16,8 @@ export function middleware(request) {
   const urlToken = request.nextUrl.searchParams.get("token");
   const isAuthenticated = !!(authCookie || urlToken);
 
-  const alwaysPublicPaths = [
-    "/terms-and-conditions",
-    "/privacy-policy",
-    "/auth/success",
-  ];
-  if (alwaysPublicPaths.includes(path)) {
-    return NextResponse.next();
-  }
-
-  const authRoutes = ["/app-login", "/auth"];
+  // Auth routes: Redirect authenticated users to dashboard
+  const authRoutes = ["/app-login", "/auth", "/tpo/login", "/tpo/register"];
   const isAuthRoute = authRoutes.some((route) => path.startsWith(route));
 
   if (isAuthRoute) {
@@ -35,22 +27,8 @@ export function middleware(request) {
     return NextResponse.next();
   }
 
-  const protectedRoutes = ["/dashboard", "/admin"];
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    path.startsWith(route)
-  );
-
-  const tpoPublicRoutes = ["/tpo/login", "/tpo/register"];
-  const isTpoPublicRoute = tpoPublicRoutes.includes(path);
-
-  if (isProtectedRoute && !isAuthenticated) {
-    return NextResponse.redirect(new URL("/", origin));
-  }
-
-  if (path.startsWith("/tpo") && !isTpoPublicRoute && !isAuthenticated) {
-    return NextResponse.redirect(new URL("/", origin));
-  }
-
+  // All other routes are allowed at the middleware level.
+  // Internal auth checks in components/layouts will handle restricted access.
   return NextResponse.next();
 }
 

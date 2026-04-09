@@ -1,5 +1,7 @@
 "use client";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 import TPOSidebar from "@/component/tpo/TPOSidebar";
 import TPOTopBar from "@/component/tpo/TPOTopBar";
 import TPOOverviewCards from "@/component/tpo/TPOOverviewCards";
@@ -8,7 +10,23 @@ import TPOStudentTable from "@/component/tpo/TPOStudentTable";
 import TPOMentorshipPanel from "@/component/tpo/TPOMentorshipPanel";
 
 export default function TPODashboard() {
+  const { isAuthenticated, loading } = useAuth();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.replace("/");
+    }
+  }, [isAuthenticated, loading, router]);
+
+  if (loading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
 
   // Mock TPO user — replace with real auth later
   const tpoUser = {
