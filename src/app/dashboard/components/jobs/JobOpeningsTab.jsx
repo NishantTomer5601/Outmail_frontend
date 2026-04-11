@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Briefcase, Building, MapPin, DollarSign, Clock, CheckCircle, X, ExternalLink } from "lucide-react";
+import { Briefcase, Building, MapPin, DollarSign, Clock, CheckCircle, X, ExternalLink, Calendar, Users, ListFilter } from "lucide-react";
 
 const JobOpeningsTab = () => {
   const [jobOpenings, setJobOpenings] = useState([]);
@@ -117,25 +117,39 @@ const JobOpeningsTab = () => {
 
             <div className="flex flex-wrap items-center gap-3 text-sm text-white/60 mb-3">
               <div className="flex items-center gap-1">
-                <Building size={14} />
+                <Building size={14} className="text-purple-400" />
                 {job.company}
               </div>
               <div className="flex items-center gap-1">
-                <MapPin size={14} />
+                <MapPin size={14} className="text-purple-400" />
                 {job.location}
               </div>
               <div className="flex items-center gap-1">
-                <Briefcase size={14} />
-                {job.type}
+                <Briefcase size={14} className="text-purple-400" />
+                {job.workType}
               </div>
               <div className="flex items-center gap-1">
-                <DollarSign size={14} />
-                {job.salary}
+                <DollarSign size={14} className="text-purple-400" />
+                {job.compensation}
               </div>
-              <div className="flex items-center gap-1">
-                <Clock size={14} />
-                {job.posted}
-              </div>
+              {job.duration && (
+                <div className="flex items-center gap-1">
+                  <Clock size={14} className="text-purple-400" />
+                  {job.duration}
+                </div>
+              )}
+              {job.startDate && (
+                <div className="flex items-center gap-1">
+                  <Calendar size={14} className="text-purple-400" />
+                  {job.startDate}
+                </div>
+              )}
+              {job.numApplicants && (
+                <div className="flex items-center gap-1">
+                  <Users size={14} className="text-purple-400" />
+                  {job.numApplicants}
+                </div>
+              )}
             </div>
           </div>
 
@@ -153,28 +167,32 @@ const JobOpeningsTab = () => {
           ))}
         </div>
 
-        <p className="text-white/70 text-sm mb-3 line-clamp-2">
-          {job.description}
-        </p>
-
-        <div className="mb-4">
-          <div className="flex flex-wrap gap-2">
-            {job.requirements && job.requirements.map((req, index) => (
-              <span key={index} className="px-2 py-1 bg-white/10 text-white/70 rounded-lg text-xs">
-                {req}
-              </span>
-            ))}
-          </div>
+        <div className="bg-white/5 rounded-xl p-4 mb-4 border border-white/5">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-white/40 mb-2">Job Details</h4>
+          <div 
+            className="text-white/70 text-sm prose prose-invert max-w-none"
+            dangerouslySetInnerHTML={{ __html: job.details }}
+          />
         </div>
+
+        {job.qualifications && (
+          <div className="bg-purple-500/5 rounded-xl p-4 mb-4 border border-purple-500/10">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-purple-300/60 mb-2">Qualifications</h4>
+            <div 
+              className="text-white/70 text-sm prose prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ __html: job.qualifications }}
+            />
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-2">
           {job.status === 'pending' && (
             <>
               <button
-                onClick={() => handleApply(job.id)}
+                onClick={() => handleOpenJob(job.applyLink || job.url)}
                 className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors text-sm"
               >
-                <CheckCircle size={16} /> Apply
+                <CheckCircle size={16} /> Apply Now
               </button>
               <button
                 onClick={() => handleDiscard(job.id)}
