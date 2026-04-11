@@ -24,11 +24,12 @@ import {
   AlertTriangle,
   Briefcase,
   MapPin,
-  ExternalLink
+  ExternalLink,
+  School
 } from "lucide-react";
 
 const SettingsTab = () => {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, checkAuth } = useAuth();
   
   const [profileSettings, setProfileSettings] = useState({
     name: user?.display_name || user?.name || "",
@@ -53,6 +54,8 @@ const SettingsTab = () => {
   const [isDeleteAttachmentConfirmOpen, setIsDeleteAttachmentConfirmOpen] = useState(false);
   const [attachmentToDelete, setAttachmentToDelete] = useState(null);
   const [isDeleteAccountConfirmOpen, setIsDeleteAccountConfirmOpen] = useState(false);
+  const [institutionCode, setInstitutionCode] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
 
 
   const fileInputRef = useRef(null);
@@ -275,6 +278,34 @@ const SettingsTab = () => {
       toast.error('An error occurred while updating your profile.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleJoinInstitution = async () => {
+    if (!institutionCode.trim()) {
+      toast.error('Please enter an Institution ID');
+      return;
+    }
+    
+    setIsJoining(true);
+    try {
+      const response = await api.put('/api/user/join', {
+        institutionCode: institutionCode
+      });
+      
+      if (response.data.success) {
+        toast.success(response.data.message || 'Successfully joined institution!');
+        setInstitutionCode("");
+        // Re-fetch user data via context
+        await checkAuth();
+      } else {
+        toast.error(response.data.error || 'Failed to join institution');
+      }
+    } catch (error) {
+      console.error('Error joining institution:', error);
+      toast.error(error.response?.data?.error || 'An error occurred while joining the institution.');
+    } finally {
+      setIsJoining(false);
     }
   };
 
@@ -508,6 +539,88 @@ const SettingsTab = () => {
                       </>
                     )}
                   </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
+              <div className="flex items-center gap-4 mb-6">
+                <School className="text-emerald-500" size={24} />
+                <h2 className="text-xl font-semibold text-white">
+                  Institution Settings
+                </h2>
+              </div>
+              
+              <div className="space-y-6">
+                {user?.institution ? (
+                  <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="text-xs font-medium text-emerald-400 uppercase tracking-wider mb-1">Joined Institution</p>
+                        <h3 className="text-lg font-bold text-white">{user.institution.name}</h3>
+                        <p className="text-sm text-white/60 mt-1 flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-xs font-mono">
+                            ID: {user.institution.institutionCode}
+                          </span>
+                        </p>
+                      </div>
+                      <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400">
+                        <Check size={20} />
+                      </div>
+                    </div>
+                  </div>
+                ) : user?.institute_name ? (
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                    <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-1">Current Institution (Legacy)</p>
+                    <h3 className="text-lg font-bold text-white">{user.institute_name}</h3>
+                    <p className="text-xs text-white/30 mt-2 italic">Connect using an Official ID below to unlock institution-specific features.</p>
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+                    <p className="text-sm text-white/40">You haven't joined an institution yet.</p>
+                  </div>
+                )}
+
+                <div className="pt-2 border-t border-white/10">
+                  <label htmlFor="instCode" className="block text-sm font-medium text-gray-300 mb-2">
+                    {user?.institution ? 'Change Institution' : 'Join Institution'}
+                  </label>
+                  <p className="text-xs text-white/40 mb-3">
+                    Enter the unique ID provided by your Training & Placement Office (TPO).
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-grow">
+                      <input
+                        type="text"
+                        id="instCode"
+                        value={institutionCode}
+                        onChange={(e) => setInstitutionCode(e.target.value)}
+                        placeholder="e.g. PESU-2024"
+                        className="w-full p-3 rounded-lg border border-gray-600 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors uppercase font-mono"
+                      />
+                    </div>
+                    <button
+                      onClick={handleJoinInstitution}
+                      disabled={isJoining || !institutionCode.trim()}
+                      className={`px-6 py-3 rounded-lg font-semibold shadow-lg transition-all duration-300 flex items-center justify-center gap-2 ${
+                        isJoining || !institutionCode.trim()
+                          ? 'bg-gray-600 cursor-not-allowed text-gray-400'
+                          : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                      }`}
+                    >
+                      {isJoining ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Joining...
+                        </>
+                      ) : (
+                        <>
+                          <Zap size={18} />
+                          Join Now
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
