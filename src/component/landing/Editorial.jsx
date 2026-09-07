@@ -2,6 +2,7 @@
 import { Mail, Briefcase, Zap, Users } from "lucide-react";
 import { Reveal, MaskLines, Count, Kicker } from "@/component/motion/kit";
 import { EDITORIAL } from "@/content/landing";
+import { STAT } from "@/content/story";
 
 /**
  * The four offerings, set as a magazine spread rather than a card grid.
@@ -34,7 +35,7 @@ export const OFFERINGS = [
 ];
 
 /** `copy` defaults to the production wording; only the content lab varies it. */
-export default function Editorial({ copy = EDITORIAL[0] }) {
+export default function Editorial({ copy = EDITORIAL[0], stat = STAT[0] }) {
   const items = OFFERINGS.map((o, i) => ({ ...o, ...copy.items[i] }));
   return (
     <section className="max-w-5xl mx-auto px-6 py-28">
@@ -55,12 +56,14 @@ export default function Editorial({ copy = EDITORIAL[0] }) {
           className="col-span-12 md:col-span-5 md:border-l border-white/15 md:pl-8 md:pt-3"
         >
           <p className="font-syne text-5xl font-bold text-primary/30 leading-none mb-2">
-            <Count key={copy.label} to={copy.stat} suffix={copy.statSuffix} />
+            <Count key={stat.label} to={stat.stat} suffix={stat.suffix} />
           </p>
-          <p className="text-sm text-white/50 leading-relaxed">
-            applications per opening. A recruiter reads perhaps twelve. Outmail is how you become
-            one of the twelve — and how you find the openings worth that effort.
-          </p>
+          <p className="text-sm text-white/50 leading-relaxed">{stat.body}</p>
+          {/* A statistic on a page that also asks for money will eventually be
+              checked, so where it came from is printed next to it. */}
+          {stat.source && (
+            <p className="text-[11px] text-white/25 mt-3 leading-relaxed">Source: {stat.source}</p>
+          )}
         </Reveal>
         {items.map((o, i) => (
           <Reveal

@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Mail, Briefcase, Zap, MessageSquare, ArrowDown } from "lucide-react";
 import React from "react";
 import { Reveal, MaskLines, EASE_OUT } from "@/component/motion/kit";
+import { STORY_COPY } from "@/content/story";
 
 /**
  * HOW IT WORKS — comic-strip panels. LOCKED.
@@ -154,17 +155,23 @@ function SectionHead({ kicker = "How it works", lines, sub, className = "" }) {
 
 /* ═══ S5 · PANELS — comic-strip frames. Loud, staggered, unmistakably for
        students rather than for their placement office. ═══ */
-export function StoryPanels() {
+/** `copy` defaults to the production wording; only the content lab varies it. */
+export function StoryPanels({ copy = STORY_COPY[0] }) {
+  // Icons, panel numbers and the little visuals are presentation and never
+  // change between copy variants — only the words are swapped.
+  const panels = STORY.map((s, i) => ({ ...s, ...copy.panels[i] }));
   const reduce = useReducedMotion();
   return (
     <section className="max-w-6xl mx-auto px-6 py-28">
       <SectionHead
-        lines={["Meet Ananya.", "Four frames."]}
-        sub="Read it like a strip. Every frame is a wall she hit, and the thing that got her over it."
+        key={copy.label}
+        kicker={copy.kicker}
+        lines={copy.lines}
+        sub={copy.sub}
         className="mb-16"
       />
       <div className="grid md:grid-cols-2 gap-5">
-        {STORY.map((s, i) => (
+        {panels.map((s, i) => (
           <Reveal key={s.n} delay={i * 0.07}>
             <motion.div
               whileHover={reduce ? {} : { y: -6, rotate: i % 2 ? -0.6 : 0.6 }}
