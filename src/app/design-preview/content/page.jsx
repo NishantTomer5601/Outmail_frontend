@@ -11,6 +11,7 @@ import Story from "@/component/landing/Story";
 import Validation from "@/component/landing/Validation";
 import Navbar from "@/component/Navbar";
 import { HERO, EDITORIAL, CLOSING } from "@/content/landing";
+import { STORY_COPY, STAT } from "@/content/story";
 
 /**
  * Content lab — the landing page rendered with switchable copy.
@@ -68,6 +69,8 @@ function Lab({ groups }) {
 export default function ContentLab() {
   const [hero, setHero] = useState(0);
   const [ed, setEd] = useState(0);
+  const [stat, setStat] = useState(0);
+  const [story, setStory] = useState(0);
   const [close, setClose] = useState(0);
 
   return (
@@ -75,8 +78,8 @@ export default function ContentLab() {
       <Navbar variant="dark" />
       <Hero copy={HERO[hero]} />
       <KineticBand />
-      <Editorial copy={EDITORIAL[ed]} />
-      <Story />
+      <Editorial copy={EDITORIAL[ed]} stat={STAT[stat]} />
+      <Story copy={STORY_COPY[story]} />
       <Validation />
       <PricingLedger />
       <Faq />
@@ -86,6 +89,8 @@ export default function ContentLab() {
         groups={[
           { name: "Hero", opts: HERO, i: hero, set: setHero },
           { name: "Four things", opts: EDITORIAL, i: ed, set: setEd },
+          { name: "The number", opts: STAT, i: stat, set: setStat },
+          { name: "Meet Ananya", opts: STORY_COPY, i: story, set: setStory },
           { name: "Closing CTA", opts: CLOSING, i: close, set: setClose },
         ]}
       />

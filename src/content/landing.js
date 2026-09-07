@@ -71,10 +71,29 @@ export const EDITORIAL = [
     label: "Current",
     kicker: "The four things",
     lines: ["Four problems.", "One subscription-free", "year."],
-    stat: 250,
-    statSuffix: "+",
-    statBody:
-      "applications per opening. A recruiter reads perhaps twelve. Outmail is how you become one of the twelve — and how you find the openings worth that effort.",
+    items: [
+      {
+        t: "Cold outreach",
+        d: "Reach recruiters directly, from your own Gmail, with a message written for that company.",
+      },
+      {
+        t: "Matched jobs",
+        d: "See the openings that fit your resume, and why they fit, before you spend an hour on one.",
+      },
+      {
+        t: "One-click autofill",
+        d: "Stop retyping your notice period. Save your answers once and reuse them everywhere.",
+      },
+      {
+        t: "Mentorship",
+        d: "Ask someone who has already done it, twice a month, in a group of twenty-five.",
+      },
+    ],
+  },
+  {
+    label: "Previous",
+    kicker: "The four things",
+    lines: ["Four problems.", "One subscription-free", "year."],
     items: [
       {
         t: "Reach",
@@ -98,10 +117,6 @@ export const EDITORIAL = [
     label: "The filter",
     kicker: "What you actually get",
     lines: ["An ATS is a filter.", "It was never meant", "to find you."],
-    stat: 12,
-    statSuffix: "",
-    statBody:
-      "applications a recruiter reads, out of roughly 250. Everything Outmail does is aimed at that gap: getting you into the twelve, and picking the openings where you belong there.",
     items: [
       {
         t: "Cold outreach",
@@ -125,10 +140,6 @@ export const EDITORIAL = [
     label: "Four verbs",
     kicker: "How the year runs",
     lines: ["Reach. Find.", "Apply. Close."],
-    stat: 4,
-    statSuffix: "",
-    statBody:
-      "things decide whether a placement season works. Most students only have tools for one of them, which is why effort and outcome stop correlating around application two hundred.",
     items: [
       {
         t: "Reach",
@@ -149,40 +160,9 @@ export const EDITORIAL = [
     ],
   },
   {
-    label: "Plain",
-    kicker: "The four things",
-    lines: ["Four problems.", "One subscription-free", "year."],
-    stat: 250,
-    statSuffix: "+",
-    statBody:
-      "applications land on a single opening. Yours is one of them. Outmail is the set of tools that stops that being the only route you have.",
-    items: [
-      {
-        t: "Cold outreach",
-        d: "Reach recruiters directly, from your own Gmail, with a message written for that company.",
-      },
-      {
-        t: "Matched jobs",
-        d: "See the openings that fit your resume, and why they fit, before you spend an hour on one.",
-      },
-      {
-        t: "One-click autofill",
-        d: "Stop retyping your notice period. Save your answers once and reuse them everywhere.",
-      },
-      {
-        t: "Mentorship",
-        d: "Ask someone who has already done it, twice a month, in a group of twenty-five.",
-      },
-    ],
-  },
-  {
     label: "Second person",
     kicker: "What changes",
     lines: ["You are not short", "of effort. You are", "short of reach."],
-    stat: 250,
-    statSuffix: "+",
-    statBody:
-      "people apply to the role you want. Around twelve get read. Outmail changes which pile you land in, and how much of your week goes into piles worth landing in.",
     items: [
       {
         t: "Cold outreach",
@@ -207,14 +187,6 @@ export const EDITORIAL = [
 export const CLOSING = [
   {
     label: "Current",
-    lines: ["Every week you wait", "is a week of "],
-    accent: "openings.",
-    priceSuffix: "for the whole season",
-    sub: "One payment. Nothing renews, ever. If it is not for you, ask within 7 days and we refund all of it.",
-    cta: "Start this week",
-  },
-  {
-    label: "Cost of waiting",
     lines: ["Every week you wait", "is a week of "],
     accent: "openings.",
     priceSuffix: "for the whole season",
