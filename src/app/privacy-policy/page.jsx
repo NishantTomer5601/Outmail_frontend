@@ -325,15 +325,16 @@ export default function PrivacyPolicy() {
               <p>
                 <strong className="text-slate-900">The limits we place on ourselves.</strong> A
                 given recruiter is contacted by only a small number of students in any week, and
-                never twice by the same student. Every message carries an unsubscribe link.
+                never twice by the same student.
               </p>
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 space-y-3">
                 <p className="font-semibold text-slate-900">To stop receiving these emails</p>
                 <p>
-                  Use the unsubscribe link in any message you received. It works immediately and
-                  needs no account or reply. You can also email{" "}
-                  <A href="mailto:support@outmail.in">support@outmail.in</A> and we will remove you
-                  and confirm.
+                  Email <A href="mailto:support@outmail.in">support@outmail.in</A> and we will
+                  remove you and confirm. We do not include an automated unsubscribe link in these
+                  messages, because each one is sent by an individual student from their own inbox —
+                  the same as if they had written to you directly — rather than from a platform
+                  mailing list.
                 </p>
                 <p>
                   Once removed, your address is added to a permanent suppression list so that{" "}
