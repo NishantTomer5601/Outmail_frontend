@@ -289,7 +289,8 @@ function Minimal({ kind }) {
   );
 }
 
-const SETS = [Current, Interface, Terminal, Receipt, Minimal];
+// Receipt is the production default; the rest stay for the content lab.
+const SETS = [Receipt, Current, Interface, Terminal, Minimal];
 
 export function StepVisual({ kind, reduce, variant = 0 }) {
   const C = SETS[variant] || SETS[0];
@@ -298,8 +299,8 @@ export function StepVisual({ kind, reduce, variant = 0 }) {
 
 export const STEP_VISUALS = [
   { label: "Current" },
+  { label: "Previous" },
   { label: "Interface" },
   { label: "Terminal" },
-  { label: "Receipt" },
   { label: "Minimal" },
 ];

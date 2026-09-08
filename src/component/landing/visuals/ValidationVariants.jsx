@@ -239,9 +239,9 @@ export function ValidationOneQuote() {
 }
 
 export const VALIDATION_VARIANTS = [
-  { label: "Current", C: ValidationCurrent },
+  { label: "Current", C: ValidationOneQuote },
   { label: "Real thread", C: ValidationThreadReal },
   { label: "Pull quotes", C: ValidationPullQuotes },
   { label: "Research", C: ValidationResearch },
-  { label: "One quote", C: ValidationOneQuote },
+  { label: "Previous", C: ValidationCurrent },
 ];

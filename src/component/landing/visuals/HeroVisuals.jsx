@@ -332,9 +332,9 @@ export function HeroAnonymised() {
 }
 
 export const HERO_VISUALS = [
-  { label: "Current", C: HeroCurrent },
+  { label: "Current", C: HeroAnonymised },
   { label: "Sent mail", C: HeroSentMail },
   { label: "Today's queue", C: HeroQueue },
   { label: "Match table", C: HeroMatches },
-  { label: "Anonymised", C: HeroAnonymised },
+  { label: "Previous", C: HeroCurrent },
 ];
