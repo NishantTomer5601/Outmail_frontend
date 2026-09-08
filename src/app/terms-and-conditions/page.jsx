@@ -43,7 +43,9 @@ export default function TermsAndConditions() {
               <strong className="text-slate-900">PrimeWork Labs LLP</strong> (LLPIN ADB-2168), which
               operates Outmail at <A href="https://outmail.in">https://outmail.in</A> (“Outmail”,
               “we”, “our”, “us”). Registered office: 1/400, UIT, Bhiwadi, Alwar, Rajasthan 301019,
-              India.
+              India. PrimeWork Labs LLP is{" "}
+              <strong className="text-slate-900">registered with limited liability</strong> under
+              the Limited Liability Partnership Act, 2008.
             </p>
             <p>
               By creating an account or paying for Outmail you accept these terms. If you do not
@@ -379,7 +381,8 @@ export default function TermsAndConditions() {
             <H2>17. Contact and grievances</H2>
             <div className="space-y-2">
               <p>
-                Support: <A href="mailto:support@outmail.in">support@outmail.in</A>
+                Customer care: <A href="mailto:support@outmail.in">support@outmail.in</A>, +91 63751
+                19988
               </p>
               <p>
                 Grievance Officer: <strong className="text-slate-900">Vishu Tomer</strong>,

@@ -69,6 +69,7 @@ export default function PrivacyPolicy() {
                 LLP is the <strong className="text-slate-900">Data Fiduciary</strong>.
               </p>
               <p className="pt-2">LLPIN: ADB-2168</p>
+              <p>Registered with limited liability under the LLP Act, 2008</p>
               <p>Registered address: 1/400, UIT, Bhiwadi, Alwar, Rajasthan 301019, India</p>
               <p>
                 General contact: <A href="mailto:support@outmail.in">support@outmail.in</A>
