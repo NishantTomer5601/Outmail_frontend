@@ -46,8 +46,15 @@ export default function DashboardLayout({
   const containerStyle = isLight
     ? {}
     : {
+        // A pure-saturation brand-primary centerpoint reads as a genuine light
+        // source right behind the main content column, which starves every
+        // low-opacity white/gray text token overlaid on it of contrast — the
+        // exact "hard to read" complaint this blend fixes. Mixing it toward
+        // surface-deep keeps the same brand-glow silhouette (still brightest
+        // at center, same three-stop falloff) at a level text can sit on top
+        // of without washing out.
         background:
-          "radial-gradient(ellipse at center, var(--brand-primary) 0%, var(--surface-deep) 60%, #000 100%)",
+          "radial-gradient(ellipse at center, color-mix(in srgb, var(--brand-primary) 45%, var(--surface-deep)) 0%, var(--surface-deep) 60%, #000 100%)",
       };
 
   // Topbar styles

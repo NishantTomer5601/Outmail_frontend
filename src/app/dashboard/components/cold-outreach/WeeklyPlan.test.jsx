@@ -50,9 +50,15 @@ describe("WeeklyPlan — no plan yet", () => {
 });
 
 describe("WeeklyPlan — rendering a plan", () => {
-  it("renders the week summary and each day's rows", async () => {
+  it("renders the week summary, with each day collapsed until its header is clicked", async () => {
     api.get.mockResolvedValue({ data: planPayload() });
     render(<WeeklyPlan />);
+    await waitFor(() => expect(screen.getByText(/1 emails/i)).toBeInTheDocument());
+
+    // Collapsed by default — the whole point of the accordion.
+    expect(screen.queryByText("Jane Doe")).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByText(/1 emails/i));
     await waitFor(() => expect(screen.getByText("Jane Doe")).toBeInTheDocument());
 
     expect(screen.getByText("SWE Intern")).toBeInTheDocument();
@@ -108,13 +114,43 @@ describe("WeeklyPlan — rendering a plan", () => {
   });
 });
 
+describe("WeeklyPlan — accordion", () => {
+  it("toggles a day's rows open and closed on repeated clicks of its header", async () => {
+    api.get.mockResolvedValue({ data: planPayload() });
+    render(<WeeklyPlan />);
+    await waitFor(() => expect(screen.getByText(/1 emails/i)).toBeInTheDocument());
+    expect(screen.queryByText("Jane Doe")).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByText(/1 emails/i));
+    expect(screen.getByText("Jane Doe")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByText(/1 emails/i));
+    expect(screen.queryByText("Jane Doe")).not.toBeInTheDocument();
+  });
+
+  it('clicking "Approve day" does not also toggle the accordion open', async () => {
+    api.get.mockResolvedValue({ data: { ...planPayload(), mode: "daily" } });
+    api.post.mockResolvedValue({ data: {} });
+    render(<WeeklyPlan />);
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /approve day/i })).toBeInTheDocument()
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /approve day/i }));
+    expect(screen.queryByText("Jane Doe")).not.toBeInTheDocument();
+  });
+});
+
 describe("WeeklyPlan — approval mode switcher", () => {
   it("sets a new approval mode and shows a success toast", async () => {
     api.get.mockResolvedValue({ data: planPayload() });
     api.post.mockResolvedValue({});
     const { toast } = await import("sonner");
     render(<WeeklyPlan />);
-    await waitFor(() => expect(screen.getByText("Jane Doe")).toBeInTheDocument());
+    // "1 emails" (the day summary) is visible regardless of accordion state —
+    // "Jane Doe" itself is collapsed until the day is expanded, and this test
+    // only needs to know the plan has loaded before switching modes.
+    await waitFor(() => expect(screen.getByText(/1 emails/i)).toBeInTheDocument());
 
     await userEvent.click(screen.getByRole("button", { name: /automatic/i }));
 
@@ -129,7 +165,7 @@ describe("WeeklyPlan — approval mode switcher", () => {
     api.post.mockRejectedValue({ response: { data: { error: "Mode locked by admin" } } });
     const { toast } = await import("sonner");
     render(<WeeklyPlan />);
-    await waitFor(() => expect(screen.getByText("Jane Doe")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/1 emails/i)).toBeInTheDocument());
 
     await userEvent.click(screen.getByRole("button", { name: /daily approval/i }));
 
