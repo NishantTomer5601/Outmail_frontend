@@ -74,10 +74,10 @@ const MailingAgentPanel = () => {
             <Monitor size={13} className="text-purple-400" />
             Mailing Agent
           </h3>
-          <p className="text-[11px] text-white/40">
+          <p className="text-[11px] text-white/55">
             Sends from your desktop
             {status?.lastSeen && (
-              <span className="text-white/30"> · last check-in {timeAgo(status.lastSeen)}</span>
+              <span className="text-white/45"> · last check-in {timeAgo(status.lastSeen)}</span>
             )}
           </p>
         </div>
@@ -205,7 +205,7 @@ const MailingAgentPanel = () => {
                   </p>
                   {log.error && <p className="text-[10px] text-red-400/70 truncate">{log.error}</p>}
                 </div>
-                <span className="text-[10px] text-white/35 flex-shrink-0">
+                <span className="text-[10px] text-white/50 flex-shrink-0">
                   {timeAgo(log.createdAt)}
                 </span>
               </div>

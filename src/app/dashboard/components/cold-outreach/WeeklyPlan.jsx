@@ -7,6 +7,7 @@ import {
   Sparkles,
   Briefcase,
   FileText,
+  ChevronDown,
 } from "lucide-react";
 import React, { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
@@ -47,6 +48,20 @@ const WeeklyPlan = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [approving, setApproving] = useState(false);
+  // Accordion: which day keys are expanded. Starts empty — five fully-open
+  // days was the whole "takes too much space on dashboard" complaint, so
+  // collapsed-by-default (tap a day to see its rows) is the fix, not a
+  // smaller default set of open days.
+  const [expandedDays, setExpandedDays] = useState(() => new Set());
+
+  const toggleDay = (day) => {
+    setExpandedDays((prev) => {
+      const next = new Set(prev);
+      if (next.has(day)) next.delete(day);
+      else next.add(day);
+      return next;
+    });
+  };
 
   const fetchPlan = useCallback(async () => {
     try {
@@ -175,80 +190,121 @@ const WeeklyPlan = () => {
           <div className="space-y-5">
             {Object.entries(plan.days).map(([day, rows]) => {
               const dayApproved = weekApproved || plan.approvedDays?.[day] === true;
+              const isOpen = expandedDays.has(day);
+              const dayLabel = new Date(`${day}T12:00:00Z`).toLocaleDateString("en-IN", {
+                weekday: "long",
+                day: "numeric",
+                month: "short",
+              });
               return (
                 <div
                   key={day}
                   className="rounded-xl border border-white/10 bg-white/5 overflow-hidden"
                 >
-                  <div className="flex items-center justify-between px-4 py-3 bg-white/5 border-b border-white/10">
-                    <p className="text-sm font-semibold text-white">
-                      {new Date(`${day}T12:00:00Z`).toLocaleDateString("en-IN", {
-                        weekday: "long",
-                        day: "numeric",
-                        month: "short",
-                      })}
-                      <span className="text-gray-400 font-normal"> · {rows.length} emails</span>
-                    </p>
-                    {mode === "daily" && !dayApproved && (
-                      <button
-                        onClick={() => approve("day", day)}
-                        disabled={approving}
-                        className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold transition-colors"
-                      >
-                        Approve day
-                      </button>
-                    )}
-                    {dayApproved && (
-                      <span className="text-xs text-green-400 flex items-center gap-1">
-                        <CheckCircle2 size={13} /> Approved
+                  {/* A day header can't be a <button> itself — it needs to
+                      contain a real, independently-clickable "Approve day"
+                      button, and <button> elements cannot nest. The toggle
+                      instead lives on this div, with its own keyboard
+                      handling; "Approve day" stops propagation so clicking
+                      it doesn't also flip the accordion. */}
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => toggleDay(day)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        toggleDay(day);
+                      }
+                    }}
+                    aria-expanded={isOpen}
+                    // Without this, the div's computed accessible name pulls
+                    // in ALL descendant text — including the nested "Approve
+                    // day" button's label — making the two indistinguishable
+                    // to getByRole in tests (and to a screen reader).
+                    aria-label={`${isOpen ? "Collapse" : "Expand"} ${dayLabel}, ${rows.length} emails`}
+                    className="w-full flex items-center justify-between px-4 py-3 bg-white/5 border-b border-white/10 hover:bg-white/10 transition-colors text-left cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2 min-w-0">
+                      <ChevronDown
+                        size={15}
+                        className={`text-white/50 flex-shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                      />
+                      <span className="text-sm font-semibold text-white truncate">
+                        {dayLabel}
+                        <span className="text-white/50 font-normal"> · {rows.length} emails</span>
                       </span>
-                    )}
+                    </span>
+                    <span className="flex items-center gap-2 flex-shrink-0">
+                      {mode === "daily" && !dayApproved && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            approve("day", day);
+                          }}
+                          disabled={approving}
+                          className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold transition-colors"
+                        >
+                          {approving ? "Approving…" : "Approve day"}
+                        </button>
+                      )}
+                      {dayApproved && (
+                        <span className="text-xs text-green-300 flex items-center gap-1">
+                          <CheckCircle2 size={13} /> Approved
+                        </span>
+                      )}
+                    </span>
                   </div>
-                  <div className="divide-y divide-white/5">
-                    {rows.map((row) => (
-                      <div
-                        key={row.id}
-                        className="px-4 py-3 flex flex-col md:flex-row md:items-center justify-between gap-2"
-                      >
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-white truncate">
-                              {row.recipient_name || row.recipient_email}
-                            </span>
-                            {row.job_role && (
-                              <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-blue-500/10 border border-blue-500/20 text-blue-300 flex-shrink-0">
-                                <Briefcase size={10} /> {row.job_role}
+                  {isOpen && (
+                    <div className="divide-y divide-white/5">
+                      {rows.map((row) => (
+                        <div
+                          key={row.id}
+                          className="px-4 py-3 flex flex-col md:flex-row md:items-center justify-between gap-2"
+                        >
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-white truncate">
+                                {row.recipient_name || row.recipient_email}
                               </span>
+                              {row.job_role && (
+                                <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-blue-500/10 border border-blue-500/20 text-blue-300 flex-shrink-0">
+                                  <Briefcase size={10} /> {row.job_role}
+                                </span>
+                              )}
+                            </div>
+                            {row.reason && (
+                              <p className="text-xs text-gray-400 mt-0.5 flex items-start gap-1">
+                                <Sparkles
+                                  size={12}
+                                  className="text-purple-400/70 mt-0.5 flex-shrink-0"
+                                />
+                                <span className="truncate">{row.reason}</span>
+                              </p>
+                            )}
+                            {row.resume_name && (
+                              <p className="text-[11px] text-gray-500 mt-0.5 flex items-center gap-1">
+                                <FileText size={11} className="text-gray-500 flex-shrink-0" />
+                                <span className="truncate">Sending {row.resume_name}</span>
+                              </p>
                             )}
                           </div>
-                          {row.reason && (
-                            <p className="text-xs text-gray-400 mt-0.5 flex items-start gap-1">
-                              <Sparkles
-                                size={12}
-                                className="text-purple-400/70 mt-0.5 flex-shrink-0"
-                              />
-                              <span className="truncate">{row.reason}</span>
-                            </p>
-                          )}
-                          {row.resume_name && (
-                            <p className="text-[11px] text-gray-500 mt-0.5 flex items-center gap-1">
-                              <FileText size={11} className="text-gray-500 flex-shrink-0" />
-                              <span className="truncate">Sending {row.resume_name}</span>
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-3 flex-shrink-0">
-                          {typeof row.confidence_score === "number" && (
-                            <span className="text-[11px] text-gray-500">
-                              {Math.round(row.confidence_score * 100)}% match
+                          <div className="flex items-center gap-3 flex-shrink-0">
+                            {typeof row.confidence_score === "number" && (
+                              <span className="text-[11px] text-gray-500">
+                                {Math.round(row.confidence_score * 100)}% match
+                              </span>
+                            )}
+                            <ValidationBadge status={row.validation_status} />
+                            <span className="text-[11px] text-gray-500 capitalize">
+                              {row.status}
                             </span>
-                          )}
-                          <ValidationBadge status={row.validation_status} />
-                          <span className="text-[11px] text-gray-500 capitalize">{row.status}</span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
