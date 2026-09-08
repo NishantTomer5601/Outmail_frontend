@@ -41,12 +41,12 @@ const WeeklyIntelligenceCard = () => {
             <Sparkles size={13} className="text-purple-400" />
             This Week&apos;s Market Read
           </h3>
-          <p className="text-[11px] text-white/40">
+          <p className="text-[11px] text-white/55">
             Where we expect hiring — drives your outreach batches
           </p>
         </div>
         {weekLabel && (
-          <span className="text-[10px] text-white/30 flex-shrink-0">Week of {weekLabel}</span>
+          <span className="text-[10px] text-white/45 flex-shrink-0">Week of {weekLabel}</span>
         )}
       </div>
 
@@ -66,12 +66,12 @@ const WeeklyIntelligenceCard = () => {
       ) : (
         <div className="flex-1 overflow-y-auto min-h-0 space-y-3">
           {intel.summary && (
-            <p className="text-[11px] text-white/60 leading-relaxed">{intel.summary}</p>
+            <p className="text-[11px] text-white/75 leading-relaxed">{intel.summary}</p>
           )}
 
           {intel.industries?.length > 0 && (
             <div>
-              <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1.5">
+              <p className="text-[9px] text-white/55 uppercase tracking-widest mb-1.5">
                 Industries expected to hire
               </p>
               <div className="space-y-1.5">
@@ -81,12 +81,12 @@ const WeeklyIntelligenceCard = () => {
                       {row.industry}
                     </span>
                     {typeof row.confidence === "number" && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-500/15 text-purple-300 font-semibold flex-shrink-0">
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-500/25 text-purple-100 font-semibold flex-shrink-0">
                         {Math.round(row.confidence * 100)}%
                       </span>
                     )}
                     {row.reason && (
-                      <span className="text-[10px] text-white/40 truncate">{row.reason}</span>
+                      <span className="text-[10px] text-white/55 truncate">{row.reason}</span>
                     )}
                   </div>
                 ))}
@@ -96,7 +96,7 @@ const WeeklyIntelligenceCard = () => {
 
           {intel.companies?.length > 0 && (
             <div>
-              <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1.5">
+              <p className="text-[9px] text-white/55 uppercase tracking-widest mb-1.5">
                 Companies on the radar
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -104,12 +104,12 @@ const WeeklyIntelligenceCard = () => {
                   <span
                     key={c.name}
                     title={(c.reasons || []).join(" · ")}
-                    className="flex items-center gap-1 bg-white/5 rounded-full px-2 py-0.5 border border-white/10"
+                    className="flex items-center gap-1 bg-white/10 rounded-full px-2 py-0.5 border border-white/15"
                   >
-                    <Building2 size={9} className="text-white/40" />
-                    <span className="text-[10px] text-white/70">{c.name}</span>
+                    <Building2 size={9} className="text-white/55" />
+                    <span className="text-[10px] text-white/90">{c.name}</span>
                     {typeof c.hiringProbability === "number" && (
-                      <span className="text-[10px] font-bold text-green-400">
+                      <span className="text-[10px] font-bold text-green-300">
                         {Math.round(c.hiringProbability * 100)}%
                       </span>
                     )}
