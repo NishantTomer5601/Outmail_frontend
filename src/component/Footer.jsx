@@ -186,7 +186,20 @@ export default function Footer({ variant = "dark" }) {
           {/* Entity and LLPIN stay — they say who is taking the money. The
               registered address and phone live in the Terms and Privacy Policy
               rather than on every page. */}
-          <p>© {new Date().getFullYear()} Outmail · PrimeWork Labs LLP · LLPIN ADB-2168</p>
+          {/* Section 21 of the LLP Act 2008 requires an LLP's publications to
+              bear its name, registered office, registration number and a
+              statement that it is registered with limited liability. Three of
+              the four are here; the registered office sits one click away in
+              the Terms, which every page links to. Penalty for omitting them
+              is a flat ₹10,000, and the LLPIN is public on the MCA register
+              regardless, so withholding it would cost compliance and hide
+              nothing. */}
+          <p>
+            © {new Date().getFullYear()} Outmail · PrimeWork Labs LLP · LLPIN ADB-2168 ·{" "}
+            <Link href="/terms-and-conditions" className="hover:text-white/60 transition-colors">
+              registered with limited liability
+            </Link>
+          </p>
           <a href="mailto:support@outmail.in" className="hover:text-primary transition-colors">
             support@outmail.in
           </a>
