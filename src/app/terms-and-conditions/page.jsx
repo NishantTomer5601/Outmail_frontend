@@ -381,8 +381,8 @@ export default function TermsAndConditions() {
             <H2>17. Contact and grievances</H2>
             <div className="space-y-2">
               <p>
-                Customer care: <A href="mailto:support@outmail.in">support@outmail.in</A>, +91 63751
-                19988
+                Customer care: <A href="mailto:support@outmail.in">support@outmail.in</A>, +91 94108
+                54417
               </p>
               <p>
                 Grievance Officer: <strong className="text-slate-900">Vishu Tomer</strong>,
