@@ -2,6 +2,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Mail, Briefcase, Zap, MessageSquare, ArrowDown } from "lucide-react";
 import React from "react";
+import { StepVisual as VariantStepVisual } from "@/component/landing/visuals/StepVisuals";
 import { Reveal, MaskLines, EASE_OUT } from "@/component/motion/kit";
 import { STORY_COPY } from "@/content/story";
 
@@ -156,7 +157,7 @@ function SectionHead({ kicker = "How it works", lines, sub, className = "" }) {
 /* ═══ S5 · PANELS — comic-strip frames. Loud, staggered, unmistakably for
        students rather than for their placement office. ═══ */
 /** `copy` defaults to the production wording; only the content lab varies it. */
-export function StoryPanels({ copy = STORY_COPY[0] }) {
+export function StoryPanels({ copy = STORY_COPY[0], visual = 0 }) {
   // Icons, panel numbers and the little visuals are presentation and never
   // change between copy variants — only the words are swapped.
   const panels = STORY.map((s, i) => ({ ...s, ...copy.panels[i] }));
@@ -197,7 +198,7 @@ export function StoryPanels({ copy = STORY_COPY[0] }) {
                   </span>
                 </div>
                 <p className="text-sm text-white/70 leading-relaxed mb-5">{s.fix}</p>
-                <StepVisual kind={s.visual} reduce={reduce} compact />
+                <VariantStepVisual kind={s.visual} reduce={reduce} variant={visual} />
               </div>
             </motion.div>
           </Reveal>

@@ -8,7 +8,9 @@ import Hero from "@/component/landing/Hero";
 import KineticBand from "@/component/landing/KineticBand";
 import PricingLedger from "@/component/landing/PricingLedger";
 import Story from "@/component/landing/Story";
-import Validation from "@/component/landing/Validation";
+import { HERO_VISUALS } from "@/component/landing/visuals/HeroVisuals";
+import { STEP_VISUALS } from "@/component/landing/visuals/StepVisuals";
+import { VALIDATION_VARIANTS } from "@/component/landing/visuals/ValidationVariants";
 import Navbar from "@/component/Navbar";
 import { HERO, EDITORIAL, CLOSING } from "@/content/landing";
 import { STORY_COPY, STAT } from "@/content/story";
@@ -72,15 +74,21 @@ export default function ContentLab() {
   const [stat, setStat] = useState(0);
   const [story, setStory] = useState(0);
   const [close, setClose] = useState(0);
+  const [heroVis, setHeroVis] = useState(0);
+  const [stepVis, setStepVis] = useState(0);
+  const [valid, setValid] = useState(0);
+
+  const HeroVis = HERO_VISUALS[heroVis].C;
+  const ValidationVis = VALIDATION_VARIANTS[valid].C;
 
   return (
     <div className="min-h-screen bg-surface-page text-white">
       <Navbar variant="dark" />
-      <Hero copy={HERO[hero]} />
+      <Hero copy={HERO[hero]} Visual={HeroVis} />
       <KineticBand />
       <Editorial copy={EDITORIAL[ed]} stat={STAT[stat]} />
-      <Story copy={STORY_COPY[story]} />
-      <Validation />
+      <Story copy={STORY_COPY[story]} visual={stepVis} />
+      <ValidationVis />
       <PricingLedger />
       <Faq />
       <ClosingCta copy={CLOSING[close]} />
@@ -92,6 +100,9 @@ export default function ContentLab() {
           { name: "The number", opts: STAT, i: stat, set: setStat },
           { name: "Meet Ananya", opts: STORY_COPY, i: story, set: setStory },
           { name: "Closing CTA", opts: CLOSING, i: close, set: setClose },
+          { name: "Hero visual", opts: HERO_VISUALS, i: heroVis, set: setHeroVis },
+          { name: "Panel blocks", opts: STEP_VISUALS, i: stepVis, set: setStepVis },
+          { name: "Testimonials", opts: VALIDATION_VARIANTS, i: valid, set: setValid },
         ]}
       />
     </div>
