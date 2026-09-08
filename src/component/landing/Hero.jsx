@@ -18,7 +18,7 @@ import { HERO } from "@/content/landing";
  * `copy` defaults to HERO[0], which is exactly the production wording — so the
  * live page is unchanged and only the content lab passes anything else.
  */
-export default function Hero({ copy = HERO[0] }) {
+export default function Hero({ copy = HERO[0], Visual = HeroVisual }) {
   const reduce = useReducedMotion();
   return (
     <section
@@ -65,7 +65,7 @@ export default function Hero({ copy = HERO[0] }) {
         {/* Hidden below lg: on a phone it would only push the CTA off the fold,
             and the headline is the thing that has to land there. */}
         <div className="hidden lg:block lg:col-span-5">
-          <HeroVisual />
+          <Visual />
         </div>
       </div>
 
